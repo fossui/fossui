@@ -18,8 +18,15 @@ pre-push:
       run: fvm flutter test
 
 # Prepend an emoji based on the conventional-commit type.
+# {1} = commit msg file, {2} = commit source (git hook args).
 prepare-commit-msg:
-  scripts:
-    "emoji.sh":
-      runner: sh
+  commands:
+    emoji:
+      run: sh scripts/git-hooks/commit-msg-emoji.sh {1} {2}
+
+# Reject messages that are not Conventional Commits. {1} = commit msg file.
+commit-msg:
+  commands:
+    lint:
+      run: sh scripts/git-hooks/commit-msg-lint.sh {1}
 

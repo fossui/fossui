@@ -66,7 +66,7 @@ Golden tests are slow, so they run once before a push rather than on every commi
 
 ### `prepare-commit-msg`
 
-Prepends an emoji based on the [Conventional Commits](https://www.conventionalcommits.org/) type prefix. The logic lives in [`.lefthook/prepare-commit-msg/emoji.sh`](../../.lefthook/prepare-commit-msg/emoji.sh).
+Prepends an emoji based on the [Conventional Commits](https://www.conventionalcommits.org/) type prefix. The logic lives in [`scripts/git-hooks/commit-msg-emoji.sh`](../../scripts/git-hooks/commit-msg-emoji.sh), wired into the hook as a `command` so all project scripts can live under `scripts/` instead of Lefthook's own directory.
 
 ```
 feat: add button widget   ->   ✨ feat: add button widget
@@ -90,6 +90,24 @@ The script is a no-op when:
 - the message already starts with an emoji (so amends and re-edits stay clean), or
 - the commit comes from a merge or squash, or
 - the prefix doesn't match any known type.
+
+This hook only decorates; it never blocks a commit. Enforcement is the `commit-msg` hook below.
+
+### `commit-msg`
+
+Rejects any commit whose subject is not a [Conventional Commit](https://www.conventionalcommits.org/). The check lives in [`scripts/git-hooks/commit-msg-lint.sh`](../../scripts/git-hooks/commit-msg-lint.sh).
+
+A subject must match `<type>(<optional scope>): <subject>`, using one of the allowed types (same list as the emoji map). An optional leading emoji is allowed, since `prepare-commit-msg` runs first and may have added one.
+
+```
+feat: add button widget        accepted
+fix(theme): handle null scheme accepted
+✨ feat: add button widget      accepted
+added: something               rejected (unknown type)
+Fix: capitalized type          rejected (types are lowercase)
+```
+
+Merge, revert, and `fixup!` / `squash!` autosquash subjects are allowed through untouched. A rejected commit prints the rule and an example, and the commit is aborted so you can rewrite the message.
 
 ## Day-to-day
 
@@ -116,4 +134,4 @@ When you edit `lefthook.yml` or add a script, run `lefthook install` again so th
 
 ## Committing the config
 
-`lefthook.yml` and the `.lefthook/` directory are tracked in Git. After cloning, every dev only needs `lefthook install` to get the same hooks.
+`lefthook.yml` and the `scripts/` directory are tracked in Git. After cloning, every dev only needs `lefthook install` to get the same hooks.

@@ -1,0 +1,9 @@
+# scripts
+
+Project automation scripts, grouped by purpose in subdirectories.
+
+| Dir | Purpose |
+|-----|---------|
+| `git-hooks/` | Scripts run by Lefthook Git hooks. See [docs/tools/lefthook.md](../docs/tools/lefthook.md). |
+
+Add a new subdirectory per purpose (e.g. `ci/`, `release/`) rather than dropping loose scripts at the root. Keep scripts POSIX `sh` where possible so they run without extra tooling.
