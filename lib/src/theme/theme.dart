@@ -8,3 +8,4 @@
 export 'colors/foss_colors.dart';
 export 'radii/foss_radii.dart';
 export 'spacing/foss_spacing.dart';
+export 'typography/foss_typography.dart';

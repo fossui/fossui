@@ -24,3 +24,7 @@ dev_dependencies:
   very_good_analysis: ^10.2.0
 
 flutter:
+  fonts:
+    - family: Geist
+      fonts:
+        - asset: fonts/Geist-Variable.ttf

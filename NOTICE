@@ -24,5 +24,11 @@ preserved per the MIT License:
     https://github.com/shadcn-ui/ui
     Copyright (c) shadcn
 
+Bundled font, under the SIL Open Font License 1.1 (full text in fonts/OFL.txt):
+
+  - Geist (variable), by The Geist Project Authors / Vercel
+    https://github.com/vercel/geist-font
+    Copyright 2024 The Geist Project Authors
+
 Ported widgets are original Dart/Flutter code. Visual tokens and component
 APIs are derived from the projects above.
