@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart' show Theme, ThemeExtension;
+import 'package:flutter/material.dart' show ThemeExtension;
 import 'package:flutter/widgets.dart';
 import 'package:theme_tailor_annotation/theme_tailor_annotation.dart';
 
@@ -11,7 +11,13 @@ part '_foss_palette.dart';
 ///
 /// Components read these through `context.fossTheme`, never the private
 /// primitive palette. Override roles per app with [copyWith].
-@TailorMixin()
+///
+/// ```dart
+/// const c = FossColors.light;
+/// final action = c.primary;
+/// final brand = c.copyWith(primary: const Color(0xFF6D28D9));
+/// ```
+@TailorMixin(themeGetter: ThemeGetter.none)
 class FossColors extends ThemeExtension<FossColors>
     with _$FossColorsTailorMixin {
   /// Creates a semantic color set. Prefer [light] or [dark] unless retheming.

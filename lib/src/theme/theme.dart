@@ -5,4 +5,6 @@
 // FossTheme InheritedWidget, and the context.fossTheme accessor. There is no
 // FossApp wrapper.
 
-export 'foss_colors.dart';
+export 'colors/foss_colors.dart';
+export 'radii/foss_radii.dart';
+export 'spacing/foss_spacing.dart';
