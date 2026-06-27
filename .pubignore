@@ -1,0 +1,9 @@
+# Keep the published archive lean: the example app's build output and IDE
+# cruft never need to ship. example/lib and example/pubspec stay so pub.dev
+# can render the Example tab.
+example/build/
+example/web/
+example/.idea/
+example/.dart_tool/
+example/.metadata
+example/foss_ui_example.iml
