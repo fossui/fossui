@@ -17,7 +17,11 @@ part 'foss_motion.tailor.dart';
 class FossMotion extends ThemeExtension<FossMotion>
     with _$FossMotionTailorMixin {
   /// Creates a motion scale. Prefer [standard] unless retheming.
-  const FossMotion({required this.skeleton, required this.caretBlink});
+  const FossMotion({
+    required this.skeleton,
+    required this.caretBlink,
+    required this.spinner,
+  });
 
   /// Skeleton shimmer cycle.
   @override
@@ -27,9 +31,14 @@ class FossMotion extends ThemeExtension<FossMotion>
   @override
   final Duration caretBlink;
 
+  /// Loading spinner rotation cycle.
+  @override
+  final Duration spinner;
+
   /// The default motion scale.
   static const standard = FossMotion(
     skeleton: Duration(seconds: 2),
     caretBlink: Duration(seconds: 1),
+    spinner: Duration(milliseconds: 1000),
   );
 }

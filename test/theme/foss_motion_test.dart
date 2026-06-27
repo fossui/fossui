@@ -5,6 +5,7 @@ void main() {
   test('standard durations', () {
     expect(FossMotion.standard.skeleton, const Duration(seconds: 2));
     expect(FossMotion.standard.caretBlink, const Duration(seconds: 1));
+    expect(FossMotion.standard.spinner, const Duration(milliseconds: 1000));
   });
 
   test('copyWith overrides one duration', () {
@@ -20,6 +21,7 @@ void main() {
     const b = FossMotion(
       skeleton: Duration(seconds: 4),
       caretBlink: Duration(seconds: 1),
+      spinner: Duration(milliseconds: 1000),
     );
     expect(a.lerp(b, 0.4).skeleton, a.skeleton); // before midpoint -> a
     expect(a.lerp(b, 0.6).skeleton, b.skeleton); // after midpoint -> b
