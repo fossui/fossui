@@ -82,12 +82,15 @@ Keep cells small so the committed PNGs stay tiny and a diff stays readable in a 
 
 When you change a component on purpose, its golden will fail, and you regenerate it.
 
+The committed `ci/` references render on the CI platform, so regenerate them there: run the **Update goldens** workflow ([`.github/workflows/update-goldens.yaml`](../../.github/workflows/update-goldens.yaml)) on your branch from the Actions tab, or with `gh workflow run "Update goldens" --ref <branch>`. It renders the references on CI and commits them back to the branch.
+
+Locally, `--update` regenerates only the host-rendered preview, which is gitignored:
+
 ```sh
-# regenerate both flavors
 sh scripts/dev/goldens.sh --update
 ```
 
-Then look at the diff of `goldens/ci/*.png` before committing it. A changed reference is a reviewed artifact, not a rubber stamp: an unexpected pixel change is a bug to chase, not an image to accept. Commit only `ci/`; the platform and failure images stay gitignored.
+Then look at the diff of `goldens/ci/*.png` before merging it. A changed reference is a reviewed artifact, not a rubber stamp: an unexpected pixel change is a bug to chase, not an image to accept. Only `ci/` is committed; the preview and failure images stay gitignored.
 
 A change to a shared token (a color, a radius, a type scale) will move every component's goldens at once. That sweep is reviewed as one diff, since the point is to see exactly what the token shifted.
 

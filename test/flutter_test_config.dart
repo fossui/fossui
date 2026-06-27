@@ -10,8 +10,12 @@ Future<void> testExecutable(FutureOr<void> Function() testMain) async {
   // Real face only matters for the platform flavor; CI obscures text.
   await _loadGeist();
 
+  // References render differently per platform, so each flavor is verified only
+  // where it was generated: the Ahem flavor on CI, the host-rendered flavor
+  // locally.
   return AlchemistConfig.runWithConfig(
     config: AlchemistConfig(
+      ciGoldensConfig: CiGoldensConfig(enabled: isCi),
       platformGoldensConfig: PlatformGoldensConfig(enabled: !isCi),
     ),
     run: testMain,

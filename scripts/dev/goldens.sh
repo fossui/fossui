@@ -10,13 +10,14 @@ Usage: scripts/dev/goldens.sh [options] [-- <flutter test args>]
 
 Runs the golden tests (--tags golden).
 
-By default it verifies the rendered output against the committed references
-under test/**/goldens/ci/. With --update it regenerates the references; review
-the diff before committing, and commit only the ci/ flavor.
+By default it verifies the rendered output against the committed references.
+With --update it regenerates them; review the diff before committing.
 
-In CI (CI=true) only the committed Ahem flavor renders, so the same image
-gates the build on every machine. Locally both flavors render: ci/ and the
-gitignored platform preview.
+The two flavors render on different platforms, so each is exercised only where
+its references were generated. In CI (CI=true) the committed Ahem flavor under
+test/**/goldens/ci/ renders and gates the build. Locally the gitignored
+host-rendered preview renders; regenerate the ci/ flavor with the Update
+goldens workflow.
 
 Options:
   --update     Regenerate the references (--update-goldens).
