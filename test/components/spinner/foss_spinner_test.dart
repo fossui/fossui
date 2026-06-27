@@ -62,6 +62,13 @@ void main() {
     );
   });
 
+  testWidgets('repaints when the color changes', (tester) async {
+    await tester.pumpWidget(_host(const FossSpinner(color: Color(0xFFFF00FF))));
+    await tester.pumpWidget(_host(const FossSpinner(color: Color(0xFF00FFFF))));
+
+    expect((_painterOf(tester) as dynamic).color, const Color(0xFF00FFFF));
+  });
+
   testWidgets('reduced motion renders a static arc', (tester) async {
     await tester.pumpWidget(_host(const FossSpinner(), reduceMotion: true));
     expect(

@@ -1,3 +1,4 @@
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -284,6 +285,193 @@ void main() {
       await expectLater(tester, meetsGuideline(labeledTapTargetGuideline));
 
       handle.dispose();
+    });
+
+    // destructive is excluded by design: it is white-on-`destructive`, which
+    // sits near 3.8:1, below the 4.5:1 normal-text bar but matching the
+    // reference's solid-danger treatment.
+    testWidgets('label meets text contrast on a themed surface', (
+      tester,
+    ) async {
+      final handle = tester.ensureSemantics();
+      await tester.pumpWidget(
+        host(
+          ColoredBox(
+            color: FossColors.light.background,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                for (final variant in FossButtonVariant.values)
+                  if (variant != FossButtonVariant.destructive)
+                    FossButton(
+                      onPressed: () {},
+                      variant: variant,
+                      child: const Text('Continue'),
+                    ),
+              ],
+            ),
+          ),
+        ),
+      );
+
+      await expectLater(tester, meetsGuideline(textContrastGuideline));
+
+      handle.dispose();
+    });
+  });
+
+  group('FossButton variants', () {
+    testWidgets('destructive fills with the destructive token', (tester) async {
+      await tester.pumpWidget(
+        host(
+          FossButton(
+            onPressed: () {},
+            variant: FossButtonVariant.destructive,
+            child: const Text('Go'),
+          ),
+        ),
+      );
+
+      expect(_decoration(tester).color, FossColors.light.destructive);
+    });
+  });
+
+  group('FossButton sizing', () {
+    Future<double> minHeightFor(
+      WidgetTester tester,
+      FossButtonSize size,
+    ) async {
+      await tester.pumpWidget(
+        host(
+          FossButton(onPressed: () {}, size: size, child: const Text('Go')),
+        ),
+      );
+      final box = tester.widget<ConstrainedBox>(
+        find
+            .descendant(
+              of: find.byType(DecoratedBox),
+              matching: find.byType(ConstrainedBox),
+            )
+            .first,
+      );
+      return box.constraints.minHeight;
+    }
+
+    testWidgets('sm and lg set their minimum heights', (tester) async {
+      expect(await minHeightFor(tester, FossButtonSize.sm), 32);
+      expect(await minHeightFor(tester, FossButtonSize.lg), 40);
+    });
+
+    testWidgets('themes a trailing icon to 18px', (tester) async {
+      await tester.pumpWidget(
+        host(
+          FossButton(
+            onPressed: () {},
+            trailing: const Icon(IconData(0x44)),
+            child: const Text('Go'),
+          ),
+        ),
+      );
+
+      final iconTheme = tester.widget<IconTheme>(
+        find
+            .descendant(
+              of: find.byType(FossButton),
+              matching: find.byType(IconTheme),
+            )
+            .first,
+      );
+
+      expect(iconTheme.data.size, 18);
+    });
+  });
+
+  group('FossButton style override', () {
+    testWidgets('applies a per-instance style', (tester) async {
+      await tester.pumpWidget(
+        host(
+          FossButton(
+            onPressed: () {},
+            style: const FossButtonStyle(minHeight: 50, borderRadius: 4),
+            child: const Text('Go'),
+          ),
+        ),
+      );
+
+      expect(_decoration(tester).borderRadius, BorderRadius.circular(4));
+      final box = tester.widget<ConstrainedBox>(
+        find
+            .descendant(
+              of: find.byType(DecoratedBox),
+              matching: find.byType(ConstrainedBox),
+            )
+            .first,
+      );
+      expect(box.constraints.minHeight, 50);
+    });
+  });
+
+  group('FossButton interaction', () {
+    testWidgets('swapping the controller resyncs disabled', (tester) async {
+      final enabled = FossButtonController();
+      final off = FossButtonController(FossButtonStatus.disabled);
+      addTearDown(enabled.dispose);
+      addTearDown(off.dispose);
+
+      Widget withController(FossButtonController c) => host(
+        FossButton(controller: c, onPressed: () {}, child: const Text('Go')),
+      );
+
+      await tester.pumpWidget(withController(enabled));
+      expect(
+        tester.widget<FossButton>(find.byType(FossButton)).enabled,
+        isTrue,
+      );
+
+      await tester.pumpWidget(withController(off));
+      expect(
+        tester.widget<FossButton>(find.byType(FossButton)).enabled,
+        isFalse,
+      );
+    });
+
+    testWidgets('hovering while focused repaints the focus ring', (
+      tester,
+    ) async {
+      await tester.pumpWidget(
+        host(FossButton(onPressed: () {}, child: const Text('Go'))),
+      );
+
+      // Keyboard focus shows the ring; a following hover rebuilds it, which
+      // exercises the painter's repaint check.
+      await tester.sendKeyEvent(LogicalKeyboardKey.tab);
+      await tester.pump();
+
+      final gesture = await tester.createGesture(kind: PointerDeviceKind.mouse);
+      await gesture.addPointer(location: Offset.zero);
+      addTearDown(gesture.removePointer);
+      await gesture.moveTo(tester.getCenter(find.byType(FossButton)));
+      await tester.pump();
+
+      expect(tester.takeException(), isNull);
+    });
+
+    testWidgets('clears the pressed state when the tap is cancelled', (
+      tester,
+    ) async {
+      await tester.pumpWidget(
+        host(FossButton(onPressed: () {}, child: const Text('Go'))),
+      );
+
+      final gesture = await tester.startGesture(
+        tester.getCenter(find.byType(FossButton)),
+      );
+      await tester.pump();
+      await gesture.moveTo(const Offset(500, 500));
+      await gesture.up();
+      await tester.pump();
+
+      expect(tester.takeException(), isNull);
     });
   });
 }

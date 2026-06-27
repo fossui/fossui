@@ -1,6 +1,5 @@
-import 'dart:math' as math;
-
 import 'package:flutter/widgets.dart';
+import 'package:foss_ui/src/components/spinner/foss_spinner.dart';
 import 'package:foss_ui/src/theme/theme.dart';
 
 part 'foss_button_controller.dart';
@@ -269,7 +268,7 @@ class _FossButtonState extends State<FossButton> {
         children: [
           Opacity(opacity: 0, child: content),
           widget.loadingIndicator ??
-              _Spinner(size: visuals.iconSize, color: fg),
+              FossSpinner(size: visuals.iconSize, color: fg),
         ],
       );
     }
@@ -470,66 +469,4 @@ class _FocusRingPainter extends CustomPainter {
   @override
   bool shouldRepaint(_FocusRingPainter oldDelegate) =>
       oldDelegate.color != color || oldDelegate.radius != radius;
-}
-
-const _spinnerPeriod = Duration(milliseconds: 900);
-
-/// A minimal rotating arc, the default loading indicator. Self-contained so the
-/// package keeps no icon dependency; honors reduced motion.
-class _Spinner extends StatefulWidget {
-  const _Spinner({required this.size, required this.color});
-
-  final double size;
-  final Color color;
-
-  @override
-  State<_Spinner> createState() => _SpinnerState();
-}
-
-class _SpinnerState extends State<_Spinner>
-    with SingleTickerProviderStateMixin {
-  late final AnimationController _controller = AnimationController(
-    vsync: this,
-    duration: _spinnerPeriod,
-  )..repeat();
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final indicator = SizedBox.square(
-      dimension: widget.size,
-      child: CustomPaint(painter: _SpinnerPainter(widget.color)),
-    );
-    final reduceMotion =
-        MediaQuery.maybeOf(context)?.disableAnimations ?? false;
-    if (reduceMotion) return indicator;
-    return RotationTransition(turns: _controller, child: indicator);
-  }
-}
-
-class _SpinnerPainter extends CustomPainter {
-  const _SpinnerPainter(this.color);
-
-  final Color color;
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    final stroke = size.width / 8;
-    final paint = Paint()
-      ..color = color
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = stroke
-      ..strokeCap = StrokeCap.round;
-    // A 270-degree arc starting at the top.
-    final rect = (Offset.zero & size).deflate(stroke / 2);
-    canvas.drawArc(rect, -math.pi / 2, math.pi * 1.5, false, paint);
-  }
-
-  @override
-  bool shouldRepaint(_SpinnerPainter oldDelegate) => oldDelegate.color != color;
 }
