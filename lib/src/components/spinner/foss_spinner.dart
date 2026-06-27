@@ -82,7 +82,7 @@ class _SpinnerPainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    final stroke = size.width / 8;
+    final stroke = size.width / 12;
     final paint = Paint()
       ..color = color
       ..style = PaintingStyle.stroke

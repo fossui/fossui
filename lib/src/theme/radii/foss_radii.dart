@@ -9,7 +9,7 @@ part 'foss_radii.tailor.dart';
 ///
 /// ```dart
 /// const r = FossRadii.standard;
-/// final corners = BorderRadius.circular(r.lg); // 8 px
+/// final corners = BorderRadius.circular(r.lg); // 10 px
 /// final pill = BorderRadius.circular(FossRadii.full);
 /// ```
 @TailorMixin(themeGetter: ThemeGetter.none, encoders: [DoubleLerpEncoder()])
@@ -23,19 +23,19 @@ class FossRadii extends ThemeExtension<FossRadii> with _$FossRadiiTailorMixin {
     required this.xl2,
   });
 
-  /// Small corners (4 px): controls, chips.
+  /// Small corners (6 px): controls, chips.
   @override
   final double sm;
 
-  /// Medium corners (6 px): buttons, inputs.
+  /// Medium corners (8 px): buttons, inputs.
   @override
   final double md;
 
-  /// Large corners (8 px): cards.
+  /// Large corners (10 px): cards.
   @override
   final double lg;
 
-  /// Extra-large corners (12 px): sheets and large surfaces.
+  /// Extra-large corners (14 px): sheets and large surfaces.
   @override
   final double xl;
 
@@ -47,5 +47,5 @@ class FossRadii extends ThemeExtension<FossRadii> with _$FossRadiiTailorMixin {
   static const full = 9999.0;
 
   /// The default radius scale.
-  static const standard = FossRadii(sm: 4, md: 6, lg: 8, xl: 12, xl2: 16);
+  static const standard = FossRadii(sm: 6, md: 8, lg: 10, xl: 14, xl2: 16);
 }

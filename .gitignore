@@ -5,7 +5,8 @@
 .pub/
 build/
 doc/api/
-pubspec.lock            # library package: do not commit the lockfile
+# library package: do not commit the lockfile
+pubspec.lock
 
 # fvm (keep .fvmrc, ignore the local SDK cache/symlink)
 .fvm/

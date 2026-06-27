@@ -38,6 +38,7 @@ class FossColors extends ThemeExtension<FossColors>
     required this.accentForeground,
     required this.destructive,
     required this.destructiveForeground,
+    required this.destructiveForegroundOn,
     required this.info,
     required this.infoForeground,
     required this.success,
@@ -113,6 +114,10 @@ class FossColors extends ThemeExtension<FossColors>
   @override
   final Color destructiveForeground;
 
+  /// Text/icon color on a solid [destructive] fill.
+  @override
+  final Color destructiveForegroundOn;
+
   /// Informational accent.
   @override
   final Color info;
@@ -167,6 +172,7 @@ class FossColors extends ThemeExtension<FossColors>
     accentForeground: _FossPalette.neutral800,
     destructive: _FossPalette.red500,
     destructiveForeground: _FossPalette.red700,
+    destructiveForegroundOn: Color(0xFFFFFFFF),
     info: _FossPalette.blue500,
     infoForeground: _FossPalette.blue700,
     success: _FossPalette.emerald500,
@@ -196,6 +202,7 @@ class FossColors extends ThemeExtension<FossColors>
     accentForeground: _FossPalette.neutral100,
     destructive: Color(0xFFFB414A), // red-500, 90% over white
     destructiveForeground: _FossPalette.red400,
+    destructiveForegroundOn: Color(0xFFFFFFFF),
     info: _FossPalette.blue500,
     infoForeground: _FossPalette.blue400,
     success: _FossPalette.emerald500,

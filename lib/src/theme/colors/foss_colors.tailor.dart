@@ -26,6 +26,7 @@ mixin _$FossColorsTailorMixin on ThemeExtension<FossColors> {
   Color get accentForeground;
   Color get destructive;
   Color get destructiveForeground;
+  Color get destructiveForegroundOn;
   Color get info;
   Color get infoForeground;
   Color get success;
@@ -54,6 +55,7 @@ mixin _$FossColorsTailorMixin on ThemeExtension<FossColors> {
     Color? accentForeground,
     Color? destructive,
     Color? destructiveForeground,
+    Color? destructiveForegroundOn,
     Color? info,
     Color? infoForeground,
     Color? success,
@@ -82,6 +84,8 @@ mixin _$FossColorsTailorMixin on ThemeExtension<FossColors> {
       destructive: destructive ?? this.destructive,
       destructiveForeground:
           destructiveForeground ?? this.destructiveForeground,
+      destructiveForegroundOn:
+          destructiveForegroundOn ?? this.destructiveForegroundOn,
       info: info ?? this.info,
       infoForeground: infoForeground ?? this.infoForeground,
       success: success ?? this.success,
@@ -132,6 +136,11 @@ mixin _$FossColorsTailorMixin on ThemeExtension<FossColors> {
       destructiveForeground: Color.lerp(
         destructiveForeground,
         other.destructiveForeground,
+        t,
+      )!,
+      destructiveForegroundOn: Color.lerp(
+        destructiveForegroundOn,
+        other.destructiveForegroundOn,
         t,
       )!,
       info: Color.lerp(info, other.info, t)!,
@@ -205,6 +214,10 @@ mixin _$FossColorsTailorMixin on ThemeExtension<FossColors> {
               destructiveForeground,
               other.destructiveForeground,
             ) &&
+            const DeepCollectionEquality().equals(
+              destructiveForegroundOn,
+              other.destructiveForegroundOn,
+            ) &&
             const DeepCollectionEquality().equals(info, other.info) &&
             const DeepCollectionEquality().equals(
               infoForeground,
@@ -245,6 +258,7 @@ mixin _$FossColorsTailorMixin on ThemeExtension<FossColors> {
       const DeepCollectionEquality().hash(accentForeground),
       const DeepCollectionEquality().hash(destructive),
       const DeepCollectionEquality().hash(destructiveForeground),
+      const DeepCollectionEquality().hash(destructiveForegroundOn),
       const DeepCollectionEquality().hash(info),
       const DeepCollectionEquality().hash(infoForeground),
       const DeepCollectionEquality().hash(success),

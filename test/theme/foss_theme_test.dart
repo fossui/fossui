@@ -21,7 +21,7 @@ void main() {
       final tighter = l.copyWith(radii: l.radii.copyWith(md: 2));
       expect(l.lerp(tighter, 0), l);
       expect(l.lerp(tighter, 1), tighter);
-      expect(l.lerp(tighter, 0.5).radii.md, 4); // 6 -> 2 halfway
+      expect(l.lerp(tighter, 0.5).radii.md, 5); // 8 -> 2 halfway
     });
 
     test('equality is value-based', () {

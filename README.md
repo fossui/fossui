@@ -22,8 +22,10 @@ dependencies:
 import 'package:foss_ui/foss_ui.dart';
 ```
 
-Components and theming are added in tiers. Track progress in
-[CHANGELOG.md](CHANGELOG.md).
+Components and theming are added in tiers. See the
+[components roadmap](docs/components/roadmap.md) for what is shipped and what is
+planned, the [component checklist](docs/components/checklist.md) for the bar each
+one clears, and [CHANGELOG.md](CHANGELOG.md) for released versions.
 
 ## Development
 
