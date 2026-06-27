@@ -3,12 +3,18 @@ import 'package:foss_ui/src/components/spinner/foss_spinner.dart';
 import 'package:foss_ui/src/theme/theme.dart';
 
 part 'foss_button_controller.dart';
+part 'foss_button_painters.dart';
 part 'foss_button_style.dart';
 
 const double _iconSize = 18;
 const double _iconOpacity = 0.8;
 const double _disabledOpacity = 0.64;
 const double _minTapTarget = 48;
+
+/// Inner top-rim highlight on filled variants: 16% white at rest, 8% black when
+/// pressed.
+const Color _rimLight = Color(0x29FFFFFF);
+const Color _rimPressed = Color(0x14000000);
 
 /// The visual treatment of a [FossButton].
 enum FossButtonVariant {
@@ -26,6 +32,9 @@ enum FossButtonVariant {
 
   /// Solid action for destructive operations.
   destructive,
+
+  /// Borderless text action that underlines on interaction.
+  link,
 }
 
 /// The size of a [FossButton].
@@ -62,6 +71,18 @@ enum FossButtonSize {
 ///   child: const Text('Save'),
 /// );
 /// ```
+///
+/// The [loading] flag swaps the label for a spinner. To keep a message beside
+/// the spinner, compose it instead: put a [FossSpinner] in [leading] and pass a
+/// null [onPressed] to disable.
+///
+/// ```dart
+/// FossButton(
+///   onPressed: null,
+///   leading: const FossSpinner(size: 18),
+///   child: const Text('Loading...'),
+/// );
+/// ```
 class FossButton extends StatefulWidget {
   /// Creates a button. [child] is the label; a null [onPressed] disables it,
   /// and [loading] shows a spinner in place of the content.
@@ -78,7 +99,34 @@ class FossButton extends StatefulWidget {
     this.loading = false,
     this.loadingIndicator,
     super.key,
-  });
+  }) : _iconOnly = false;
+
+  /// Creates a square, icon-only button sized to its [size]. [icon] is the sole
+  /// content and [semanticLabel] names the action for assistive tech, since
+  /// there is no visible label.
+  ///
+  /// ```dart
+  /// FossButton.icon(
+  ///   onPressed: share,
+  ///   semanticLabel: 'Share',
+  ///   icon: const Icon(LucideIcons.share),
+  /// );
+  /// ```
+  const FossButton.icon({
+    required Widget icon,
+    required this.semanticLabel,
+    this.onPressed,
+    this.controller,
+    this.variant = FossButtonVariant.primary,
+    this.size = FossButtonSize.md,
+    this.style,
+    this.loading = false,
+    this.loadingIndicator,
+    super.key,
+  }) : child = icon,
+       leading = null,
+       trailing = null,
+       _iconOnly = true;
 
   /// The label, typically a [Text].
   final Widget child;
@@ -113,6 +161,8 @@ class FossButton extends StatefulWidget {
 
   /// Replaces the built-in spinner shown while [loading].
   final Widget? loadingIndicator;
+
+  final bool _iconOnly;
 
   /// Whether the button shows its loading spinner: the [loading] flag is set,
   /// or the [controller] is in [FossButtonStatus.loading].
@@ -170,7 +220,7 @@ class _FossButtonState extends State<FossButton> {
   Widget build(BuildContext context) {
     final theme = context.fossTheme;
     final visuals = _apply(
-      _resolve(theme, widget.variant, widget.size),
+      _resolve(theme, widget.variant, widget.size, iconOnly: widget._iconOnly),
       widget.style,
     );
     final ring = theme.colors.ring;
@@ -223,56 +273,23 @@ class _FossButtonState extends State<FossButton> {
   Widget _paint(_ButtonVisuals visuals, Color ring) {
     final states = _states.value;
     final fg = visuals.foreground.resolve(states);
-    final iconColor = fg.withValues(alpha: fg.a * _iconOpacity);
-    final shadow = states.contains(WidgetState.pressed)
-        ? const <BoxShadow>[]
-        : visuals.shadow;
-    final leading = widget.leading;
-    final trailing = widget.trailing;
+    final pressed = states.contains(WidgetState.pressed);
 
-    Widget content = Row(
-      mainAxisSize: MainAxisSize.min,
-      spacing: visuals.gap,
-      children: [
-        if (leading != null)
-          IconTheme.merge(
-            data: IconThemeData(size: visuals.iconSize, color: iconColor),
-            child: leading,
-          ),
-        Flexible(
-          child: DefaultTextStyle.merge(
-            // Set the label style outright (decoration included) so it renders
-            // the same under any app, not just where an ancestor clears it.
-            style: visuals.textStyle.copyWith(
-              color: fg,
-              decoration: TextDecoration.none,
-            ),
-            maxLines: 1,
-            softWrap: false,
-            overflow: TextOverflow.ellipsis,
-            child: widget.child,
-          ),
-        ),
-        if (trailing != null)
-          IconTheme.merge(
-            data: IconThemeData(size: visuals.iconSize, color: iconColor),
-            child: trailing,
-          ),
-      ],
-    );
-
+    var child = _content(visuals, states, fg);
     if (widget.isLoading) {
       // Overlay a spinner; keep the content at zero opacity so width holds.
-      content = Stack(
+      child = Stack(
         alignment: Alignment.center,
         children: [
-          Opacity(opacity: 0, child: content),
+          Opacity(opacity: 0, child: child),
           widget.loadingIndicator ??
               FossSpinner(size: visuals.iconSize, color: fg),
         ],
       );
     }
 
+    // Icon-only buttons are square: floor the width to the height.
+    final minWidth = widget._iconOnly ? visuals.minHeight : 0.0;
     Widget surface = DecoratedBox(
       decoration: ShapeDecoration(
         color: visuals.background.resolve(states),
@@ -280,16 +297,31 @@ class _FossButtonState extends State<FossButton> {
           side: visuals.side,
           borderRadius: BorderRadius.circular(visuals.borderRadius),
         ),
-        shadows: shadow,
+        shadows: pressed || !widget.enabled ? const [] : visuals.shadow,
       ),
       child: Padding(
         padding: visuals.padding,
         child: ConstrainedBox(
-          constraints: BoxConstraints(minHeight: visuals.minHeight),
-          child: content,
+          constraints: BoxConstraints(
+            minWidth: minWidth,
+            minHeight: visuals.minHeight,
+          ),
+          child: child,
         ),
       ),
     );
+
+    // Filled variants carry a 1px top-lit inner rim; pressed swaps it to a
+    // faint dark line. Skipped when disabled, matching the resting elevation.
+    if (widget.variant.isFilled && widget.enabled) {
+      surface = CustomPaint(
+        foregroundPainter: _TopHighlightPainter(
+          color: pressed ? _rimPressed : _rimLight,
+          radius: visuals.borderRadius,
+        ),
+        child: surface,
+      );
+    }
 
     if (!widget.enabled) {
       surface = Opacity(opacity: visuals.disabledOpacity, child: surface);
@@ -302,6 +334,57 @@ class _FossButtonState extends State<FossButton> {
       child: surface,
     );
   }
+
+  /// Builds the inner content: a single themed icon when icon-only, otherwise
+  /// the leading / label / trailing row.
+  Widget _content(_ButtonVisuals visuals, Set<WidgetState> states, Color fg) {
+    final iconColor = fg.withValues(alpha: fg.a * _iconOpacity);
+    final icon = IconThemeData(size: visuals.iconSize, color: iconColor);
+
+    if (widget._iconOnly) {
+      return IconTheme.merge(data: icon, child: widget.child);
+    }
+
+    final interacting =
+        states.contains(WidgetState.pressed) ||
+        states.contains(WidgetState.hovered);
+    final underline = widget.variant == FossButtonVariant.link && interacting;
+    final leading = widget.leading;
+    final trailing = widget.trailing;
+
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      spacing: visuals.gap,
+      children: [
+        if (leading != null) IconTheme.merge(data: icon, child: leading),
+        Flexible(
+          child: DefaultTextStyle.merge(
+            // Set the style outright (decoration too) so it renders the same
+            // under any app, not only where an ancestor clears it.
+            style: visuals.textStyle.copyWith(
+              color: fg,
+              decoration: underline
+                  ? TextDecoration.underline
+                  : TextDecoration.none,
+            ),
+            maxLines: 1,
+            softWrap: false,
+            overflow: TextOverflow.ellipsis,
+            child: widget.child,
+          ),
+        ),
+        if (trailing != null) IconTheme.merge(data: icon, child: trailing),
+      ],
+    );
+  }
+}
+
+/// Solid-fill variants: they tint the drop shadow with their own color and
+/// carry the top-lit inner rim. The single source for "is this filled".
+extension on FossButtonVariant {
+  bool get isFilled =>
+      this == FossButtonVariant.primary ||
+      this == FossButtonVariant.destructive;
 }
 
 /// Composites [base] at [opacity] of its own alpha over [surface], baking the
@@ -309,12 +392,26 @@ class _FossButtonState extends State<FossButton> {
 Color _overlay(Color base, double opacity, Color surface) =>
     Color.alphaBlend(base.withValues(alpha: base.a * opacity), surface);
 
+/// Recolors the [base] shadow layers to [color] at [alpha], keeping geometry.
+/// Filled variants tint their drop shadow with their own fill, not flat black.
+List<BoxShadow> _tint(List<BoxShadow> base, Color color, double alpha) => [
+  for (final s in base)
+    BoxShadow(
+      color: color.withValues(alpha: alpha),
+      offset: s.offset,
+      blurRadius: s.blurRadius,
+      spreadRadius: s.spreadRadius,
+      blurStyle: s.blurStyle,
+    ),
+];
+
 /// Builds the default appearance for a (variant, size) from the theme tokens.
 _ButtonVisuals _resolve(
   FossThemeData theme,
   FossButtonVariant variant,
-  FossButtonSize size,
-) {
+  FossButtonSize size, {
+  required bool iconOnly,
+}) {
   final c = theme.colors;
   final surface = c.background;
 
@@ -323,7 +420,6 @@ _ButtonVisuals _resolve(
   final Color pressed;
   final Color fg;
   final BorderSide side;
-  final List<BoxShadow> shadow;
   switch (variant) {
     case FossButtonVariant.primary:
       base = c.primary;
@@ -331,54 +427,51 @@ _ButtonVisuals _resolve(
       pressed = hover;
       fg = c.primaryForeground;
       side = BorderSide(color: c.primary);
-      shadow = theme.shadows.xs;
     case FossButtonVariant.secondary:
       base = c.secondary;
       hover = _overlay(c.secondary, 0.9, surface);
       pressed = _overlay(c.secondary, 0.8, surface);
       fg = c.secondaryForeground;
       side = BorderSide.none;
-      shadow = FossShadows.none;
     case FossButtonVariant.outline:
       base = c.popover;
       hover = _overlay(c.accent, 0.5, c.popover);
       pressed = hover;
       fg = c.foreground;
       side = BorderSide(color: c.input);
-      shadow = theme.shadows.xs;
     case FossButtonVariant.ghost:
       base = const Color(0x00000000);
       hover = _overlay(c.accent, 1, surface);
       pressed = hover;
       fg = c.foreground;
       side = BorderSide.none;
-      shadow = FossShadows.none;
     case FossButtonVariant.destructive:
       base = c.destructive;
       hover = _overlay(c.destructive, 0.9, surface);
       pressed = hover;
       fg = c.destructiveForegroundOn;
       side = BorderSide(color: c.destructive);
-      shadow = theme.shadows.xs;
+    case FossButtonVariant.link:
+      base = const Color(0x00000000);
+      hover = base;
+      pressed = base;
+      fg = c.foreground;
+      side = BorderSide.none;
   }
 
-  final double height;
-  final double gap;
-  final double horizontalPadding;
-  switch (size) {
-    case FossButtonSize.sm:
-      height = 32;
-      gap = theme.spacing(1.5);
-      horizontalPadding = theme.spacing(2.5);
-    case FossButtonSize.md:
-      height = 36;
-      gap = theme.spacing(2);
-      horizontalPadding = theme.spacing(3);
-    case FossButtonSize.lg:
-      height = 40;
-      gap = theme.spacing(2);
-      horizontalPadding = theme.spacing(3.5);
-  }
+  // Filled variants tint the lift with their own fill; outline keeps the
+  // neutral lift; the rest cast none.
+  final shadow = switch (variant) {
+    _ when variant.isFilled => _tint(theme.shadows.xs, base, 0.24),
+    FossButtonVariant.outline => theme.shadows.xs,
+    _ => FossShadows.none,
+  };
+
+  final (height, gap, horizontalPadding) = switch (size) {
+    FossButtonSize.sm => (32.0, theme.spacing(1.5), theme.spacing(2.5)),
+    FossButtonSize.md => (36.0, theme.spacing(2), theme.spacing(3)),
+    FossButtonSize.lg => (40.0, theme.spacing(2), theme.spacing(3.5)),
+  };
 
   return _ButtonVisuals(
     background: WidgetStateProperty.resolveWith((states) {
@@ -389,7 +482,10 @@ _ButtonVisuals _resolve(
     foreground: WidgetStatePropertyAll(fg),
     side: side,
     borderRadius: theme.radii.lg,
-    padding: EdgeInsets.symmetric(horizontal: horizontalPadding),
+    // Icon-only buttons drop side padding; squareness is enforced at paint.
+    padding: iconOnly
+        ? EdgeInsets.zero
+        : EdgeInsets.symmetric(horizontal: horizontalPadding),
     minHeight: height,
     textStyle: theme.typography.base.medium,
     shadow: shadow,
@@ -447,29 +543,4 @@ _ButtonVisuals _apply(_ButtonVisuals base, FossButtonStyle? override) {
     gap: override.gap ?? base.gap,
     disabledOpacity: override.disabledOpacity ?? base.disabledOpacity,
   );
-}
-
-class _FocusRingPainter extends CustomPainter {
-  const _FocusRingPainter({required this.color, required this.radius});
-
-  final Color color;
-  final double radius;
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    final rect = (Offset.zero & size).inflate(2);
-    final shape = RSuperellipse.fromRectAndRadius(
-      rect,
-      Radius.circular(radius + 2),
-    );
-    final paint = Paint()
-      ..color = color
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 2;
-    canvas.drawRSuperellipse(shape, paint);
-  }
-
-  @override
-  bool shouldRepaint(_FocusRingPainter oldDelegate) =>
-      oldDelegate.color != color || oldDelegate.radius != radius;
 }

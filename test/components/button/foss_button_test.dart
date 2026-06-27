@@ -417,6 +417,144 @@ void main() {
     });
   });
 
+  group('FossButton link variant', () {
+    DefaultTextStyle labelStyle(WidgetTester tester) =>
+        tester.widget<DefaultTextStyle>(
+          find
+              .ancestor(
+                of: find.text('Go'),
+                matching: find.byType(DefaultTextStyle),
+              )
+              .first,
+        );
+
+    testWidgets('is transparent at rest', (tester) async {
+      await tester.pumpWidget(
+        host(
+          FossButton(
+            onPressed: () {},
+            variant: FossButtonVariant.link,
+            child: const Text('Go'),
+          ),
+        ),
+      );
+
+      expect(_decoration(tester).color, const Color(0x00000000));
+      expect(labelStyle(tester).style.decoration, TextDecoration.none);
+    });
+
+    testWidgets('underlines the label while pressed', (tester) async {
+      await tester.pumpWidget(
+        host(
+          FossButton(
+            onPressed: () {},
+            variant: FossButtonVariant.link,
+            child: const Text('Go'),
+          ),
+        ),
+      );
+
+      final gesture = await tester.startGesture(
+        tester.getCenter(find.byType(FossButton)),
+      );
+      await tester.pump();
+      expect(labelStyle(tester).style.decoration, TextDecoration.underline);
+
+      await gesture.up();
+      await tester.pump();
+      expect(labelStyle(tester).style.decoration, TextDecoration.none);
+    });
+  });
+
+  group('FossButton.icon', () {
+    testWidgets('is square at its size', (tester) async {
+      await tester.pumpWidget(
+        host(
+          FossButton.icon(
+            onPressed: () {},
+            semanticLabel: 'Share',
+            icon: const Icon(IconData(0x44)),
+          ),
+        ),
+      );
+
+      final size = tester.getSize(find.byType(DecoratedBox));
+      expect(size.width, size.height);
+      expect(size.height, 36);
+    });
+
+    testWidgets('drops side padding', (tester) async {
+      await tester.pumpWidget(
+        host(
+          FossButton.icon(
+            onPressed: () {},
+            semanticLabel: 'Share',
+            icon: const Icon(IconData(0x44)),
+          ),
+        ),
+      );
+
+      final padding = tester.widget<Padding>(
+        find
+            .descendant(
+              of: find.byType(DecoratedBox),
+              matching: find.byType(Padding),
+            )
+            .first,
+      );
+      expect(padding.padding, EdgeInsets.zero);
+    });
+
+    testWidgets('fires onPressed and exposes its label', (tester) async {
+      var taps = 0;
+      await tester.pumpWidget(
+        host(
+          FossButton.icon(
+            onPressed: () => taps++,
+            semanticLabel: 'Share',
+            icon: const Icon(IconData(0x44)),
+          ),
+        ),
+      );
+
+      await tester.tap(find.byType(FossButton));
+
+      expect(taps, 1);
+      expect(find.bySemanticsLabel('Share'), findsOneWidget);
+    });
+
+    testWidgets('controller loading shows a spinner and blocks taps', (
+      tester,
+    ) async {
+      final controller = FossButtonController();
+      addTearDown(controller.dispose);
+      var taps = 0;
+      await tester.pumpWidget(
+        host(
+          FossButton.icon(
+            controller: controller,
+            onPressed: () => taps++,
+            semanticLabel: 'Add',
+            icon: const Icon(IconData(0x44)),
+          ),
+        ),
+      );
+
+      expect(find.byType(FossSpinner), findsNothing);
+
+      controller.loading();
+      await tester.pump();
+
+      expect(find.byType(FossSpinner), findsOneWidget);
+      await tester.tap(find.byType(FossButton), warnIfMissed: false);
+      expect(taps, 0);
+      expect(
+        tester.widget<FossButton>(find.byType(FossButton)).enabled,
+        isFalse,
+      );
+    });
+  });
+
   group('FossButton interaction', () {
     testWidgets('swapping the controller resyncs disabled', (tester) async {
       final enabled = FossButtonController();

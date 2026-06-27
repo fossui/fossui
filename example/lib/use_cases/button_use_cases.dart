@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart' show Icons;
 import 'package:flutter/widgets.dart';
 import 'package:foss_ui/foss_ui.dart';
 import 'package:widgetbook/widgetbook.dart';
@@ -47,3 +48,29 @@ Widget variantsButton(BuildContext context) => Center(
     ],
   ),
 );
+
+@widgetbook.UseCase(name: 'Icon', type: FossButton)
+Widget iconButton(BuildContext context) {
+  final variant = context.knobs.object.dropdown(
+    label: 'Variant',
+    options: FossButtonVariant.values,
+    initialOption: FossButtonVariant.primary,
+    labelBuilder: (v) => v.name,
+  );
+  final size = context.knobs.object.dropdown(
+    label: 'Size',
+    options: FossButtonSize.values,
+    initialOption: FossButtonSize.md,
+    labelBuilder: (s) => s.name,
+  );
+
+  return Center(
+    child: FossButton.icon(
+      onPressed: () {},
+      variant: variant,
+      size: size,
+      semanticLabel: 'Add',
+      icon: const Icon(Icons.add),
+    ),
+  );
+}
