@@ -18,6 +18,9 @@ jobs:
     name: Format, analyze, test
     runs-on: ubuntu-latest
     timeout-minutes: 15
+    permissions:
+      contents: read
+      id-token: write
     steps:
       - uses: actions/checkout@v4
 
@@ -37,6 +40,11 @@ jobs:
       - name: Install dependencies
         run: flutter pub get
 
+      # The catalog's use-case tree is generated and gitignored; build it so the
+      # example analyzes clean.
+      - name: Build catalog
+        run: sh scripts/dev/catalog.sh --build
+
       - name: Verify formatting
         run: dart format --output=none --set-exit-if-changed .
 
@@ -44,4 +52,38 @@ jobs:
         run: flutter analyze --fatal-infos
 
       - name: Test with coverage
-        run: flutter test --coverage
+        run: sh scripts/dev/coverage.sh
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v5
+        with:
+          use_oidc: true
+          files: coverage/lcov.info
+          fail_ci_if_error: false
+
+  goldens:
+    name: Goldens
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: stable
+          cache: true
+
+      - name: Cache pub packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.pub-cache
+          key: pub-${{ runner.os }}-${{ env.FLUTTER_VERSION }}-${{ hashFiles('pubspec.yaml') }}
+          restore-keys: pub-${{ runner.os }}-${{ env.FLUTTER_VERSION }}-
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      # CI is set by GitHub Actions, so only the committed Ahem flavor renders.
+      - name: Verify goldens
+        run: sh scripts/dev/goldens.sh

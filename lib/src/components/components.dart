@@ -4,3 +4,4 @@
 // Checkbox, Card, Dialog, ...).
 
 export 'button/foss_button.dart';
+export 'spinner/foss_spinner.dart';

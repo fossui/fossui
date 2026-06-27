@@ -12,12 +12,18 @@ part of 'foss_motion.dart';
 mixin _$FossMotionTailorMixin on ThemeExtension<FossMotion> {
   Duration get skeleton;
   Duration get caretBlink;
+  Duration get spinner;
 
   @override
-  FossMotion copyWith({Duration? skeleton, Duration? caretBlink}) {
+  FossMotion copyWith({
+    Duration? skeleton,
+    Duration? caretBlink,
+    Duration? spinner,
+  }) {
     return FossMotion(
       skeleton: skeleton ?? this.skeleton,
       caretBlink: caretBlink ?? this.caretBlink,
+      spinner: spinner ?? this.spinner,
     );
   }
 
@@ -27,6 +33,7 @@ mixin _$FossMotionTailorMixin on ThemeExtension<FossMotion> {
     return FossMotion(
       skeleton: t < 0.5 ? skeleton : other.skeleton,
       caretBlink: t < 0.5 ? caretBlink : other.caretBlink,
+      spinner: t < 0.5 ? spinner : other.spinner,
     );
   }
 
@@ -39,7 +46,8 @@ mixin _$FossMotionTailorMixin on ThemeExtension<FossMotion> {
             const DeepCollectionEquality().equals(
               caretBlink,
               other.caretBlink,
-            ));
+            ) &&
+            const DeepCollectionEquality().equals(spinner, other.spinner));
   }
 
   @override
@@ -48,6 +56,7 @@ mixin _$FossMotionTailorMixin on ThemeExtension<FossMotion> {
       runtimeType.hashCode,
       const DeepCollectionEquality().hash(skeleton),
       const DeepCollectionEquality().hash(caretBlink),
+      const DeepCollectionEquality().hash(spinner),
     );
   }
 }

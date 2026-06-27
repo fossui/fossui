@@ -29,6 +29,18 @@ void main() {
       expect(FossThemeData.light == FossThemeData.dark, isFalse);
     });
 
+    test('equal themes share a hashCode', () {
+      expect(FossThemeData.light.hashCode, FossThemeData.light.hashCode);
+      expect(
+        FossThemeData.light.hashCode == FossThemeData.dark.hashCode,
+        isFalse,
+      );
+    });
+
+    test('copyWith with no arguments keeps every bundle', () {
+      expect(FossThemeData.dark.copyWith(), FossThemeData.dark);
+    });
+
     test('toThemeData registers the theme as an extension', () {
       final theme = FossThemeData.dark.toThemeData();
       expect(theme.extension<FossThemeData>(), FossThemeData.dark);
@@ -85,6 +97,27 @@ void main() {
         ),
       );
       expect(resolved.colors.background, FossThemeData.light.colors.background);
+    });
+
+    testWidgets('FossTheme notifies dependents when its data changes', (
+      tester,
+    ) async {
+      final seen = <Color>[];
+      Widget build(FossThemeData data) => FossTheme(
+        data: data,
+        child: Builder(
+          builder: (context) {
+            seen.add(context.fossTheme.colors.background);
+            return const SizedBox();
+          },
+        ),
+      );
+      await tester.pumpWidget(build(FossThemeData.light));
+      await tester.pumpWidget(build(FossThemeData.dark));
+      expect(seen, [
+        FossThemeData.light.colors.background,
+        FossThemeData.dark.colors.background,
+      ]);
     });
 
     testWidgets('FossTheme wins over a registered extension', (tester) async {

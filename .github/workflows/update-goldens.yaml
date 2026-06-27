@@ -1,0 +1,47 @@
+name: Update goldens
+
+# Goldens render on the CI platform, so the committed references must be
+# generated there too. Run this from the Actions tab (or `gh workflow run`) on a
+# branch; it regenerates the references and commits them back to that branch.
+on:
+  workflow_dispatch:
+
+env:
+  FLUTTER_VERSION: 3.41.9
+
+jobs:
+  update:
+    name: Regenerate references
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref_name }}
+
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: stable
+          cache: true
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      # CI is set by GitHub Actions, so only the committed Ahem flavor renders.
+      - name: Regenerate references
+        run: sh scripts/dev/goldens.sh --update
+
+      - name: Commit references
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add test
+          if git diff --cached --quiet; then
+            echo "No golden changes."
+          else
+            git commit -m "test: regenerate ci goldens"
+            git push
+          fi

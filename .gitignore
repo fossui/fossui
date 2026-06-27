@@ -27,3 +27,9 @@ staging/
 # OS
 .DS_Store
 Thumbs.db
+
+# Golden references: only the committed CI flavor enters history.
+test/**/goldens/*/
+!test/**/goldens/ci/
+# Mismatch artifacts alchemist writes beside a failing test.
+test/**/failures/

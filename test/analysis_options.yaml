@@ -1,0 +1,8 @@
+include: ../analysis_options.yaml
+
+# Coverage does not count a const constructor invocation as a hit, so tests
+# build widgets non-const to register coverage. These lints stay on for lib/.
+linter:
+  rules:
+    prefer_const_constructors: false
+    prefer_const_literals_to_create_immutables: false
