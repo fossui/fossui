@@ -13,17 +13,23 @@ mixin _$FossMotionTailorMixin on ThemeExtension<FossMotion> {
   Duration get skeleton;
   Duration get caretBlink;
   Duration get spinner;
+  Duration get overlay;
+  Duration get toast;
 
   @override
   FossMotion copyWith({
     Duration? skeleton,
     Duration? caretBlink,
     Duration? spinner,
+    Duration? overlay,
+    Duration? toast,
   }) {
     return FossMotion(
       skeleton: skeleton ?? this.skeleton,
       caretBlink: caretBlink ?? this.caretBlink,
       spinner: spinner ?? this.spinner,
+      overlay: overlay ?? this.overlay,
+      toast: toast ?? this.toast,
     );
   }
 
@@ -34,6 +40,8 @@ mixin _$FossMotionTailorMixin on ThemeExtension<FossMotion> {
       skeleton: t < 0.5 ? skeleton : other.skeleton,
       caretBlink: t < 0.5 ? caretBlink : other.caretBlink,
       spinner: t < 0.5 ? spinner : other.spinner,
+      overlay: t < 0.5 ? overlay : other.overlay,
+      toast: t < 0.5 ? toast : other.toast,
     );
   }
 
@@ -47,7 +55,9 @@ mixin _$FossMotionTailorMixin on ThemeExtension<FossMotion> {
               caretBlink,
               other.caretBlink,
             ) &&
-            const DeepCollectionEquality().equals(spinner, other.spinner));
+            const DeepCollectionEquality().equals(spinner, other.spinner) &&
+            const DeepCollectionEquality().equals(overlay, other.overlay) &&
+            const DeepCollectionEquality().equals(toast, other.toast));
   }
 
   @override
@@ -57,6 +67,8 @@ mixin _$FossMotionTailorMixin on ThemeExtension<FossMotion> {
       const DeepCollectionEquality().hash(skeleton),
       const DeepCollectionEquality().hash(caretBlink),
       const DeepCollectionEquality().hash(spinner),
+      const DeepCollectionEquality().hash(overlay),
+      const DeepCollectionEquality().hash(toast),
     );
   }
 }

@@ -21,6 +21,8 @@ class FossMotion extends ThemeExtension<FossMotion>
     required this.skeleton,
     required this.caretBlink,
     required this.spinner,
+    required this.overlay,
+    required this.toast,
   });
 
   /// Skeleton shimmer cycle.
@@ -35,10 +37,20 @@ class FossMotion extends ThemeExtension<FossMotion>
   @override
   final Duration spinner;
 
+  /// Enter and exit of a modal overlay (dialog scrim, fade, and scale).
+  @override
+  final Duration overlay;
+
+  /// Enter and exit slide of a transient toast.
+  @override
+  final Duration toast;
+
   /// The default motion scale.
   static const standard = FossMotion(
     skeleton: Duration(seconds: 2),
     caretBlink: Duration(seconds: 1),
     spinner: Duration(milliseconds: 1000),
+    overlay: Duration(milliseconds: 200),
+    toast: Duration(milliseconds: 250),
   );
 }
