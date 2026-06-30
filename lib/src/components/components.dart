@@ -16,6 +16,7 @@ export 'dialog/foss_dialog.dart';
 export 'drawer/foss_drawer.dart';
 export 'progress/foss_progress.dart';
 export 'radio/foss_radio.dart';
+export 'separator/foss_separator.dart';
 export 'slider/foss_slider.dart';
 export 'spinner/foss_spinner.dart';
 export 'switch/foss_switch.dart';
