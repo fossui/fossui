@@ -17,53 +17,54 @@ right-to-left layout, and three layers of tests. That bar is written down in
 
 ## Available now
 
+### Forms and inputs
+
 - [x] **Button** : variants, sizes, leading and trailing icon slots, a loading
   state, an icon-only form, and an optional controller for driving loading and
   disabled imperatively.
+- [x] **Text field** : single-line and multi-line input from one widget.
+- [x] **Checkbox** : on/off control, with a group for related options.
+- [x] **Radio group** : single choice from a set.
+- [x] **Switch** : toggle control.
+- [x] **Slider** : pick a value from a range.
+
+### Layout and surfaces
+
+- [x] **Card** : surface container with the package elevation.
+- [x] **Separator** : thin divider.
+- [x] **Tabs** : tabbed panels, horizontal or vertical.
+
+### Feedback and status
+
 - [x] **Spinner** : a themed loading indicator, also used inside Button.
+- [x] **Progress** : determinate progress bar.
+- [x] **Badge** : small status or count pill.
+- [x] **Avatar** : image with an initials fallback.
+- [x] **Alert** : inline status message.
 
-## Next
+### Overlays
 
-The current focus is the rest of the form and layout foundations. These have no
-dependencies on overlays or focus traps, so they land first.
-
-- [ ] **Label** : text label that pairs with a form control.
-- [ ] **Input** : single-line text field.
-- [ ] **Textarea** : multi-line text field.
-- [ ] **Separator** : thin divider.
-- [ ] **Badge** : small status or count pill.
-- [ ] **Avatar** : image with an initials fallback.
-- [ ] **Card** : surface container with the package elevation.
-- [ ] **Skeleton** : shimmer placeholder for loading content.
-- [ ] **Checkbox** : on/off control.
-- [ ] **Switch** : toggle control.
-- [ ] **Radio group** : single choice from a set.
+- [x] **Dialog** : modal dialog over a dimmed scrim.
+- [x] **Alert dialog** : non-dismissible confirm dialog.
+- [x] **Drawer** : panel that slides in from an edge.
+- [x] **Tooltip** : anchored hint on hover or focus.
+- [x] **Toast** : transient notifications with a queue.
 
 ## Planned
 
-### Overlays and composites
+The overlay and focus-management layer already ships under the dialogs, drawer,
+tooltip, and toast above, so what is left builds on top of it.
 
-Built on an overlay and focus-management layer that lands with this group.
-
-- [ ] Tooltip
-- [ ] Popover
-- [ ] Dialog and alert dialog
-- [ ] Sheet
-- [ ] Tabs
-- [ ] Accordion and collapsible
-- [ ] Toast
-- [ ] Alert
-- [ ] Select
-
-### Data and advanced
-
-- [ ] Slider
-- [ ] Progress
-- [ ] Calendar and date picker
-- [ ] Combobox and autocomplete
-- [ ] Table and pagination
-- [ ] Number field
-- [ ] One-time-code field
+- [ ] **Label** : text label that pairs with a form control.
+- [ ] **Skeleton** : shimmer placeholder for loading content.
+- [ ] **Popover** : floating panel anchored to a trigger.
+- [ ] **Accordion and collapsible** : expandable sections.
+- [ ] **Select** : single choice from a dropdown.
+- [ ] **Combobox and autocomplete** : filterable select.
+- [ ] **Calendar and date picker** : date selection.
+- [ ] **Table and pagination** : tabular data.
+- [ ] **Number field** : numeric input with steppers.
+- [ ] **One-time-code field** : segmented code entry.
 
 ## How the order is decided
 

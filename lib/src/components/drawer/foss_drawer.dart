@@ -1,0 +1,653 @@
+import 'dart:async';
+
+import 'package:flutter/widgets.dart';
+import 'package:foss_ui/src/foundation/foss_glyphs.dart';
+import 'package:foss_ui/src/foundation/foss_modal_route.dart';
+import 'package:foss_ui/src/theme/colors/foss_colors.dart';
+import 'package:foss_ui/src/theme/foss_theme.dart';
+import 'package:foss_ui/src/theme/radii/foss_radii.dart';
+import 'package:foss_ui/src/theme/typography/foss_typography.dart';
+
+part 'foss_drawer_style.dart';
+
+/// The spring-like curve the panel rides in and out on.
+const Cubic _drawerCurve = Cubic(0.32, 0.72, 0, 1);
+
+/// Maximum width of a side panel in logical pixels (coss `max-w-md`).
+const double _sidePanelMaxWidth = 448;
+
+/// Pill dimensions of the drag handle, long axis by short axis.
+const double _handleLong = 48;
+const double _handleShort = 4;
+
+/// A release past this fraction of the panel extent dismisses it.
+const double _dismissFraction = 0.5;
+
+/// An outward fling at or above this velocity (px/s) dismisses regardless of
+/// how far the panel has travelled.
+const double _flingVelocity = 700;
+
+/// The edge a [FossDrawer] anchors to and slides in from.
+enum FossDrawerSide {
+  /// The bottom edge: full width, slides up. The primary mobile shape.
+  bottom,
+
+  /// The top edge: full width, slides down.
+  top,
+
+  /// The leading edge: a side panel that slides in from the start.
+  left,
+
+  /// The trailing edge: a side panel that slides in from the end.
+  right,
+}
+
+/// The corner treatment of a [FossDrawer] surface.
+enum FossDrawerVariant {
+  /// Rounded exposed corners (the edge that meets the page).
+  rounded,
+
+  /// Square corners on every edge.
+  straight,
+}
+
+/// The footer treatment of a [FossDrawer].
+enum FossDrawerFooterVariant {
+  /// No bar: the actions sit on the plain surface.
+  bare,
+
+  /// A bordered bar tinted with the muted role behind the actions.
+  filled,
+}
+
+/// Opens an edge [FossDrawer] and resolves to the value passed to
+/// `Navigator.pop`.
+///
+/// Slides the surface in from [side] over the drawer motion duration, draws the
+/// scrim, traps focus, and restores it to the opener on close, all from the
+/// shared modal foundation. The active theme is captured and re-provided inside
+/// the route. The surface can be dragged back off its edge to dismiss.
+///
+/// ```dart
+/// final applied = await showFossDrawer<bool>(
+///   context: context,
+///   builder: (context) => FossDrawer(
+///     showHandle: true,
+///     title: const Text('Filters'),
+///     content: const FilterForm(),
+///     actions: [
+///       FossButton(
+///         onPressed: () => Navigator.pop(context, true),
+///         child: const Text('Apply'),
+///       ),
+///     ],
+///   ),
+/// );
+/// ```
+Future<T?> showFossDrawer<T>({
+  required BuildContext context,
+  required WidgetBuilder builder,
+  FossDrawerSide side = FossDrawerSide.bottom,
+  bool barrierDismissible = true,
+  String? barrierLabel,
+  bool useRootNavigator = true,
+}) => showFossModal<T>(
+  context: context,
+  barrierDismissible: barrierDismissible,
+  barrierLabel: barrierLabel,
+  useRootNavigator: useRootNavigator,
+  transitionDuration: context.fossTheme.motion.drawer,
+  transitionBuilder: (context, animation, secondaryAnimation, child) =>
+      _DrawerSlide(side: side, animation: animation, child: child),
+  builder: (context) => _DrawerScope(
+    side: side,
+    child: Builder(builder: builder),
+  ),
+);
+
+/// An edge-anchored modal panel with slots for a title, description, body, and
+/// actions, plus an optional drag handle and close affordance.
+///
+/// Show it with [showFossDrawer], which sets the [FossDrawerSide]; the surface
+/// reads the side back from context so its corners, border edge, and drag axis
+/// match. The header, body, and footer are each optional; [actions] reuse
+/// `FossButton`. Colors, type, radius, and shadow resolve from the theme.
+///
+/// ```dart
+/// showFossDrawer<void>(
+///   context: context,
+///   builder: (context) => const FossDrawer(
+///     showHandle: true,
+///     title: Text('Details'),
+///     content: Text('A panel that slides up from the bottom edge.'),
+///   ),
+/// );
+/// ```
+class FossDrawer extends StatelessWidget {
+  /// Creates a drawer surface. Build it inside a [showFossDrawer] `builder`.
+  const FossDrawer({
+    this.title,
+    this.description,
+    this.content,
+    this.actions = const <Widget>[],
+    this.variant = FossDrawerVariant.rounded,
+    this.footerVariant = FossDrawerFooterVariant.bare,
+    this.showHandle = false,
+    this.showCloseButton = false,
+    this.closeIcon,
+    this.style,
+    super.key,
+  });
+
+  /// The title, rendered at the top of the header.
+  final Widget? title;
+
+  /// The description, rendered below the title.
+  final Widget? description;
+
+  /// The scrollable body between the header and the footer.
+  final Widget? content;
+
+  /// The footer actions; empty hides the footer.
+  final List<Widget> actions;
+
+  /// The corner treatment. Defaults to [FossDrawerVariant.rounded].
+  final FossDrawerVariant variant;
+
+  /// The footer treatment. Defaults to [FossDrawerFooterVariant.bare].
+  final FossDrawerFooterVariant footerVariant;
+
+  /// Whether to show the drag handle on the exposed edge.
+  final bool showHandle;
+
+  /// Whether to show the close affordance in the top corner.
+  final bool showCloseButton;
+
+  /// Overrides the default painted close glyph.
+  final Widget? closeIcon;
+
+  /// Per-instance visual overrides.
+  final FossDrawerStyle? style;
+
+  @override
+  Widget build(BuildContext context) {
+    final side = _DrawerScope.of(context);
+    final theme = context.fossTheme;
+    final colors = theme.colors;
+    final s = style;
+
+    return _DrawerSurface(
+      side: side,
+      variant: variant,
+      footerVariant: footerVariant,
+      backgroundColor: s?.backgroundColor ?? colors.popover,
+      borderColor: s?.borderColor ?? colors.border,
+      borderRadius: s?.borderRadius ?? theme.radii.xl2,
+      shadows: s?.shadows ?? theme.shadows.lg,
+      showHandle: showHandle,
+      header: _buildHeader(theme, colors, s),
+      content: content == null
+          ? null
+          : Padding(padding: EdgeInsets.all(theme.spacing(6)), child: content),
+      actions: actions,
+      closeButton: showCloseButton
+          ? _CloseButton(icon: closeIcon, color: colors.mutedForeground)
+          : null,
+    );
+  }
+
+  Widget? _buildHeader(
+    FossThemeData theme,
+    FossColors colors,
+    FossDrawerStyle? s,
+  ) {
+    if (title == null && description == null) return null;
+    final titleStyle = theme.typography.xl.semibold
+        .copyWith(color: colors.popoverForeground)
+        .merge(s?.titleStyle);
+    final descriptionStyle = theme.typography.sm
+        .copyWith(color: colors.mutedForeground)
+        .merge(s?.descriptionStyle);
+
+    return Padding(
+      padding: EdgeInsets.all(theme.spacing(6)),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        spacing: theme.spacing(1),
+        children: [
+          if (title case final title?)
+            DefaultTextStyle.merge(style: titleStyle, child: title),
+          if (description case final description?)
+            DefaultTextStyle.merge(style: descriptionStyle, child: description),
+        ],
+      ),
+    );
+  }
+}
+
+/// Carries the [FossDrawerSide] from [showFossDrawer] down to the [FossDrawer]
+/// surface, so the side is set in one place and read in another.
+class _DrawerScope extends InheritedWidget {
+  const _DrawerScope({required this.side, required super.child});
+
+  final FossDrawerSide side;
+
+  static FossDrawerSide of(BuildContext context) =>
+      context.dependOnInheritedWidgetOfExactType<_DrawerScope>()?.side ??
+      FossDrawerSide.bottom;
+
+  @override
+  bool updateShouldNotify(_DrawerScope oldWidget) => oldWidget.side != side;
+}
+
+/// Slides [child] in from [side] on the route animation, on the drawer curve.
+class _DrawerSlide extends StatelessWidget {
+  const _DrawerSlide({
+    required this.side,
+    required this.animation,
+    required this.child,
+  });
+
+  final FossDrawerSide side;
+  final Animation<double> animation;
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    final begin = switch (side) {
+      FossDrawerSide.bottom => const Offset(0, 1),
+      FossDrawerSide.top => const Offset(0, -1),
+      FossDrawerSide.left => const Offset(-1, 0),
+      FossDrawerSide.right => const Offset(1, 0),
+    };
+    return SlideTransition(
+      position: Tween<Offset>(begin: begin, end: Offset.zero).animate(
+        CurvedAnimation(parent: animation, curve: _drawerCurve),
+      ),
+      child: child,
+    );
+  }
+}
+
+/// The anchored, drag-dismissable panel: shape, shadow, slots, and the gesture
+/// that tracks the finger off the edge.
+class _DrawerSurface extends StatefulWidget {
+  const _DrawerSurface({
+    required this.side,
+    required this.variant,
+    required this.footerVariant,
+    required this.backgroundColor,
+    required this.borderColor,
+    required this.borderRadius,
+    required this.shadows,
+    required this.showHandle,
+    required this.header,
+    required this.content,
+    required this.actions,
+    required this.closeButton,
+  });
+
+  final FossDrawerSide side;
+  final FossDrawerVariant variant;
+  final FossDrawerFooterVariant footerVariant;
+  final Color backgroundColor;
+  final Color borderColor;
+  final double borderRadius;
+  final List<BoxShadow> shadows;
+  final bool showHandle;
+  final Widget? header;
+  final Widget? content;
+  final List<Widget> actions;
+  final Widget? closeButton;
+
+  @override
+  State<_DrawerSurface> createState() => _DrawerSurfaceState();
+}
+
+class _DrawerSurfaceState extends State<_DrawerSurface>
+    with SingleTickerProviderStateMixin {
+  final GlobalKey _panelKey = GlobalKey();
+  late final AnimationController _settle;
+
+  /// Distance the panel has been dragged off its edge, in logical pixels.
+  double _offset = 0;
+  double _settleFrom = 0;
+  double _settleTo = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _settle = AnimationController(vsync: this)..addListener(_onSettleTick);
+  }
+
+  void _onSettleTick() {
+    final t = _drawerCurve.transform(_settle.value);
+    setState(() => _offset = _settleFrom + (_settleTo - _settleFrom) * t);
+  }
+
+  @override
+  void dispose() {
+    _settle.dispose();
+    super.dispose();
+  }
+
+  /// Maps a positive primary drag delta (down / end) to outward travel.
+  double get _outwardSign {
+    final rtl = Directionality.of(context) == TextDirection.rtl;
+    return switch (widget.side) {
+      FossDrawerSide.bottom => 1,
+      FossDrawerSide.top => -1,
+      FossDrawerSide.left => rtl ? 1 : -1,
+      FossDrawerSide.right => rtl ? -1 : 1,
+    };
+  }
+
+  double get _panelExtent {
+    final box = _panelKey.currentContext?.findRenderObject();
+    if (box is! RenderBox) return 0;
+    return _axisOf(widget.side) == Axis.vertical
+        ? box.size.height
+        : box.size.width;
+  }
+
+  void _onDragStart(DragStartDetails _) => _settle.stop();
+
+  void _onDragUpdate(double primaryDelta) {
+    final next = _offset + primaryDelta * _outwardSign;
+    setState(() => _offset = next < 0 ? 0 : next);
+  }
+
+  void _onDragEnd(double primaryVelocity) {
+    final extent = _panelExtent;
+    final outwardVelocity = primaryVelocity * _outwardSign;
+    final dismiss =
+        _offset >= extent * _dismissFraction ||
+        outwardVelocity > _flingVelocity;
+    if (dismiss) {
+      // Continue off the edge (never animate back inward), then pop.
+      final target = _offset > extent ? _offset : extent;
+      _animateTo(target, then: () => Navigator.of(context).maybePop());
+    } else {
+      _animateTo(0);
+    }
+  }
+
+  void _animateTo(double target, {VoidCallback? then}) {
+    final reduceMotion =
+        MediaQuery.maybeOf(context)?.disableAnimations ?? false;
+    _settleFrom = _offset;
+    _settleTo = target;
+    _settle
+      ..duration = reduceMotion
+          ? Duration.zero
+          : context.fossTheme.motion.drawer
+      ..reset();
+    final done = _settle.forward();
+    unawaited(then == null ? done : done.whenComplete(then));
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final side = widget.side;
+    final axis = _axisOf(side);
+    final translation = switch (side) {
+      FossDrawerSide.bottom => Offset(0, _offset),
+      FossDrawerSide.top => Offset(0, -_offset),
+      FossDrawerSide.left => Offset(-_offset * _ltrSign, 0),
+      FossDrawerSide.right => Offset(_offset * _ltrSign, 0),
+    };
+
+    var panel = _buildPanel(context);
+    panel = Transform.translate(offset: translation, child: panel);
+    panel = GestureDetector(
+      onVerticalDragStart: axis == Axis.vertical ? _onDragStart : null,
+      onVerticalDragUpdate: axis == Axis.vertical
+          ? (d) => _onDragUpdate(d.primaryDelta ?? 0)
+          : null,
+      onVerticalDragEnd: axis == Axis.vertical
+          ? (d) => _onDragEnd(d.primaryVelocity ?? 0)
+          : null,
+      onHorizontalDragStart: axis == Axis.horizontal ? _onDragStart : null,
+      onHorizontalDragUpdate: axis == Axis.horizontal
+          ? (d) => _onDragUpdate(d.primaryDelta ?? 0)
+          : null,
+      onHorizontalDragEnd: axis == Axis.horizontal
+          ? (d) => _onDragEnd(d.primaryVelocity ?? 0)
+          : null,
+      child: panel,
+    );
+
+    return Align(alignment: _alignmentOf(side), child: panel);
+  }
+
+  /// The translate axis sign for a side panel, before the RTL flip handled by
+  /// the directional anchor: start-anchored panels travel toward lower x.
+  double get _ltrSign =>
+      Directionality.of(context) == TextDirection.rtl ? -1 : 1;
+
+  Widget _buildPanel(BuildContext context) {
+    final theme = context.fossTheme;
+    final side = widget.side;
+    final corners = widget.variant == FossDrawerVariant.straight
+        ? BorderRadius.zero
+        : _exposedCorners(side, widget.borderRadius);
+    final shape = RoundedSuperellipseBorder(
+      side: BorderSide(color: widget.borderColor),
+      borderRadius: corners,
+    );
+
+    final body = ClipPath(
+      clipper: ShapeBorderClipper(
+        shape: shape,
+        textDirection: Directionality.of(context),
+      ),
+      // Keep the title, body, and close affordance as distinct semantics
+      // nodes rather than merging into one panel node.
+      child: Semantics(
+        explicitChildNodes: true,
+        child: Stack(
+          children: [
+            _buildColumn(theme),
+            if (widget.showHandle && _axisOf(side) == Axis.horizontal)
+              Align(
+                alignment: _exposedEdgeAlignment(side),
+                child: _handle(theme, side),
+              ),
+            if (widget.closeButton case final button?)
+              PositionedDirectional(
+                top: theme.spacing(2),
+                end: theme.spacing(2),
+                child: button,
+              ),
+          ],
+        ),
+      ),
+    );
+
+    final decorated = DecoratedBox(
+      decoration: ShapeDecoration(
+        color: widget.backgroundColor,
+        shape: shape,
+        shadows: widget.shadows,
+      ),
+      child: body,
+    );
+
+    return KeyedSubtree(
+      key: _panelKey,
+      child: _axisOf(side) == Axis.vertical
+          ? decorated
+          : LayoutBuilder(
+              builder: (context, constraints) {
+                final available = constraints.maxWidth - theme.spacing(12);
+                final width = available < _sidePanelMaxWidth
+                    ? available
+                    : _sidePanelMaxWidth;
+                return SizedBox(width: width, child: decorated);
+              },
+            ),
+    );
+  }
+
+  Widget _buildColumn(FossThemeData theme) {
+    final side = widget.side;
+    final vertical = _axisOf(side) == Axis.vertical;
+    final handleInline = widget.showHandle && vertical;
+    final safeBottom = side == FossDrawerSide.bottom
+        ? MediaQuery.paddingOf(context).bottom
+        : 0.0;
+
+    return Column(
+      mainAxisSize: vertical ? MainAxisSize.min : MainAxisSize.max,
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        if (handleInline && side == FossDrawerSide.bottom) _handle(theme, side),
+        ?widget.header,
+        if (widget.content case final content?)
+          Flexible(child: SingleChildScrollView(child: content)),
+        if (widget.actions.isNotEmpty)
+          _Footer(
+            variant: widget.footerVariant,
+            safeBottom: safeBottom,
+            actions: widget.actions,
+          )
+        else if (safeBottom > 0)
+          SizedBox(height: safeBottom),
+        if (handleInline && side == FossDrawerSide.top) _handle(theme, side),
+      ],
+    );
+  }
+
+  Widget _handle(FossThemeData theme, FossDrawerSide side) {
+    final vertical = _axisOf(side) == Axis.vertical;
+    return ExcludeSemantics(
+      child: Padding(
+        padding: EdgeInsets.all(theme.spacing(3)),
+        child: Align(
+          child: SizedBox(
+            width: vertical ? _handleLong : _handleShort,
+            height: vertical ? _handleShort : _handleLong,
+            child: DecoratedBox(
+              decoration: BoxDecoration(
+                color: theme.colors.input,
+                borderRadius: BorderRadius.circular(FossRadii.full),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _Footer extends StatelessWidget {
+  const _Footer({
+    required this.variant,
+    required this.safeBottom,
+    required this.actions,
+  });
+
+  final FossDrawerFooterVariant variant;
+  final double safeBottom;
+  final List<Widget> actions;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = context.fossTheme;
+    final colors = theme.colors;
+    final sp = theme.spacing;
+    final filled = variant == FossDrawerFooterVariant.filled;
+
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: filled ? colors.muted.withValues(alpha: 0.72) : null,
+        border: filled ? Border(top: BorderSide(color: colors.border)) : null,
+      ),
+      child: Padding(
+        padding: EdgeInsets.only(
+          left: sp(6),
+          right: sp(6),
+          top: sp(4),
+          bottom: (filled ? sp(4) : sp(6)) + safeBottom,
+        ),
+        // Trailing-aligned row, each action hugging its content.
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.end,
+          spacing: sp(2),
+          children: actions,
+        ),
+      ),
+    );
+  }
+}
+
+/// The default ghost close affordance: a painted cross in a 48px tap target.
+class _CloseButton extends StatelessWidget {
+  const _CloseButton({required this.icon, required this.color});
+
+  final Widget? icon;
+  final Color color;
+
+  @override
+  Widget build(BuildContext context) {
+    return Semantics(
+      button: true,
+      label: 'Close',
+      child: GestureDetector(
+        behavior: HitTestBehavior.opaque,
+        onTap: () => Navigator.of(context).maybePop(),
+        child: SizedBox(
+          width: 48,
+          height: 48,
+          child: Center(
+            child:
+                icon ?? FossGlyphIcon(FossGlyph.close, size: 16, color: color),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+Axis _axisOf(FossDrawerSide side) => switch (side) {
+  FossDrawerSide.bottom || FossDrawerSide.top => Axis.vertical,
+  FossDrawerSide.left || FossDrawerSide.right => Axis.horizontal,
+};
+
+AlignmentGeometry _alignmentOf(FossDrawerSide side) => switch (side) {
+  FossDrawerSide.bottom => Alignment.bottomCenter,
+  FossDrawerSide.top => Alignment.topCenter,
+  FossDrawerSide.left => AlignmentDirectional.centerStart,
+  FossDrawerSide.right => AlignmentDirectional.centerEnd,
+};
+
+/// Where the drag handle sits for a side panel (its inner, exposed edge).
+AlignmentGeometry _exposedEdgeAlignment(FossDrawerSide side) => switch (side) {
+  FossDrawerSide.bottom => Alignment.topCenter,
+  FossDrawerSide.top => Alignment.bottomCenter,
+  FossDrawerSide.left => AlignmentDirectional.centerEnd,
+  FossDrawerSide.right => AlignmentDirectional.centerStart,
+};
+
+BorderRadiusGeometry _exposedCorners(FossDrawerSide side, double r) {
+  final radius = Radius.circular(r);
+  return switch (side) {
+    FossDrawerSide.bottom => BorderRadius.only(
+      topLeft: radius,
+      topRight: radius,
+    ),
+    FossDrawerSide.top => BorderRadius.only(
+      bottomLeft: radius,
+      bottomRight: radius,
+    ),
+    FossDrawerSide.left => BorderRadiusDirectional.only(
+      topEnd: radius,
+      bottomEnd: radius,
+    ),
+    FossDrawerSide.right => BorderRadiusDirectional.only(
+      topStart: radius,
+      bottomStart: radius,
+    ),
+  };
+}
