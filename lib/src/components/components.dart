@@ -12,6 +12,7 @@ export 'badge/foss_badge.dart';
 export 'button/foss_button.dart';
 export 'card/foss_card.dart';
 export 'checkbox/foss_checkbox.dart';
+export 'combobox/foss_combobox.dart';
 export 'dialog/foss_dialog.dart';
 export 'drawer/foss_drawer.dart';
 export 'progress/foss_progress.dart';
