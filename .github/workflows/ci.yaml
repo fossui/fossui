@@ -42,11 +42,6 @@ jobs:
       - name: Install dependencies
         run: flutter pub get
 
-      # The catalog's use-case tree is generated and gitignored; build it so the
-      # example analyzes clean.
-      - name: Build catalog
-        run: sh scripts/dev/catalog.sh --build
-
       - name: Verify formatting
         run: dart format --output=none --set-exit-if-changed .
 

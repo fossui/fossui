@@ -60,11 +60,12 @@ bottom into the pull request and tick it as you go.
 - [ ] Accessibility assertions for tap target, labeling, and contrast.
 - [ ] Coverage reported.
 
-## 6. Catalog and docs
+## 6. Docs
 
-- [ ] A catalog entry that exercises the variants, sizes, states, and themes.
 - [ ] A documentation comment on every public member, each with a short summary
   and a runnable example.
+- [ ] A companion showcase page that exercises the variants, sizes, states, and
+  themes. This lives in the separate showcase project, not in the package.
 
 ## 7. Gate
 
@@ -99,9 +100,9 @@ Tests
 [ ] unit / widget (+ semantics) / golden / accessibility
 [ ] coverage reported
 
-Catalog + docs
-[ ] catalog entry
+Docs
 [ ] documentation comment on every public member
+[ ] companion showcase page (separate project)
 
 Gate
 [ ] analysis clean, formatted, prefixed names

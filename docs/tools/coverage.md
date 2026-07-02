@@ -65,7 +65,7 @@ CI runs the same `flutter test --coverage` and uploads the result:
 |---------|-------|-----|
 | `project` | `auto`, informational | Guards the whole package against backsliding without blocking. |
 | `patch` | `90%`, informational | New code should ship with tests. The lever that matters. |
-| `ignore` | barrel, `*.tailor.dart`, `*.g.dart`, `example/` | Measure authored logic, not generated or re-export files. |
+| `ignore` | barrel, `*.tailor.dart`, `*.g.dart` | Measure authored logic, not generated or re-export files. |
 
 Both checks are informational while the component set is still landing, so a gap annotates a pull request without blocking it. The `patch` check flips to blocking before 1.0.
 

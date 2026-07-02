@@ -15,4 +15,3 @@ ignore:
   - "lib/foss_ui.dart"
   - "**/*.tailor.dart"
   - "**/*.g.dart"
-  - "example/**"
