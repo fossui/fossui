@@ -1,6 +1,6 @@
 # Golden tests
 
-`foss_ui` locks the rendered look of every component with golden tests, powered by [Alchemist](https://pub.dev/packages/alchemist). A golden is a reference image of a widget; the test re-renders the widget and fails if a single pixel drifts from the committed reference. That is how an accidental change to padding, color, or radius gets caught before review instead of after.
+`fossui` locks the rendered look of every component with golden tests, powered by [Alchemist](https://pub.dev/packages/alchemist). A golden is a reference image of a widget; the test re-renders the widget and fails if a single pixel drifts from the committed reference. That is how an accidental change to padding, color, or radius gets caught before review instead of after.
 
 Goldens cover what a widget looks like: geometry, color, slot layout, and how those shift across theme, text direction, and text scale. They do not cover behavior (tap, focus, state) or the semantics tree; those are widget tests and accessibility tests. Keep the split in mind when deciding where an assertion belongs.
 

@@ -319,7 +319,7 @@ class _FossRadioState<T> extends State<FossRadio<T>> {
     final colors = theme.colors;
     return DecoratedBox(
       decoration: ShapeDecoration(
-        // accent at 50% of its own alpha (coss `bg-accent/50`): the accent role
+        // accent at 50% of its own alpha: the accent role
         // is already a faint translucent tint, so this is a barely-there wash,
         // not a half-opaque fill.
         color: checked

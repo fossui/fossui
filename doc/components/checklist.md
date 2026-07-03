@@ -1,6 +1,6 @@
 # Component quality checklist
 
-The definition of done for a `foss_ui` component. Every component clears this
+The definition of done for a `fossui` component. Every component clears this
 before it is marked shipped on the [roadmap](roadmap.md), from a one-line
 separator to a full date picker. A simple component does not skip boxes. Most are
 trivial for it, but each one is checked off deliberately rather than assumed.

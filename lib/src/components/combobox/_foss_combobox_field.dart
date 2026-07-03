@@ -417,8 +417,8 @@ class _ComboRow<T> extends StatelessWidget {
         : visuals.foreground;
 
     Widget row = Padding(
-      // Combobox rows carry a wider end inset (coss `pe-4`) to balance the
-      // indicator column; the flat autocomplete row is symmetric (`px-2`).
+      // Combobox rows carry a wider end inset to balance the indicator
+      // column; the flat autocomplete row is symmetric.
       padding: EdgeInsetsDirectional.only(
         start: theme.spacing(2),
         end: showIndicator ? theme.spacing(4) : theme.spacing(2),

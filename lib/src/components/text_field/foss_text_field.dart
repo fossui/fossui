@@ -325,7 +325,7 @@ class _FossTextFieldState extends State<FossTextField>
     // drop the single-line icon rail.
     final multiline = widget.maxLines != 1;
     // Vertical inset trims 1px against the border, matching the horizontal
-    // inset (coss `py-[calc(--spacing(1.5)-1)]`).
+    // inset.
     final padding = multiline
         ? v.padding.add(EdgeInsets.symmetric(vertical: theme.spacing(1.5) - 1))
         : v.padding;

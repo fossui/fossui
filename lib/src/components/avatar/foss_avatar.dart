@@ -22,7 +22,7 @@ enum FossAvatarSize {
   xl._(40),
 
   /// 48 logical pixels.
-  xl2._(48)
+  xl2._(48),
   ;
 
   const FossAvatarSize._(this._box);

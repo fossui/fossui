@@ -126,8 +126,7 @@ class _Footer extends StatelessWidget {
     final sp = theme.spacing;
     final filled = variant == FossDialogFooterVariant.filled;
 
-    // Actions sit in a trailing-aligned row (coss sm:flex-row justify-end),
-    // each hugging its own content.
+    // Actions sit in a trailing-aligned row, each hugging its own content.
     final row = Row(
       mainAxisAlignment: MainAxisAlignment.end,
       spacing: sp(2),

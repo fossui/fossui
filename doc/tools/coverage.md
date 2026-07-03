@@ -1,6 +1,6 @@
 # Coverage
 
-`foss_ui` measures test coverage with Flutter's built-in `--coverage` and reports it to [Codecov](https://about.codecov.io/). Coverage tells you which lines the tests actually exercised, so gaps show up before review instead of after.
+`fossui` measures test coverage with Flutter's built-in `--coverage` and reports it to [Codecov](https://about.codecov.io/). Coverage tells you which lines the tests actually exercised, so gaps show up before review instead of after.
 
 Treat the number as a signal, not a target. A covered line ran under test; it does not prove the assertion around it was meaningful. Coverage rides alongside the tests that catch real regressions (token bake values, goldens, accessibility), it does not replace them.
 
@@ -33,7 +33,7 @@ genhtml coverage/lcov.info -o coverage/html && open coverage/html/index.html
 
 ## The const-constructor caveat
 
-This is the one surprise worth knowing. Dart coverage does not record a `const` constructor call as a hit, so a widget built with `const` in a test shows up as uncovered even though the test drove it. `foss_ui` is const-heavy, so left alone this under-reports component coverage badly.
+This is the one surprise worth knowing. Dart coverage does not record a `const` constructor call as a hit, so a widget built with `const` in a test shows up as uncovered even though the test drove it. `fossui` is const-heavy, so left alone this under-reports component coverage badly.
 
 The fix lives in [`test/analysis_options.yaml`](../../test/analysis_options.yaml): it turns `prefer_const_constructors` and `prefer_const_literals_to_create_immutables` off for tests only. The analyzer applies the nearest options file, so `lib/` stays const-correct; only test files opt out, so their widget instantiations are non-const and register coverage. When you write a widget test, build the widget without `const` and let coverage count it.
 
@@ -84,7 +84,7 @@ Until step 2 is done, the upload runs but no report is produced, and CI stays gr
 Once coverage is meaningful, add the badge to the README (replace `OWNER`):
 
 ```md
-[![codecov](https://codecov.io/gh/OWNER/foss_ui/branch/main/graph/badge.svg)](https://codecov.io/gh/OWNER/foss_ui)
+[![codecov](https://codecov.io/gh/OWNER/fossui/branch/main/graph/badge.svg)](https://codecov.io/gh/OWNER/fossui)
 ```
 
 It is left out until then so it does not show an empty or misleading number before the repository is connected.

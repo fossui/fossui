@@ -13,7 +13,7 @@ part 'foss_drawer_style.dart';
 /// The spring-like curve the panel rides in and out on.
 const Cubic _drawerCurve = Cubic(0.32, 0.72, 0, 1);
 
-/// Maximum width of a side panel in logical pixels (coss `max-w-md`).
+/// Maximum width of a side panel in logical pixels.
 const double _sidePanelMaxWidth = 448;
 
 /// Pill dimensions of the drag handle, long axis by short axis.

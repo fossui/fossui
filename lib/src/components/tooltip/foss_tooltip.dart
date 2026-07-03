@@ -13,10 +13,10 @@ const double _sideOffset = 4;
 /// Keeps the popup this far off the viewport edge when it would overflow.
 const double _viewportMargin = 8;
 
-/// Vertical padding inside the popup (coss `py-1`).
+/// Vertical padding inside the popup.
 const double _verticalPadding = 4;
 
-/// Scale the popup grows from on open (coss `scale-98`).
+/// Scale the popup grows from on open.
 const double _openScale = 0.98;
 
 /// The side of the anchor a [FossTooltip] prefers to open on. The popup flips

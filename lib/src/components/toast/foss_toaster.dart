@@ -7,7 +7,7 @@ import 'package:fossui/src/theme/colors/foss_colors.dart';
 import 'package:fossui/src/theme/foss_theme.dart';
 import 'package:fossui/src/theme/typography/foss_typography.dart';
 
-/// Maximum width of a toast surface in logical pixels (coss `max-w-90`).
+/// Maximum width of a toast surface in logical pixels.
 const double _maxWidth = 360;
 
 /// The slide curve for a toast entering or leaving.

@@ -1,6 +1,6 @@
 # Lefthook
 
-[Lefthook](https://lefthook.dev/) is the Git hooks manager we use in `foss_ui`. It runs checks automatically when you commit and push, so broken formatting, lint errors, or failing tests get caught on your machine instead of in CI or review.
+[Lefthook](https://lefthook.dev/) is the Git hooks manager we use in `fossui`. It runs checks automatically when you commit and push, so broken formatting, lint errors, or failing tests get caught on your machine instead of in CI or review.
 
 ## Why we use it
 

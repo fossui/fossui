@@ -5,10 +5,9 @@ import 'package:fossui/src/theme/theme.dart';
 
 part 'foss_tabs_style.dart';
 
-// Fixed tab geometry, mobile base (coss h-9 / px-[calc(spacing(2.5)-1px)] /
-// size-4.5, the base values, not the sm: desktop step). Vertical padding plus
-// the label line height sums to the 36 tab height, so the tab grows with the
-// text under a larger scale instead of clipping.
+// Fixed tab geometry, the mobile base values, not the desktop step. Vertical
+// padding plus the label line height sums to the 36 tab height, so the tab
+// grows with the text under a larger scale instead of clipping.
 const double _tabHeight = 36;
 const double _tabPadX = 9;
 const double _tabPadY = (_tabHeight - 24) / 2;
@@ -17,9 +16,8 @@ const double _barThickness = 2;
 const double _ringWidth = 2;
 const double _disabledOpacity = 0.64;
 
-// coss dims the inactive label to 72% inside the segmented bar (text-muted-
-// foreground/72), lifting it to full strength on hover. The underline variant
-// keeps it at full strength.
+// The inactive label is dimmed to 72% inside the segmented bar, lifting to
+// full strength on hover. The underline variant keeps it at full strength.
 const double _segmentedInactiveOpacity = 0.72;
 
 /// The two tab looks.

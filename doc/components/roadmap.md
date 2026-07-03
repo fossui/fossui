@@ -1,6 +1,6 @@
 # Components roadmap
 
-What `foss_ui` ships today, what is being built next, and what is planned. This
+What `fossui` ships today, what is being built next, and what is planned. This
 page is the single place to check whether a component exists yet, so you do not
 have to read the changelog or grep the source.
 

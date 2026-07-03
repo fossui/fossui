@@ -13,7 +13,7 @@ const double _ringOffset = 1;
 const double _disabledOpacity = 0.64;
 const double _minTapTarget = 48;
 
-// The coss glyph paths are authored on a 24-unit viewBox with a stroke width of
+// The glyph paths are authored on a 24-unit viewBox with a stroke width of
 // 3, so the stroke is 1/8 of the box and the coordinates normalize by 24.
 const double _glyphViewBox = 24;
 const double _glyphStroke = 3 / _glyphViewBox;
@@ -381,7 +381,7 @@ class _FossCheckboxControlState extends State<_FossCheckboxControl> {
         final tinted = widget.checked || hovered;
         return DecoratedBox(
           decoration: ShapeDecoration(
-            // accent at 50% of its own alpha (coss `bg-accent/50`): the accent
+            // accent at 50% of its own alpha: the accent
             // role is already a faint translucent tint, so this is a
             // barely-there wash, not a half-opaque fill.
             color: tinted
@@ -477,7 +477,7 @@ class _CheckboxVisuals {
   final TextStyle descriptionStyle;
 }
 
-/// Strokes the checkmark or the minus on the box. Coordinates are the coss
+/// Strokes the checkmark or the minus on the box. Coordinates are the
 /// glyph paths on a 24-unit viewBox, scaled to the painter size.
 class _GlyphPainter extends CustomPainter {
   const _GlyphPainter({required this.checked, required this.color});
