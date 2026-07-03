@@ -37,6 +37,16 @@ fvm flutter pub get
 fvm flutter test
 ```
 
+## Star history
+
+<a href="https://star-history.com/#narayann7/foss_ui&Date">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=narayann7/foss_ui&type=Date&theme=dark" />
+    <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/svg?repos=narayann7/foss_ui&type=Date" />
+    <img alt="Star history chart for foss_ui" src="https://api.star-history.com/svg?repos=narayann7/foss_ui&type=Date" />
+  </picture>
+</a>
+
 ## License
 
 MIT. See [LICENSE](LICENSE) and [NOTICE](NOTICE).
