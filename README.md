@@ -39,7 +39,13 @@ fvm flutter test
 
 ## Star history
 
-[![Star history chart for fossui](https://api.star-history.com/svg?repos=fossui/fossui&type=Date)](https://star-history.com/#fossui/fossui&Date)
+<a href="https://star-history.com/#fossui/fossui&Date">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=fossui/fossui&type=Date&theme=dark" />
+    <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/svg?repos=fossui/fossui&type=Date" />
+    <img alt="Star history chart for fossui" src="https://api.star-history.com/svg?repos=fossui/fossui&type=Date" />
+  </picture>
+</a>
 
 ## License
 
