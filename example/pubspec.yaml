@@ -1,0 +1,16 @@
+name: fossui_example
+description: A minimal example that renders a few fossui components.
+publish_to: none
+
+environment:
+  sdk: ^3.11.5
+  flutter: ">=3.41.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  fossui:
+    path: ../
+
+flutter:
+  uses-material-design: true

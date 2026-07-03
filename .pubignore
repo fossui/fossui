@@ -1,0 +1,15 @@
+# This file replaces .gitignore when building the pub archive, so it repeats the
+# build and tooling excludes. Unanchored patterns match at any depth, covering
+# example/ as well. These affect the published archive only.
+.dart_tool/
+build/
+.fvm/
+coverage/
+staging/
+*.log
+.DS_Store
+pubspec.lock
+test/
+scripts/
+codecov.yml
+lefthook.yml

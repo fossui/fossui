@@ -1,0 +1,47 @@
+# fossui
+
+An open-source Flutter UI library. Unofficial port inspired by coss.com/ui,
+built on Flutter-native theming and golden-tested widgets. One import gives you
+the theme system and every component.
+
+```dart
+import 'package:fossui/fossui.dart';
+```
+
+## Theming
+
+Tokens live in a `ThemeExtension`. `FossThemeData.light` and `FossThemeData.dark`
+are the defaults; pass your own to retheme. Register it once, then read tokens
+through `context.fossTheme`.
+
+- Material app: `MaterialApp(theme: FossThemeData.light.toThemeData(), darkTheme: FossThemeData.dark.toThemeData())`.
+- Non-Material app: wrap the subtree in `FossTheme(data: FossThemeData.light, child: ...)`.
+- Read: `context.fossTheme` resolves the `FossTheme` widget first, then the theme
+  extension, then the light default.
+
+Token bundles on `FossThemeData`: `colors` (FossColors), `typography`
+(FossTypography), `radii` (FossRadii), `spacing` (FossSpacing), `shadows`
+(FossShadows), `motion` (FossMotion). There is no `FossApp` wrapper.
+
+## Components
+
+All are `Foss`-prefixed. Variants and sizes are enums passed as named params; a
+single `style` object per component is the one-off override escape hatch. Icon
+slots take any `Widget`, so the package has no icon dependency.
+
+- FossAlert, FossAlertDialog
+- FossAvatar, FossBadge
+- FossButton (plus `FossButton.icon`), FossCard
+- FossCheckbox (FossCheckboxGroup), FossRadio (FossRadioGroup)
+- FossCombobox, FossSelect, FossMultiSelect
+- FossDialog, FossDrawer
+- FossProgress, FossSpinner, FossSlider
+- FossSeparator, FossTabs
+- FossSwitch, FossTextField
+- FossToast, FossToaster, FossTooltip
+
+## Links
+
+- Homepage: https://fossui.org
+- Repository: https://github.com/fossui/fossui
+- License: MIT (see NOTICE for attribution)

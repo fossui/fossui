@@ -4,7 +4,9 @@ An open-source Flutter UI library. Unofficial port inspired by
 [coss.com/ui](https://coss.com/ui) (the Cal.com design system), reimplemented
 with Flutter-native theming and golden-tested widgets.
 
-> **Status:** early development. APIs and tokens will change.
+> **Status: beta, under active development.** The first pre-release
+> (`0.1.0-beta.1`) ships over 20 components, but APIs and tokens can still change
+> between releases. Pin an exact version if you depend on it.
 
 > **Unofficial.** Not affiliated with or endorsed by Cal.com, Inc. or coss.com.
 > See [NOTICE](NOTICE) for attribution.
@@ -13,19 +15,45 @@ with Flutter-native theming and golden-tested widgets.
 
 ```yaml
 dependencies:
-  fossui: ^0.0.1
+  fossui: ^0.1.0-beta.1
 ```
 
 ## Usage
 
+Register the theme once, then read tokens through `context.fossTheme`. There is
+no `FossApp` wrapper; the library works under `MaterialApp`, `CupertinoApp`, or a
+bare `WidgetsApp`.
+
 ```dart
+import 'package:flutter/material.dart';
 import 'package:fossui/fossui.dart';
+
+void main() => runApp(
+      MaterialApp(
+        theme: FossThemeData.light.toThemeData(),
+        darkTheme: FossThemeData.dark.toThemeData(),
+        home: const Scaffold(
+          body: Center(child: FossBadge(label: Text('fossui'))),
+        ),
+      ),
+    );
 ```
 
-Components and theming are added in tiers. See the
-[components roadmap](docs/components/roadmap.md) for what is shipped and what is
-planned, the [component checklist](docs/components/checklist.md) for the bar each
+See [`example/`](example/) for a runnable app. Components and theming are added
+in tiers. See the
+[components roadmap](doc/components/roadmap.md) for what is shipped and what is
+planned, the [component checklist](doc/components/checklist.md) for the bar each
 one clears, and [CHANGELOG.md](CHANGELOG.md) for released versions.
+
+## Platforms
+
+Built on `package:flutter/widgets.dart` with no platform channels, so it runs
+anywhere Flutter does. During the beta, mobile is the tested target:
+
+| Platform | Status |
+| --- | --- |
+| iOS, Android | Tested and supported. |
+| Web, macOS, Windows, Linux | Should work, not yet verified. Use with care. |
 
 ## Development
 
