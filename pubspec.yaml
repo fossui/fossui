@@ -1,7 +1,7 @@
 name: fossui
 description: >-
-  An open-source Flutter UI library. Unofficial port inspired by coss.com/ui,
-  built on Flutter-native theming and golden-tested widgets.
+  An open-source Flutter UI library, inspired by Cal.com's design system.
+  Themed from one source, accessible, one import.
 version: 0.1.0-beta.1
 homepage: https://fossui.org
 repository: https://github.com/fossui/fossui

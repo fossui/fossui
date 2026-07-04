@@ -1,11 +1,10 @@
 # fossui
 
-An open-source Flutter UI library. Unofficial port inspired by
-[coss.com/ui](https://coss.com/ui) (the Cal.com design system), reimplemented
-with Flutter-native theming and golden-tested widgets.
+An open-source Flutter UI library, inspired by Cal.com's design system.
+Themed from one source, accessible, one import.
 
 > **Status: beta, under active development.** The first pre-release
-> (`0.1.0-beta.1`) ships over 20 components, but APIs and tokens can still change
+> (`0.1.0-beta.1`) ships 21 components, but APIs and tokens can still change
 > between releases. Pin an exact version if you depend on it.
 
 > **Unofficial.** Not affiliated with or endorsed by Cal.com, Inc. or coss.com.
@@ -44,6 +43,12 @@ in tiers. See the
 [components roadmap](doc/components/roadmap.md) for what is shipped and what is
 planned, the [component checklist](doc/components/checklist.md) for the bar each
 one clears, and [CHANGELOG.md](CHANGELOG.md) for released versions.
+
+## Links
+
+- Documentation: [fossui.org](https://fossui.org)
+- Live gallery: [play.fossui.org](https://play.fossui.org)
+- Package: [pub.dev/packages/fossui](https://pub.dev/packages/fossui)
 
 ## Platforms
 
