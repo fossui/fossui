@@ -304,7 +304,7 @@ class _FossSelectFieldState<T> extends State<_FossSelectField<T>>
     required bool hasError,
   }) {
     final colors = theme.colors;
-    final dark = _isDark(colors);
+    final dark = colors.isDark;
     final focused = _states.value.contains(WidgetState.focused);
     final atRest = !focused && !_open && !hasError;
 
@@ -337,11 +337,11 @@ class _FossSelectFieldState<T> extends State<_FossSelectField<T>>
             ),
           ),
           SizedBox(width: v.gap),
-          CustomPaint(
-            size: Size.square(v.iconSize),
-            painter: _ChevronPainter(
-              color: v.foreground.withValues(alpha: v.foreground.a * 0.8),
+          FossGlyphIcon(
+            ChevronUpDownGlyph(
+              v.foreground.withValues(alpha: v.foreground.a * 0.8),
             ),
+            size: v.iconSize,
           ),
         ],
       ),
@@ -441,7 +441,7 @@ class _FossSelectFieldState<T> extends State<_FossSelectField<T>>
       ],
     );
 
-    final dark = _isDark(theme.colors);
+    final dark = theme.colors.isDark;
     final surface = DecoratedBox(
       decoration: ShapeDecoration(
         color: v.popupColor,
@@ -600,7 +600,7 @@ class _SelectRow<T> extends StatelessWidget {
     switch (indicator) {
       case _SelectIndicator.checkmark:
         if (!selected) return const SizedBox.shrink();
-        return CustomPaint(painter: _CheckPainter(color: color));
+        return FossGlyphIcon(CheckGlyph(color));
       case _SelectIndicator.checkbox:
         final colors = theme.colors;
         return DecoratedBox(
@@ -616,9 +616,7 @@ class _SelectRow<T> extends StatelessWidget {
           child: selected
               ? Padding(
                   padding: const EdgeInsets.all(2),
-                  child: CustomPaint(
-                    painter: _CheckPainter(color: colors.primaryForeground),
-                  ),
+                  child: FossGlyphIcon(CheckGlyph(colors.primaryForeground)),
                 )
               : null,
         );
@@ -666,72 +664,6 @@ class _PopupLayout extends SingleChildLayoutDelegate {
 
   @override
   bool shouldRelayout(_PopupLayout oldDelegate) => oldDelegate.anchor != anchor;
-}
-
-/// A stacked up/down chevron, the trigger's open affordance.
-class _ChevronPainter extends CustomPainter {
-  const _ChevronPainter({required this.color});
-
-  final Color color;
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    final s = size.shortestSide;
-    final stroke = Paint()
-      ..color = color
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = s * 0.09
-      ..strokeCap = StrokeCap.round
-      ..strokeJoin = StrokeJoin.round;
-    Offset p(double x, double y) => Offset(x * s, y * s);
-    canvas
-      ..drawPath(
-        Path()
-          ..moveTo(p(0.3, 0.44).dx, p(0.3, 0.44).dy)
-          ..lineTo(p(0.5, 0.3).dx, p(0.5, 0.3).dy)
-          ..lineTo(p(0.7, 0.44).dx, p(0.7, 0.44).dy),
-        stroke,
-      )
-      ..drawPath(
-        Path()
-          ..moveTo(p(0.3, 0.56).dx, p(0.3, 0.56).dy)
-          ..lineTo(p(0.5, 0.7).dx, p(0.5, 0.7).dy)
-          ..lineTo(p(0.7, 0.56).dx, p(0.7, 0.56).dy),
-        stroke,
-      );
-  }
-
-  @override
-  bool shouldRepaint(_ChevronPainter old) => old.color != color;
-}
-
-/// A bare check mark, the picked-row indicator.
-class _CheckPainter extends CustomPainter {
-  const _CheckPainter({required this.color});
-
-  final Color color;
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    final s = size.shortestSide;
-    final stroke = Paint()
-      ..color = color
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = s * 0.12
-      ..strokeCap = StrokeCap.round
-      ..strokeJoin = StrokeJoin.round;
-    Offset p(double x, double y) => Offset(x * s, y * s);
-    canvas.drawPath(
-      Path()
-        ..moveTo(p(0.24, 0.52).dx, p(0.24, 0.52).dy)
-        ..lineTo(p(0.42, 0.7).dx, p(0.42, 0.7).dy)
-        ..lineTo(p(0.76, 0.3).dx, p(0.76, 0.3).dy),
-      stroke,
-    );
-  }
-
-  @override
-  bool shouldRepaint(_CheckPainter old) => old.color != color;
 }
 
 /// Paints a 1px rim inside the trigger, top-lit in dark mode, fading to nothing

@@ -4,7 +4,6 @@
 // Checkbox, Card, Dialog, ...).
 
 export '../foundation/foss_dialog_surface.dart' show FossDialogFooterVariant;
-export '../foundation/foss_glyphs.dart';
 export 'alert/foss_alert.dart';
 export 'alert_dialog/foss_alert_dialog.dart';
 export 'avatar/foss_avatar.dart';

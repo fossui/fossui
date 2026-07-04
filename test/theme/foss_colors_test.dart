@@ -83,4 +83,18 @@ void main() {
       expect(updated.background, FossColors.light.background);
     });
   });
+
+  group('FossColors.isDark', () {
+    test('reads the background luminance', () {
+      expect(FossColors.light.isDark, isFalse);
+      expect(FossColors.dark.isDark, isTrue);
+    });
+
+    test('follows a retheme of the background', () {
+      final lifted = FossColors.light.copyWith(
+        background: const Color(0xFF000000),
+      );
+      expect(lifted.isDark, isTrue);
+    });
+  });
 }

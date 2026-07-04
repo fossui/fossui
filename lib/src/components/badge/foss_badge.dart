@@ -208,14 +208,12 @@ class FossBadge extends StatelessWidget {
   );
 }
 
-bool _isDark(FossColors c) => c.background.computeLuminance() < 0.5;
-
 ({Color fill, Color foreground, Color? border}) _resolve(
   FossColors c,
   FossBadgeVariant variant,
 ) {
   Color soft(Color role) => role.withValues(
-    alpha: role.a * (_isDark(c) ? _softFillAlphaDark : _softFillAlphaLight),
+    alpha: role.a * (c.isDark ? _softFillAlphaDark : _softFillAlphaLight),
   );
 
   return switch (variant) {

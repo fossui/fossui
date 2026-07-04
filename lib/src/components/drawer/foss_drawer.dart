@@ -1,8 +1,8 @@
 import 'dart:async';
 
 import 'package:flutter/widgets.dart';
-import 'package:fossui/src/foundation/foss_glyphs.dart';
 import 'package:fossui/src/foundation/foss_modal_route.dart';
+import 'package:fossui/src/icons/foss_glyph.dart';
 import 'package:fossui/src/theme/colors/foss_colors.dart';
 import 'package:fossui/src/theme/foss_theme.dart';
 import 'package:fossui/src/theme/radii/foss_radii.dart';
@@ -426,6 +426,16 @@ class _DrawerSurfaceState extends State<_DrawerSurface>
   double get _ltrSign =>
       Directionality.of(context) == TextDirection.rtl ? -1 : 1;
 
+  /// The system insets the panel must clear on the edges it touches the screen:
+  /// the top for every side but bottom, the bottom for every side but top.
+  EdgeInsets get _safeInsets {
+    final padding = MediaQuery.paddingOf(context);
+    return EdgeInsets.only(
+      top: widget.side == FossDrawerSide.bottom ? 0 : padding.top,
+      bottom: widget.side == FossDrawerSide.top ? 0 : padding.bottom,
+    );
+  }
+
   Widget _buildPanel(BuildContext context) {
     final theme = context.fossTheme;
     final side = widget.side;
@@ -456,7 +466,7 @@ class _DrawerSurfaceState extends State<_DrawerSurface>
               ),
             if (widget.closeButton case final button?)
               PositionedDirectional(
-                top: theme.spacing(2),
+                top: theme.spacing(2) + _safeInsets.top,
                 end: theme.spacing(2),
                 child: button,
               ),
@@ -494,14 +504,13 @@ class _DrawerSurfaceState extends State<_DrawerSurface>
     final side = widget.side;
     final vertical = _axisOf(side) == Axis.vertical;
     final handleInline = widget.showHandle && vertical;
-    final safeBottom = side == FossDrawerSide.bottom
-        ? MediaQuery.paddingOf(context).bottom
-        : 0.0;
+    final insets = _safeInsets;
 
     return Column(
       mainAxisSize: vertical ? MainAxisSize.min : MainAxisSize.max,
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
+        if (insets.top > 0) SizedBox(height: insets.top),
         if (handleInline && side == FossDrawerSide.bottom) _handle(theme, side),
         ?widget.header,
         if (widget.content case final content?)
@@ -509,11 +518,11 @@ class _DrawerSurfaceState extends State<_DrawerSurface>
         if (widget.actions.isNotEmpty)
           _Footer(
             variant: widget.footerVariant,
-            safeBottom: safeBottom,
+            safeBottom: insets.bottom,
             actions: widget.actions,
           )
-        else if (safeBottom > 0)
-          SizedBox(height: safeBottom),
+        else if (insets.bottom > 0)
+          SizedBox(height: insets.bottom),
         if (handleInline && side == FossDrawerSide.top) _handle(theme, side),
       ],
     );
@@ -601,8 +610,7 @@ class _CloseButton extends StatelessWidget {
           width: 48,
           height: 48,
           child: Center(
-            child:
-                icon ?? FossGlyphIcon(FossGlyph.close, size: 16, color: color),
+            child: icon ?? FossGlyphIcon(CloseGlyph(color), size: 16),
           ),
         ),
       ),

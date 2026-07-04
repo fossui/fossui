@@ -217,7 +217,7 @@ class _FossRadioState<T> extends State<FossRadio<T>> {
     required bool enabled,
   }) {
     final colors = theme.colors;
-    final dark = _isDark(colors);
+    final dark = colors.isDark;
     final focused = _states.value.contains(WidgetState.focused);
     final showBorder = !checked;
 
@@ -347,10 +347,6 @@ class _FossRadioState<T> extends State<FossRadio<T>> {
   }
 }
 
-/// Whether [c] is a dark color set, by surface luminance. Drives the dark-only
-/// fill lift and rim highlight.
-bool _isDark(FossColors c) => c.background.computeLuminance() < 0.5;
-
 /// Builds the default appearance from the theme tokens. The checked and
 /// unchecked fills are both resolved here; the widget picks between them.
 _RadioVisuals _resolve(FossThemeData theme) {
@@ -358,7 +354,7 @@ _RadioVisuals _resolve(FossThemeData theme) {
 
   // Dark adds a faint lift to the unchecked circle: the input color at 32% of
   // its alpha, composited to opaque. Light is the bare surface.
-  final uncheckedFill = _isDark(c)
+  final uncheckedFill = c.isDark
       ? Color.alphaBlend(
           c.input.withValues(alpha: c.input.a * _darkFillOpacity),
           c.background,

@@ -154,6 +154,10 @@ class FossColors extends ThemeExtension<FossColors>
   @override
   final Color ring;
 
+  /// Whether this is a dark set, judged by [background] luminance. Drives the
+  /// dark-only surface lifts and rim highlights components paint at rest.
+  bool get isDark => background.computeLuminance() < 0.5;
+
   /// The default light color set.
   static const light = FossColors(
     background: Color(0xFFFFFFFF),

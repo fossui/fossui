@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart' show setEquals;
 import 'package:flutter/widgets.dart';
+import 'package:fossui/src/icons/foss_glyph.dart';
 import 'package:fossui/src/theme/theme.dart';
 
 part 'foss_checkbox_group.dart';
@@ -12,11 +13,6 @@ const double _ringWidth = 2;
 const double _ringOffset = 1;
 const double _disabledOpacity = 0.64;
 const double _minTapTarget = 48;
-
-// The glyph paths are authored on a 24-unit viewBox with a stroke width of
-// 3, so the stroke is 1/8 of the box and the coordinates normalize by 24.
-const double _glyphViewBox = 24;
-const double _glyphStroke = 3 / _glyphViewBox;
 
 // Error border and ring alphas: the border deepens when the box is focused, the
 // ring lifts in dark mode.
@@ -272,7 +268,7 @@ class _FossCheckboxControlState extends State<_FossCheckboxControl> {
 
   Widget _box(FossThemeData theme, _CheckboxVisuals v) {
     final colors = theme.colors;
-    final dark = _isDark(colors);
+    final dark = colors.isDark;
     final focused = _states.value.contains(WidgetState.focused);
     final checked = widget.checked;
     final showBorder = !checked;
@@ -341,12 +337,9 @@ class _FossCheckboxControlState extends State<_FossCheckboxControl> {
   Widget? _glyph(_CheckboxVisuals v) {
     if (!widget.checked && !widget.indeterminate) return null;
     return Center(
-      child: CustomPaint(
-        size: Size.square(v.glyphSize),
-        painter: _GlyphPainter(
-          checked: widget.checked,
-          color: widget.checked ? v.checkColor : v.minusColor,
-        ),
+      child: FossGlyphIcon(
+        widget.checked ? CheckGlyph(v.checkColor) : MinusGlyph(v.minusColor),
+        size: v.glyphSize,
       ),
     );
   }
@@ -413,10 +406,6 @@ class _FossCheckboxControlState extends State<_FossCheckboxControl> {
   }
 }
 
-/// Whether [c] is a dark color set, by surface luminance. Drives the dark-only
-/// fill lift and rim highlight.
-bool _isDark(FossColors c) => c.background.computeLuminance() < 0.5;
-
 /// Builds the default appearance from the theme tokens, then lays a
 /// per-instance [override] over it field by field.
 _CheckboxVisuals _resolve(FossThemeData theme, FossCheckboxStyle? override) {
@@ -424,7 +413,7 @@ _CheckboxVisuals _resolve(FossThemeData theme, FossCheckboxStyle? override) {
 
   // Dark adds a faint lift to the resting box: the input color at 32% of its
   // alpha, composited to opaque. Light is the bare surface.
-  final uncheckedFill = _isDark(c)
+  final uncheckedFill = c.isDark
       ? Color.alphaBlend(
           c.input.withValues(alpha: c.input.a * _darkFillOpacity),
           c.background,
@@ -475,45 +464,6 @@ class _CheckboxVisuals {
   final double gap;
   final TextStyle labelStyle;
   final TextStyle descriptionStyle;
-}
-
-/// Strokes the checkmark or the minus on the box. Coordinates are the
-/// glyph paths on a 24-unit viewBox, scaled to the painter size.
-class _GlyphPainter extends CustomPainter {
-  const _GlyphPainter({required this.checked, required this.color});
-
-  final bool checked;
-  final Color color;
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    final s = size.shortestSide;
-    Offset p(double x, double y) =>
-        Offset(x / _glyphViewBox * s, y / _glyphViewBox * s);
-    final paint = Paint()
-      ..color = color
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = s * _glyphStroke
-      ..strokeCap = StrokeCap.round
-      ..strokeJoin = StrokeJoin.round;
-
-    final path = Path();
-    if (checked) {
-      path
-        ..moveTo(p(5.252, 12.7).dx, p(5.252, 12.7).dy)
-        ..lineTo(p(10.2, 18.63).dx, p(10.2, 18.63).dy)
-        ..lineTo(p(18.748, 5.37).dx, p(18.748, 5.37).dy);
-    } else {
-      path
-        ..moveTo(p(5.252, 12).dx, p(5.252, 12).dy)
-        ..lineTo(p(18.748, 12).dx, p(18.748, 12).dy);
-    }
-    canvas.drawPath(path, paint);
-  }
-
-  @override
-  bool shouldRepaint(_GlyphPainter old) =>
-      old.checked != checked || old.color != color;
 }
 
 /// Builds the superellipse outline of a box [rect] with corner [radius].

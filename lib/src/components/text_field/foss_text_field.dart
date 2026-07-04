@@ -304,7 +304,7 @@ class _FossTextFieldState extends State<FossTextField>
       borderColor = colors.destructive.withValues(
         alpha: focused ? _errorBorderFocusedOpacity : _errorBorderOpacity,
       );
-      final errorRingAlpha = _isDark(colors)
+      final errorRingAlpha = colors.isDark
           ? _errorRingOpacityDark
           : _errorRingOpacityLight;
       ringColor = focused
@@ -378,7 +378,7 @@ class _FossTextFieldState extends State<FossTextField>
     // Dark lights the top edge with a white highlight, light darkens the bottom
     // edge. Rim radius is the inner edge (radius - 1).
     if (showShadow) {
-      final dark = _isDark(colors);
+      final dark = colors.isDark;
       content = CustomPaint(
         foregroundPainter: _RimPainter(
           color: dark ? _rimDark : _rimLight,
@@ -497,7 +497,7 @@ _FieldVisuals _resolve(FossThemeData theme, FossTextFieldSize size) {
 
   // Dark adds a faint lift over the surface: the input color at 32% of its
   // alpha, composited to opaque. Light is the bare surface.
-  final fill = _isDark(c)
+  final fill = c.isDark
       ? Color.alphaBlend(
           c.input.withValues(alpha: c.input.a * _darkFillOpacity),
           c.background,
@@ -523,10 +523,6 @@ _FieldVisuals _resolve(FossThemeData theme, FossTextFieldSize size) {
     shadow: theme.shadows.xs,
   );
 }
-
-/// Whether [c] is a dark color set, by surface luminance. Drives the dark-only
-/// fill lift and error-ring alpha.
-bool _isDark(FossColors c) => c.background.computeLuminance() < 0.5;
 
 /// Lays a per-instance [override] over the resolved [base], field by field.
 _FieldVisuals _apply(_FieldVisuals base, FossTextFieldStyle? override) {

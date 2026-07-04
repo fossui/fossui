@@ -158,7 +158,7 @@ void main() {
       await tester.enterText(find.byType(EditableText), 'ap');
       await tester.pumpAndSettle();
 
-      await tester.tap(_byPainter('_CrossPainter'));
+      await tester.tap(_byPainter('CloseGlyph'));
       await tester.pump();
 
       final editable = tester.widget<EditableText>(find.byType(EditableText));
@@ -294,7 +294,7 @@ void main() {
       final editable = tester.widget<EditableText>(find.byType(EditableText));
       expect(editable.controller.text, 'Engineering');
 
-      await tester.tap(_byPainter('_CrossPainter'));
+      await tester.tap(_byPainter('CloseGlyph'));
       await tester.pump();
 
       expect(picked, isNull);
@@ -306,11 +306,11 @@ void main() {
         host(FossCombobox<String>(items: _items, onSelected: (_) {})),
       );
 
-      await tester.tap(_byPainter('_ChevronPainter'));
+      await tester.tap(_byPainter('ChevronUpDownGlyph'));
       await tester.pumpAndSettle();
       expect(find.text('Design'), findsOneWidget);
 
-      await tester.tap(_byPainter('_ChevronPainter'));
+      await tester.tap(_byPainter('ChevronUpDownGlyph'));
       await tester.pumpAndSettle();
       expect(find.text('Design'), findsNothing);
     });
@@ -620,12 +620,12 @@ void main() {
       await tester.pumpAndSettle();
 
       // Each chip carries one remove cross.
-      expect(_byPainter('_CrossPainter'), findsNWidgets(2));
+      expect(_byPainter('CloseGlyph'), findsNWidgets(2));
 
-      await tester.tap(_byPainter('_CrossPainter').first);
+      await tester.tap(_byPainter('CloseGlyph').first);
       await tester.pumpAndSettle();
 
-      expect(_byPainter('_CrossPainter'), findsOneWidget);
+      expect(_byPainter('CloseGlyph'), findsOneWidget);
     });
 
     testWidgets('backspace removes the last chip and is a no-op when empty', (
@@ -643,15 +643,15 @@ void main() {
       // No chips yet: backspace does nothing.
       await tester.sendKeyEvent(LogicalKeyboardKey.backspace);
       await tester.pump();
-      expect(_byPainter('_CrossPainter'), findsNothing);
+      expect(_byPainter('CloseGlyph'), findsNothing);
 
       await tester.tap(find.text('Design').last);
       await tester.pumpAndSettle();
-      expect(_byPainter('_CrossPainter'), findsOneWidget);
+      expect(_byPainter('CloseGlyph'), findsOneWidget);
 
       await tester.sendKeyEvent(LogicalKeyboardKey.backspace);
       await tester.pumpAndSettle();
-      expect(_byPainter('_CrossPainter'), findsNothing);
+      expect(_byPainter('CloseGlyph'), findsNothing);
     });
 
     testWidgets('keyboard navigates and Enter picks the highlighted row', (
@@ -671,7 +671,7 @@ void main() {
       await tester.pumpAndSettle();
       await tester.testTextInput.receiveAction(TextInputAction.done);
       await tester.pumpAndSettle();
-      expect(_byPainter('_CrossPainter'), findsWidgets);
+      expect(_byPainter('CloseGlyph'), findsWidgets);
 
       // The pick clears the query, so the full list is shown again to navigate.
       await tester.sendKeyEvent(LogicalKeyboardKey.arrowDown);

@@ -123,7 +123,7 @@ class FossCard extends StatelessWidget {
       ],
     );
 
-    final dark = _isDark(colors);
+    final dark = colors.isDark;
     return DecoratedBox(
       decoration: ShapeDecoration(
         color: s?.backgroundColor ?? colors.card,
@@ -183,8 +183,6 @@ class FossCard extends StatelessWidget {
     return text;
   }
 }
-
-bool _isDark(FossColors c) => c.background.computeLuminance() < 0.5;
 
 /// Paints a 1px rim inside the surface: brightest along one edge, fading to
 /// nothing by the middle. [topLit] lights the top edge; otherwise the bottom.

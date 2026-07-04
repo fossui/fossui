@@ -4,6 +4,7 @@ import 'dart:math' as math;
 import 'package:flutter/semantics.dart' show SemanticsRole;
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
+import 'package:fossui/src/icons/foss_glyph.dart';
 import 'package:fossui/src/theme/theme.dart';
 
 part '_foss_select_listbox.dart';
@@ -133,10 +134,6 @@ class FossSelect<T> extends StatelessWidget {
   }
 }
 
-/// Whether [c] is a dark color set, by surface luminance. Drives the dark-only
-/// fill lift and rim highlight.
-bool _isDark(FossColors c) => c.background.computeLuminance() < 0.5;
-
 /// Builds the default trigger appearance from the theme tokens for [size].
 _SelectVisuals _resolve(FossThemeData theme, FossSelectSize size) {
   final c = theme.colors;
@@ -163,7 +160,7 @@ _SelectVisuals _resolve(FossThemeData theme, FossSelectSize size) {
 
   // Dark lifts the resting trigger fill by the input color at 32% of its alpha,
   // composited to opaque. Light is the bare surface.
-  final background = _isDark(c)
+  final background = c.isDark
       ? Color.alphaBlend(
           c.input.withValues(alpha: c.input.a * _darkFillOpacity),
           c.background,

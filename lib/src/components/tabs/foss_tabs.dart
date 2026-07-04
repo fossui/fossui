@@ -272,7 +272,7 @@ class _FossTabsState<T> extends State<FossTabs<T>> {
   @override
   Widget build(BuildContext context) {
     final theme = context.fossTheme;
-    final dark = _isDark(theme.colors);
+    final dark = theme.colors.isDark;
     final v = _resolve(theme, widget.variant, dark, widget.style);
     final reduceMotion =
         MediaQuery.maybeOf(context)?.disableAnimations ?? false;
@@ -561,8 +561,6 @@ class _FossTabsState<T> extends State<FossTabs<T>> {
     );
   }
 }
-
-bool _isDark(FossColors c) => c.background.computeLuminance() < 0.5;
 
 /// Builds the default appearance from the theme tokens for [variant], then lays
 /// a per-instance [override] over it field by field.

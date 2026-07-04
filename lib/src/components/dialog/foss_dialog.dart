@@ -1,7 +1,7 @@
 import 'package:flutter/widgets.dart';
 import 'package:fossui/src/foundation/foss_dialog_surface.dart';
-import 'package:fossui/src/foundation/foss_glyphs.dart';
 import 'package:fossui/src/foundation/foss_modal_route.dart';
+import 'package:fossui/src/icons/foss_glyph.dart';
 import 'package:fossui/src/theme/colors/foss_colors.dart';
 import 'package:fossui/src/theme/foss_theme.dart';
 import 'package:fossui/src/theme/typography/foss_typography.dart';
@@ -184,8 +184,7 @@ class _CloseButton extends StatelessWidget {
           width: 48,
           height: 48,
           child: Center(
-            child:
-                icon ?? FossGlyphIcon(FossGlyph.close, size: 16, color: color),
+            child: icon ?? FossGlyphIcon(CloseGlyph(color), size: 16),
           ),
         ),
       ),

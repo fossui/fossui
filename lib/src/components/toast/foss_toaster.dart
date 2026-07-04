@@ -2,7 +2,7 @@ import 'package:flutter/widgets.dart';
 import 'package:fossui/src/components/spinner/foss_spinner.dart';
 import 'package:fossui/src/components/toast/foss_toast.dart';
 import 'package:fossui/src/components/toast/foss_toast_controller.dart';
-import 'package:fossui/src/foundation/foss_glyphs.dart';
+import 'package:fossui/src/icons/foss_glyph.dart';
 import 'package:fossui/src/theme/colors/foss_colors.dart';
 import 'package:fossui/src/theme/foss_theme.dart';
 import 'package:fossui/src/theme/typography/foss_typography.dart';
@@ -266,30 +266,26 @@ Widget? _leadingFor(FossToastType type, FossColors colors) {
       return FossSpinner(size: 16, color: colors.mutedForeground);
     case FossToastType.info:
       return FossGlyphIcon(
-        FossGlyph.info,
+        InfoGlyph(colors.info),
         size: 16,
-        color: colors.info,
         semanticLabel: 'info',
       );
     case FossToastType.success:
       return FossGlyphIcon(
-        FossGlyph.success,
+        SuccessGlyph(colors.success),
         size: 16,
-        color: colors.success,
         semanticLabel: 'success',
       );
     case FossToastType.warning:
       return FossGlyphIcon(
-        FossGlyph.warning,
+        WarningGlyph(colors.warning),
         size: 16,
-        color: colors.warning,
         semanticLabel: 'warning',
       );
     case FossToastType.error:
       return FossGlyphIcon(
-        FossGlyph.error,
+        ErrorGlyph(colors.destructive),
         size: 16,
-        color: colors.destructive,
         semanticLabel: 'error',
       );
   }

@@ -399,7 +399,7 @@ class _InnerRing extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final dark = _isDark(colors);
+    final dark = colors.isDark;
     final highlight = colors.foreground.withValues(alpha: dark ? 0.06 : 0.04);
     final edge = BorderSide(color: highlight);
     return DecoratedBox(
@@ -423,5 +423,3 @@ FossTooltipSide _physicalSide(FossTooltipSide side, TextDirection direction) {
     FossTooltipSide.top || FossTooltipSide.bottom => side,
   };
 }
-
-bool _isDark(FossColors c) => c.background.computeLuminance() < 0.5;

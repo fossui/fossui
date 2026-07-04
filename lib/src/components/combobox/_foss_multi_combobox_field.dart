@@ -254,7 +254,7 @@ class _FossMultiComboboxFieldState<T> extends State<_FossMultiComboboxField<T>>
 
   Widget _shell(FossThemeData theme, _ComboboxVisuals v) {
     final colors = theme.colors;
-    final dark = _isDark(colors);
+    final dark = colors.isDark;
     final hasError = widget.errorText != null;
     final minHeight = switch (widget.size) {
       FossTextFieldSize.sm => 32.0,
@@ -542,8 +542,8 @@ class _Chip extends StatelessWidget {
                     ),
                     child: CustomPaint(
                       size: const Size.square(14),
-                      painter: _CrossPainter(
-                        color: colors.accentForeground.withValues(
+                      painter: CloseGlyph(
+                        colors.accentForeground.withValues(
                           alpha: colors.accentForeground.a * _affixOpacity,
                         ),
                       ),

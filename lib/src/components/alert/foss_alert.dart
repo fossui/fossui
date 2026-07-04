@@ -1,5 +1,5 @@
 import 'package:flutter/widgets.dart';
-import 'package:fossui/src/foundation/foss_glyphs.dart';
+import 'package:fossui/src/icons/foss_glyph.dart';
 import 'package:fossui/src/theme/colors/foss_colors.dart';
 import 'package:fossui/src/theme/foss_theme.dart';
 import 'package:fossui/src/theme/typography/foss_typography.dart';
@@ -14,6 +14,10 @@ const double _fillAlpha = 0.04;
 
 /// Neutral dark fill: the input color at 32% of its alpha, lifted on dark.
 const double _neutralDarkFillAlpha = 0.32;
+
+/// The leading glyph extent. Centered in a box as tall as the title line so it
+/// lands on the first line rather than the top of the row.
+const double _iconSize = 16;
 
 /// The status of a [FossAlert], driving its border, fill, and leading glyph.
 enum FossAlertVariant {
@@ -38,8 +42,8 @@ enum FossAlertVariant {
 /// [variant].
 ///
 /// The whole surface is an `alert` live region; the status glyph is semantic.
-/// Colors, type, radius, and spacing come from `context.fossTheme`. Actions
-/// reuse `FossButton`.
+/// Colors, type, radius, and spacing come from `context.fossTheme`. Actions are
+/// any widgets, typically `FossButton`s.
 ///
 /// ```dart
 /// FossAlert(
@@ -66,8 +70,10 @@ class FossAlert extends StatelessWidget {
   /// The description below the title.
   final Widget? description;
 
-  /// Overrides the default leading glyph. Null hides the leading slot for
-  /// [FossAlertVariant.neutral] and uses the painted status glyph otherwise.
+  /// Overrides the default leading glyph. A status variant paints its status
+  /// glyph unless overridden here; [FossAlertVariant.neutral] has no default
+  /// glyph, so its leading slot stays empty until an [icon] is given. A custom
+  /// icon inherits the variant accent color and the glyph size.
   final Widget? icon;
 
   /// Action widgets, rendered below the text. Empty hides them.
@@ -97,7 +103,11 @@ class FossAlert extends StatelessWidget {
         )
         .merge(s?.descriptionStyle);
 
-    final leading = icon ?? v.glyph(s?.iconColor ?? v.accent);
+    final iconColor = s?.iconColor ?? v.accent;
+    final leading = icon ?? v.glyph?.call(iconColor);
+    // The box matches the title's line height so the glyph centers on the first
+    // line instead of top-aligning to the row.
+    final iconBox = (titleStyle.fontSize ?? 14) * (titleStyle.height ?? 1);
 
     return Semantics(
       container: true,
@@ -121,7 +131,17 @@ class FossAlert extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             spacing: sp(2),
             children: [
-              if (leading != null) SizedBox(width: 16, child: leading),
+              if (leading != null)
+                SizedBox(
+                  width: _iconSize,
+                  height: iconBox,
+                  child: Center(
+                    child: IconTheme.merge(
+                      data: IconThemeData(color: iconColor, size: _iconSize),
+                      child: leading,
+                    ),
+                  ),
+                ),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -138,7 +158,15 @@ class FossAlert extends StatelessWidget {
                     if (actions.isNotEmpty)
                       Padding(
                         padding: EdgeInsets.only(top: sp(1)),
-                        child: Row(spacing: sp(2), children: actions),
+                        child: Align(
+                          alignment: AlignmentDirectional.centerEnd,
+                          child: Wrap(
+                            alignment: WrapAlignment.end,
+                            spacing: sp(1),
+                            runSpacing: sp(1),
+                            children: actions,
+                          ),
+                        ),
                       ),
                   ],
                 ),
@@ -158,28 +186,17 @@ class _AlertVisuals {
     required this.border,
     required this.fill,
     required this.accent,
-    required this.glyphKind,
+    required this.glyph,
   });
 
   final Color border;
   final Color fill;
   final Color accent;
-  final FossGlyph? glyphKind;
 
-  /// The leading glyph in [color], or null for the neutral variant.
-  Widget? glyph(Color color) {
-    final kind = glyphKind;
-    if (kind == null) return null;
-    return FossGlyphIcon(
-      kind,
-      size: 16,
-      color: color,
-      semanticLabel: kind.name,
-    );
-  }
+  /// Builds the leading status glyph in the given color. Null for the neutral
+  /// variant, which has no status mark.
+  final Widget Function(Color color)? glyph;
 }
-
-bool _isDark(FossColors c) => c.background.computeLuminance() < 0.5;
 
 _AlertVisuals _resolve(FossColors c, FossAlertVariant variant) {
   Color tintBorder(Color role) => role.withValues(alpha: role.a * _borderAlpha);
@@ -187,7 +204,7 @@ _AlertVisuals _resolve(FossColors c, FossAlertVariant variant) {
 
   switch (variant) {
     case FossAlertVariant.neutral:
-      final fill = _isDark(c)
+      final fill = c.isDark
           ? Color.alphaBlend(
               c.input.withValues(alpha: c.input.a * _neutralDarkFillAlpha),
               c.background,
@@ -197,35 +214,51 @@ _AlertVisuals _resolve(FossColors c, FossAlertVariant variant) {
         border: c.border,
         fill: fill,
         accent: c.mutedForeground,
-        glyphKind: null,
+        glyph: null,
       );
     case FossAlertVariant.info:
       return _AlertVisuals(
         border: tintBorder(c.info),
         fill: tintFill(c.info),
         accent: c.info,
-        glyphKind: FossGlyph.info,
+        glyph: (color) => FossGlyphIcon(
+          InfoGlyph(color),
+          size: _iconSize,
+          semanticLabel: 'info',
+        ),
       );
     case FossAlertVariant.success:
       return _AlertVisuals(
         border: tintBorder(c.success),
         fill: tintFill(c.success),
         accent: c.success,
-        glyphKind: FossGlyph.success,
+        glyph: (color) => FossGlyphIcon(
+          SuccessGlyph(color),
+          size: _iconSize,
+          semanticLabel: 'success',
+        ),
       );
     case FossAlertVariant.warning:
       return _AlertVisuals(
         border: tintBorder(c.warning),
         fill: tintFill(c.warning),
         accent: c.warning,
-        glyphKind: FossGlyph.warning,
+        glyph: (color) => FossGlyphIcon(
+          WarningGlyph(color),
+          size: _iconSize,
+          semanticLabel: 'warning',
+        ),
       );
     case FossAlertVariant.error:
       return _AlertVisuals(
         border: tintBorder(c.destructive),
         fill: tintFill(c.destructive),
         accent: c.destructive,
-        glyphKind: FossGlyph.error,
+        glyph: (color) => FossGlyphIcon(
+          ErrorGlyph(color),
+          size: _iconSize,
+          semanticLabel: 'error',
+        ),
       );
   }
 }

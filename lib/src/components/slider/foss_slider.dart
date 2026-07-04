@@ -344,7 +344,7 @@ class _FossSliderState extends State<FossSlider> {
     required bool reduceMotion,
   }) {
     final colors = theme.colors;
-    final dark = _isDark(colors);
+    final dark = colors.isDark;
     return ListenableBuilder(
       listenable: _states,
       builder: (_, _) {
@@ -409,10 +409,6 @@ class _SliderMaxIntent extends Intent {
   const _SliderMaxIntent();
 }
 
-/// Whether [c] is a dark color set, by surface luminance. Switches the thumb
-/// border to the surface role and lifts the focus ring alpha.
-bool _isDark(FossColors c) => c.background.computeLuminance() < 0.5;
-
 /// Builds the default appearance from the theme tokens.
 _SliderVisuals _resolve(FossThemeData theme) {
   final c = theme.colors;
@@ -420,7 +416,7 @@ _SliderVisuals _resolve(FossThemeData theme) {
     trackColor: c.input,
     rangeColor: c.primary,
     thumbColor: _knobColor,
-    borderColor: _isDark(c) ? c.background : c.input,
+    borderColor: c.isDark ? c.background : c.input,
     shadow: theme.shadows.xs,
     trackHeight: _trackHeight,
     thumbSize: _thumbSize,

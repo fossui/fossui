@@ -270,13 +270,13 @@ class _FossComboboxFieldState<T> extends State<_FossComboboxField<T>>
             _IconButton(
               size: v.iconSize,
               onTap: _clear,
-              painter: _CrossPainter(color: color),
+              painter: CloseGlyph(color),
             ),
           if (widget.showTrigger && !showClear)
             _IconButton(
               size: v.iconSize,
               onTap: widget.enabled ? _toggle : null,
-              painter: _ChevronPainter(color: color),
+              painter: ChevronUpDownGlyph(color),
             ),
         ];
         if (children.isEmpty) return const SizedBox.shrink();
@@ -431,9 +431,7 @@ class _ComboRow<T> extends StatelessWidget {
             SizedBox(
               width: _indicatorColumn,
               height: _indicatorColumn,
-              child: selected
-                  ? CustomPaint(painter: _CheckPainter(color: textColor))
-                  : null,
+              child: selected ? FossGlyphIcon(CheckGlyph(textColor)) : null,
             ),
             SizedBox(width: theme.spacing(2)),
           ],
@@ -557,94 +555,4 @@ class _PopupLayout extends SingleChildLayoutDelegate {
 
   @override
   bool shouldRelayout(_PopupLayout oldDelegate) => oldDelegate.anchor != anchor;
-}
-
-/// A bare check mark, the picked-row indicator.
-class _CheckPainter extends CustomPainter {
-  const _CheckPainter({required this.color});
-
-  final Color color;
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    final s = size.shortestSide;
-    final stroke = Paint()
-      ..color = color
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = s * 0.12
-      ..strokeCap = StrokeCap.round
-      ..strokeJoin = StrokeJoin.round;
-    Offset p(double x, double y) => Offset(x * s, y * s);
-    canvas.drawPath(
-      Path()
-        ..moveTo(p(0.24, 0.52).dx, p(0.24, 0.52).dy)
-        ..lineTo(p(0.42, 0.7).dx, p(0.42, 0.7).dy)
-        ..lineTo(p(0.76, 0.3).dx, p(0.76, 0.3).dy),
-      stroke,
-    );
-  }
-
-  @override
-  bool shouldRepaint(_CheckPainter old) => old.color != color;
-}
-
-/// A stacked up/down chevron, the trigger's open affordance.
-class _ChevronPainter extends CustomPainter {
-  const _ChevronPainter({required this.color});
-
-  final Color color;
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    final s = size.shortestSide;
-    final stroke = Paint()
-      ..color = color
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = s * 0.09
-      ..strokeCap = StrokeCap.round
-      ..strokeJoin = StrokeJoin.round;
-    Offset p(double x, double y) => Offset(x * s, y * s);
-    canvas
-      ..drawPath(
-        Path()
-          ..moveTo(p(0.3, 0.44).dx, p(0.3, 0.44).dy)
-          ..lineTo(p(0.5, 0.3).dx, p(0.5, 0.3).dy)
-          ..lineTo(p(0.7, 0.44).dx, p(0.7, 0.44).dy),
-        stroke,
-      )
-      ..drawPath(
-        Path()
-          ..moveTo(p(0.3, 0.56).dx, p(0.3, 0.56).dy)
-          ..lineTo(p(0.5, 0.7).dx, p(0.5, 0.7).dy)
-          ..lineTo(p(0.7, 0.56).dx, p(0.7, 0.56).dy),
-        stroke,
-      );
-  }
-
-  @override
-  bool shouldRepaint(_ChevronPainter old) => old.color != color;
-}
-
-/// An X glyph, the clear affordance.
-class _CrossPainter extends CustomPainter {
-  const _CrossPainter({required this.color});
-
-  final Color color;
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    final s = size.shortestSide;
-    final stroke = Paint()
-      ..color = color
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = s * 0.1
-      ..strokeCap = StrokeCap.round;
-    Offset p(double x, double y) => Offset(x * s, y * s);
-    canvas
-      ..drawLine(p(0.34, 0.34), p(0.66, 0.66), stroke)
-      ..drawLine(p(0.66, 0.34), p(0.34, 0.66), stroke);
-  }
-
-  @override
-  bool shouldRepaint(_CrossPainter old) => old.color != color;
 }

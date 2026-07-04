@@ -4,6 +4,7 @@ import 'dart:math' as math;
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:fossui/src/components/text_field/foss_text_field.dart';
+import 'package:fossui/src/icons/foss_glyph.dart';
 import 'package:fossui/src/theme/theme.dart';
 
 part '_foss_combobox_field.dart';
@@ -31,8 +32,6 @@ const double _errorRingOpacityLight = 0.16;
 const double _errorRingOpacityDark = 0.24;
 const double _darkFillOpacity = 0.32;
 const double _placeholderOpacity = 0.72;
-
-bool _isDark(FossColors c) => c.background.computeLuminance() < 0.5;
 
 /// Default filter: a case-insensitive substring match of the query against the
 /// option label.
