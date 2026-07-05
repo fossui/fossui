@@ -567,10 +567,17 @@ class _Footer extends StatelessWidget {
     final colors = theme.colors;
     final sp = theme.spacing;
     final filled = variant == FossDrawerFooterVariant.filled;
+    final basePad = filled ? sp(4) : sp(6);
+    // Absorb the system inset rather than stacking it on the base padding.
+    final bottom = safeBottom > basePad ? safeBottom : basePad;
 
     return DecoratedBox(
       decoration: BoxDecoration(
-        color: filled ? colors.muted.withValues(alpha: 0.72) : null,
+        // The bar is the muted role at 72% of its own opacity; muted is already
+        // translucent, so multiply rather than replace its alpha.
+        color: filled
+            ? colors.muted.withValues(alpha: colors.muted.a * 0.72)
+            : null,
         border: filled ? Border(top: BorderSide(color: colors.border)) : null,
       ),
       child: Padding(
@@ -578,7 +585,7 @@ class _Footer extends StatelessWidget {
           left: sp(6),
           right: sp(6),
           top: sp(4),
-          bottom: (filled ? sp(4) : sp(6)) + safeBottom,
+          bottom: bottom,
         ),
         // Trailing-aligned row, each action hugging its content.
         child: Row(

@@ -2,61 +2,44 @@ import 'package:flutter/widgets.dart';
 import 'package:fossui/src/foundation/foss_dialog_surface.dart';
 import 'package:fossui/src/foundation/foss_modal_route.dart';
 import 'package:fossui/src/icons/foss_glyph.dart';
-import 'package:fossui/src/theme/colors/foss_colors.dart';
 import 'package:fossui/src/theme/foss_theme.dart';
-import 'package:fossui/src/theme/typography/foss_typography.dart';
 
+part 'foss_alert_dialog.dart';
+part 'foss_alert_dialog_style.dart';
+part 'foss_dialog_show.dart';
 part 'foss_dialog_style.dart';
 
 /// Default maximum width of the centered card in logical pixels.
 const double _maxWidth = 512;
 
-/// Opens a centered modal dialog and resolves to the value passed to
-/// `Navigator.pop`.
-///
-/// The scrim, focus trap, and focus restoration come from the framework; the
-/// active theme is captured and re-provided inside the route. Set
-/// [barrierDismissible] to false to require an explicit action.
-///
-/// ```dart
-/// final ok = await showFossDialog<bool>(
-///   context: context,
-///   builder: (context) => FossDialog(
-///     title: const Text('Delete project'),
-///     description: const Text('This cannot be undone.'),
-///     actions: [
-///       FossButton(
-///         variant: FossButtonVariant.ghost,
-///         onPressed: () => Navigator.pop(context, false),
-///         child: const Text('Cancel'),
-///       ),
-///       FossButton(
-///         onPressed: () => Navigator.pop(context, true),
-///         child: const Text('Delete'),
-///       ),
-///     ],
-///   ),
-/// );
-/// ```
-Future<T?> showFossDialog<T>({
-  required BuildContext context,
-  required WidgetBuilder builder,
-  bool barrierDismissible = true,
-  String? barrierLabel,
-  bool useRootNavigator = true,
-}) => showFossModal<T>(
-  context: context,
-  builder: builder,
-  barrierDismissible: barrierDismissible,
-  barrierLabel: barrierLabel,
-  useRootNavigator: useRootNavigator,
-);
+/// Carries the [FossDialogPresentation] from the show function down to the
+/// surface, so the caller sets it once on the route and the widget reads it
+/// back, the same handoff the drawer makes for its side.
+class _DialogPresentationScope extends InheritedWidget {
+  const _DialogPresentationScope({
+    required this.presentation,
+    required super.child,
+  });
 
-/// A centered modal surface with slots for a title, description, body, and
-/// actions, plus a default close affordance.
+  final FossDialogPresentation presentation;
+
+  static FossDialogPresentation of(BuildContext context) =>
+      context
+          .dependOnInheritedWidgetOfExactType<_DialogPresentationScope>()
+          ?.presentation ??
+      FossDialogPresentation.centered;
+
+  @override
+  bool updateShouldNotify(_DialogPresentationScope oldWidget) =>
+      oldWidget.presentation != presentation;
+}
+
+/// A modal surface with slots for a title, description, body, and actions,
+/// plus a default close affordance. Presents as a bottom sheet by default, or a
+/// centered card via [presentation].
 ///
 /// Show it with [showFossDialog]. The header, body, and footer are each
-/// optional; [actions] reuse `FossButton` and stack full width on the footer.
+/// optional; [actions] reuse `FossButton` and sit in a trailing-aligned row.
 /// Colors, type, radius, and shadow come from `context.fossTheme`.
 ///
 /// ```dart
@@ -75,9 +58,12 @@ class FossDialog extends StatelessWidget {
     this.description,
     this.content,
     this.actions = const <Widget>[],
-    this.footerVariant = FossDialogFooterVariant.bare,
+    this.footerVariant = FossDialogFooterVariant.filled,
     this.showCloseButton = true,
     this.closeIcon,
+    this.closeLabel = 'Close',
+    this.semanticLabel,
+    this.presentation,
     this.style,
     super.key,
   });
@@ -94,7 +80,7 @@ class FossDialog extends StatelessWidget {
   /// The footer actions; empty hides the footer.
   final List<Widget> actions;
 
-  /// The footer treatment. Defaults to [FossDialogFooterVariant.bare].
+  /// The footer treatment. Defaults to [FossDialogFooterVariant.filled].
   final FossDialogFooterVariant footerVariant;
 
   /// Whether to show the close affordance in the top corner.
@@ -103,88 +89,138 @@ class FossDialog extends StatelessWidget {
   /// Overrides the default painted close glyph.
   final Widget? closeIcon;
 
+  /// Semantic label for the close affordance.
+  final String closeLabel;
+
+  /// Names the modal route for assistive technology. Defaults to the [title]
+  /// text when it is a [Text].
+  final String? semanticLabel;
+
+  /// How the dialog presents. Null inherits the value the show function set
+  /// (bottom sheet by default); pass one to override for a standalone surface.
+  final FossDialogPresentation? presentation;
+
   /// Per-instance visual overrides.
   final FossDialogStyle? style;
 
   @override
   Widget build(BuildContext context) {
-    final theme = context.fossTheme;
-    final colors = theme.colors;
-    final s = style;
-
-    final header = _buildHeader(theme, colors, s);
-
-    return FossDialogSurface(
-      header: header,
-      content: content == null
-          ? null
-          : Padding(
-              padding: EdgeInsets.all(theme.spacing(6)),
-              child: content,
-            ),
+    final colors = context.fossTheme.colors;
+    return _buildDialogSurface(
+      context,
+      title: title,
+      description: description,
+      content: content,
       actions: actions,
       footerVariant: footerVariant,
-      maxWidth: s?.maxWidth ?? _maxWidth,
-      backgroundColor: s?.backgroundColor ?? colors.popover,
-      borderColor: s?.borderColor ?? colors.border,
-      borderRadius: s?.borderRadius ?? theme.radii.xl2,
-      shadows: s?.shadows ?? theme.shadows.lg,
+      presentation: presentation ?? _DialogPresentationScope.of(context),
+      semanticLabel: semanticLabel,
+      style: style,
       closeButton: showCloseButton
-          ? _CloseButton(icon: closeIcon, color: colors.mutedForeground)
+          ? _CloseButton(
+              icon: closeIcon,
+              color: colors.foreground.withValues(alpha: 0.8),
+              label: closeLabel,
+            )
           : null,
-    );
-  }
-
-  Widget? _buildHeader(
-    FossThemeData theme,
-    FossColors colors,
-    FossDialogStyle? s,
-  ) {
-    if (title == null && description == null) return null;
-    final titleStyle = theme.typography.xl.semibold
-        .copyWith(color: colors.popoverForeground)
-        .merge(s?.titleStyle);
-    final descriptionStyle = theme.typography.sm
-        .copyWith(color: colors.mutedForeground)
-        .merge(s?.descriptionStyle);
-
-    return Padding(
-      padding: EdgeInsets.all(theme.spacing(6)),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisSize: MainAxisSize.min,
-        spacing: theme.spacing(1),
-        children: [
-          if (title case final title?)
-            DefaultTextStyle.merge(style: titleStyle, child: title),
-          if (description case final description?)
-            DefaultTextStyle.merge(style: descriptionStyle, child: description),
-        ],
-      ),
     );
   }
 }
 
-/// The default ghost close affordance: a painted cross in a 48px tap target.
-class _CloseButton extends StatelessWidget {
-  const _CloseButton({required this.icon, required this.color});
+/// Resolves the theme tokens under the optional [style] and builds the shared
+/// [FossDialogSurface]. Both [FossDialog] and [FossAlertDialog] route through
+/// here; [closeButton] is present only for the plain dialog.
+Widget _buildDialogSurface(
+  BuildContext context, {
+  required Widget? title,
+  required Widget? description,
+  required Widget? content,
+  required List<Widget> actions,
+  required FossDialogFooterVariant footerVariant,
+  required FossDialogPresentation presentation,
+  required String? semanticLabel,
+  required FossDialogStyle? style,
+  required Widget? closeButton,
+}) {
+  final theme = context.fossTheme;
+  final colors = theme.colors;
+  return FossDialogSurface(
+    presentation: presentation,
+    semanticLabel: semanticLabel ?? dialogRouteLabel(title),
+    header: buildDialogHeader(
+      theme: theme,
+      title: title,
+      description: description,
+      titleStyleOverride: style?.titleStyle,
+      descriptionStyleOverride: style?.descriptionStyle,
+    ),
+    content: content,
+    actions: actions,
+    footerVariant: footerVariant,
+    visual: FossDialogVisual(
+      maxWidth: style?.maxWidth ?? _maxWidth,
+      backgroundColor: style?.backgroundColor ?? colors.popover,
+      borderColor: style?.borderColor ?? colors.border,
+      borderRadius: style?.borderRadius ?? theme.radii.xl2,
+      shadows: style?.shadows ?? theme.shadows.lg,
+    ),
+    closeButton: closeButton,
+  );
+}
+
+/// The default ghost close affordance: a painted cross that tints on press,
+/// inside a 48px tap target.
+class _CloseButton extends StatefulWidget {
+  const _CloseButton({
+    required this.icon,
+    required this.color,
+    required this.label,
+  });
 
   final Widget? icon;
   final Color color;
+  final String label;
+
+  @override
+  State<_CloseButton> createState() => _CloseButtonState();
+}
+
+class _CloseButtonState extends State<_CloseButton> {
+  bool _pressed = false;
+
+  void _setPressed(bool value) {
+    if (_pressed != value) setState(() => _pressed = value);
+  }
 
   @override
   Widget build(BuildContext context) {
+    final theme = context.fossTheme;
     return Semantics(
       button: true,
-      label: 'Close',
+      label: widget.label,
       child: GestureDetector(
         behavior: HitTestBehavior.opaque,
+        onTapDown: (_) => _setPressed(true),
+        onTapUp: (_) => _setPressed(false),
+        onTapCancel: () => _setPressed(false),
         onTap: () => Navigator.of(context).maybePop(),
-        child: SizedBox(
-          width: 48,
-          height: 48,
-          child: Center(
-            child: icon ?? FossGlyphIcon(CloseGlyph(color), size: 16),
+        child: Center(
+          child: DecoratedBox(
+            decoration: ShapeDecoration(
+              color: _pressed ? theme.colors.accent : null,
+              shape: RoundedSuperellipseBorder(
+                borderRadius: BorderRadius.circular(theme.radii.md),
+              ),
+            ),
+            child: SizedBox(
+              width: 36,
+              height: 36,
+              child: Center(
+                child:
+                    widget.icon ??
+                    FossGlyphIcon(CloseGlyph(widget.color), size: 18),
+              ),
+            ),
           ),
         ),
       ),

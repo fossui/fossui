@@ -97,6 +97,115 @@ void main() {
     expect(find.text('Your token lapsed.'), findsOneWidget);
   });
 
+  testWidgets('names the modal route for assistive technology', (tester) async {
+    final handle = tester.ensureSemantics();
+    late BuildContext ctx;
+    await tester.pumpWidget(
+      host(
+        Builder(
+          builder: (context) {
+            ctx = context;
+            return const SizedBox();
+          },
+        ),
+      ),
+    );
+
+    unawaited(
+      showFossAlertDialog<void>(
+        context: ctx,
+        builder: (context) => FossAlertDialog(
+          title: const Text('Delete account'),
+          semanticLabel: 'Delete account alert',
+          actions: [
+            GestureDetector(
+              onTap: () => Navigator.pop(context),
+              child: const Text('Delete'),
+            ),
+          ],
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.bySemanticsLabel('Delete account alert'), findsOneWidget);
+    handle.dispose();
+  });
+
+  testWidgets('back button pops with a null result', (tester) async {
+    late BuildContext ctx;
+    await tester.pumpWidget(
+      host(
+        Builder(
+          builder: (context) {
+            ctx = context;
+            return const SizedBox();
+          },
+        ),
+      ),
+    );
+
+    final pending = showFossAlertDialog<bool>(
+      context: ctx,
+      builder: (context) => FossAlertDialog(
+        title: const Text('Discard changes'),
+        actions: [
+          GestureDetector(
+            onTap: () => Navigator.pop(context, true),
+            child: const Text('Discard'),
+          ),
+        ],
+      ),
+    );
+    await tester.pumpAndSettle();
+    expect(find.text('Discard changes'), findsOneWidget);
+
+    await tester.binding.handlePopRoute();
+    await tester.pumpAndSettle();
+    expect(find.text('Discard changes'), findsNothing);
+    expect(await pending, isNull);
+  });
+
+  testWidgets('defaults to a full-width bottom sheet', (tester) async {
+    late BuildContext ctx;
+    await tester.pumpWidget(
+      host(
+        Builder(
+          builder: (context) {
+            ctx = context;
+            return const SizedBox();
+          },
+        ),
+      ),
+    );
+
+    unawaited(
+      showFossAlertDialog<void>(
+        context: ctx,
+        builder: (context) => FossAlertDialog(
+          title: const Text('Sheet'),
+          actions: [
+            GestureDetector(
+              onTap: () => Navigator.pop(context),
+              child: const Text('OK'),
+            ),
+          ],
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    final surface = find
+        .descendant(
+          of: find.byType(FossAlertDialog),
+          matching: find.byType(DecoratedBox),
+        )
+        .first;
+    final rect = tester.getRect(surface);
+    expect(rect.width, 800);
+    expect(rect.bottom, 600);
+  });
+
   testWidgets('asserts on empty actions', (tester) async {
     expect(
       () => FossAlertDialog(actions: const [], title: const Text('x')),
@@ -133,6 +242,15 @@ void main() {
     test('merge(null) returns this', () {
       const base = FossAlertDialogStyle(maxWidth: 320);
       expect(base.merge(null), same(base));
+    });
+
+    test('is a FossDialogStyle and merge keeps the alert type', () {
+      const base = FossAlertDialogStyle(maxWidth: 320);
+      expect(base, isA<FossDialogStyle>());
+      expect(
+        base.merge(const FossAlertDialogStyle(borderRadius: 6)),
+        isA<FossAlertDialogStyle>(),
+      );
     });
   });
 }

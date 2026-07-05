@@ -3,9 +3,9 @@
 // Widgets are exported from here as they are ported (Button, Input,
 // Checkbox, Card, Dialog, ...).
 
-export '../foundation/foss_dialog_surface.dart' show FossDialogFooterVariant;
+export '../foundation/foss_dialog_surface.dart'
+    show FossDialogFooterVariant, FossDialogPresentation;
 export 'alert/foss_alert.dart';
-export 'alert_dialog/foss_alert_dialog.dart';
 export 'avatar/foss_avatar.dart';
 export 'badge/foss_badge.dart';
 export 'button/foss_button.dart';
