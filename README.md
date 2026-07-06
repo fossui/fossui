@@ -10,7 +10,9 @@ by coss.com/ui, Cal.com's design system. Themed from one source, one import.
 > **Unofficial.** Not affiliated with or endorsed by Cal.com, Inc. or coss.com.
 > See [NOTICE](NOTICE) for attribution.
 
-<img width="2555" height="2240" alt="examples" src="https://github.com/user-attachments/assets/1af78d08-c4e9-4fd4-bd52-94a3d2ad6b5f" />
+
+<img width="2555" height="2240" alt="examples" src="https://github.com/user-attachments/assets/32f01ce5-6622-4dce-9f70-8fc320dd2da9" />
+
 
 ## Install
 
