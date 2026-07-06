@@ -1,10 +1,10 @@
 # fossui
 
-An open-source Flutter UI library, inspired by Cal.com's design system.
-Themed from one source, accessible, one import.
+An open-source Flutter UI library of themeable, accessible components, inspired
+by coss.com/ui, Cal.com's design system. Themed from one source, one import.
 
-> **Status: beta, under active development.** The first pre-release
-> (`0.1.0-beta.1`) ships 21 components, but APIs and tokens can still change
+> **Status: beta, under active development.** This pre-release
+> (`0.1.0-beta.2`) ships 21 components, but APIs and tokens can still change
 > between releases. Pin an exact version if you depend on it.
 
 > **Unofficial.** Not affiliated with or endorsed by Cal.com, Inc. or coss.com.
@@ -18,7 +18,7 @@ Themed from one source, accessible, one import.
 
 ```yaml
 dependencies:
-  fossui: ^0.1.0-beta.1
+  fossui: ^0.1.0-beta.2
 ```
 
 ## Usage
@@ -73,6 +73,9 @@ fvm install          # uses .fvmrc (Flutter 3.41.9)
 fvm flutter pub get
 fvm flutter test
 ```
+
+Contributions are welcome. See [CONTRIBUTING.md](CONTRIBUTING.md) for the
+workflow and the [Code of Conduct](CODE_OF_CONDUCT.md).
 
 
 
