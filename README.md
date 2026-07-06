@@ -78,3 +78,12 @@ fvm flutter test
 ## License
 
 MIT. See [LICENSE](LICENSE) and [NOTICE](NOTICE).
+
+## Star History
+
+<!-- star-history:start -->
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="assets/star-history/star-history-dark-20260706143857.svg">
+  <img alt="Star history" src="assets/star-history/star-history-light-20260706143857.svg">
+</picture>
+<!-- star-history:end -->

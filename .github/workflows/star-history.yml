@@ -1,0 +1,25 @@
+# TEST workflow for narayann7/star-history-action.
+# Uses a push trigger on the test branch only so the run fires immediately.
+# For real use, prefer `schedule` (3h/6h/daily) + workflow_dispatch, no push.
+name: Star History (test)
+
+on:
+  push:
+    branches: [test/star-history-action]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: star-history
+  cancel-in-progress: false
+
+jobs:
+  star-history:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: narayann7/star-history-action@v1
+        with:
+          repos: ${{ github.repository }}
