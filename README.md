@@ -78,3 +78,8 @@ fvm flutter test
 ## License
 
 MIT. See [LICENSE](LICENSE) and [NOTICE](NOTICE).
+
+## Star History
+
+<!-- star-history:start -->
+<!-- star-history:end -->
