@@ -10,6 +10,9 @@ Themed from one source, accessible, one import.
 > **Unofficial.** Not affiliated with or endorsed by Cal.com, Inc. or coss.com.
 > See [NOTICE](NOTICE) for attribution.
 
+<img width="2560" height="2490" alt="banner" src="https://github.com/user-attachments/assets/4e5ff237-4db8-48f8-9219-cd1064f4c0b1" />
+
+
 ## Install
 
 ```yaml
@@ -70,15 +73,7 @@ fvm flutter pub get
 fvm flutter test
 ```
 
-## Star history
 
-<a href="https://star-history.com/#fossui/fossui&Date">
-  <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=fossui/fossui&type=Date&theme=dark" />
-    <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/svg?repos=fossui/fossui&type=Date" />
-    <img alt="Star history chart for fossui" src="https://api.star-history.com/svg?repos=fossui/fossui&type=Date" />
-  </picture>
-</a>
 
 ## License
 
