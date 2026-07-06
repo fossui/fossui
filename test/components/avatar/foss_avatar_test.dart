@@ -89,6 +89,7 @@ void main() {
       final t = FossThemeData.light.typography;
       final steps = {
         FossAvatarSize.xs: t.xs.fontSize,
+        FossAvatarSize.sm: t.xs.fontSize,
         FossAvatarSize.md: t.xs.fontSize,
         FossAvatarSize.lg: t.sm.fontSize,
         FossAvatarSize.xl: t.base.fontSize,
@@ -143,6 +144,24 @@ void main() {
     });
   });
 
+  group('style', () {
+    testWidgets('overrides the background, fallback fill, and text', (
+      tester,
+    ) async {
+      const style = FossAvatarStyle(
+        backgroundColor: Color(0xFF010203),
+        fallbackColor: Color(0xFF040506),
+        fallbackTextStyle: TextStyle(letterSpacing: 3),
+      );
+      await tester.pumpWidget(
+        host(const FossAvatar(fallback: Text('VL'), style: style)),
+      );
+      expect(circleColor(tester, fallback: false), const Color(0xFF010203));
+      expect(circleColor(tester, fallback: true), const Color(0xFF040506));
+      expect(fallbackStyle(tester).letterSpacing, 3);
+    });
+  });
+
   group('image', () {
     testWidgets('renders an Image over the provider, cover fit', (
       tester,
@@ -154,6 +173,22 @@ void main() {
       final image = tester.widget<Image>(find.byType(Image));
       expect(image.image, provider);
       expect(image.fit, BoxFit.cover);
+    });
+
+    testWidgets('the decoded frame covers the fallback once it settles', (
+      tester,
+    ) async {
+      final provider = MemoryImage(_kPixel);
+      await tester.runAsync(() async {
+        await tester.pumpWidget(
+          host(FossAvatar(image: provider, fallback: const Text('VL'))),
+        );
+        await precacheImage(provider, tester.element(find.byType(FossAvatar)));
+      });
+      await tester.pumpAndSettle();
+      // A non-null RawImage means the first frame arrived, so frameBuilder
+      // handed through the image instead of the empty placeholder.
+      expect(tester.widget<RawImage>(find.byType(RawImage)).image, isNotNull);
     });
 
     testWidgets('fallback stays visible until the first frame', (tester) async {
@@ -193,13 +228,17 @@ void main() {
       handle.dispose();
     });
 
-    testWidgets('is decorative when unlabelled', (tester) async {
+    testWidgets('is decorative when unlabelled, emitting no image node', (
+      tester,
+    ) async {
       final handle = tester.ensureSemantics();
       await tester.pumpWidget(host(const FossAvatar(fallback: Text('VL'))));
+      // No own image node and the monogram is excluded, so nothing announces.
       expect(
         tester.getSemantics(find.byType(FossAvatar)),
-        matchesSemantics(isImage: true),
+        isNot(matchesSemantics(isImage: true)),
       );
+      expect(find.bySemanticsLabel('VL'), findsNothing);
       handle.dispose();
     });
 

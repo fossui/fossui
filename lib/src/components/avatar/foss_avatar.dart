@@ -53,7 +53,7 @@ enum FossAvatarSize {
 /// FossAvatar(
 ///   image: NetworkImage('https://example.com/v.png'),
 ///   fallback: const Text('VL'),
-///   semanticsLabel: 'Vitalik Larsen',
+///   semanticsLabel: 'Violet Light',
 /// );
 /// ```
 class FossAvatar extends StatelessWidget {
@@ -88,61 +88,65 @@ class FossAvatar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = context.fossTheme;
-    final colors = theme.colors;
-    final s = style;
-    final img = image;
-    final fb = fallback;
 
-    final layers = <Widget>[
-      if (fb != null)
-        DecoratedBox(
-          decoration: BoxDecoration(
-            color: s?.fallbackColor ?? colors.muted,
-            shape: BoxShape.circle,
-          ),
-          child: Center(
-            child: DefaultTextStyle.merge(
-              textAlign: TextAlign.center,
-              style: size
-                  ._fallbackType(theme.typography)
-                  .medium
-                  .copyWith(color: colors.mutedForeground)
-                  .merge(s?.fallbackTextStyle),
-              child: fb,
-            ),
-          ),
+    final avatar = SizedBox.square(
+      dimension: size._box,
+      child: DecoratedBox(
+        decoration: BoxDecoration(
+          color: style?.backgroundColor ?? theme.colors.background,
+          shape: BoxShape.circle,
         ),
-      if (img != null)
-        Image(
-          image: img,
-          fit: BoxFit.cover,
-          width: double.infinity,
-          height: double.infinity,
-          // Keep the fallback visible until the first frame; an absent or dead
-          // image leaves the layer empty so the fallback shows through.
-          frameBuilder: (context, child, frame, _) =>
-              frame == null ? const SizedBox.shrink() : child,
-          errorBuilder: (context, _, _) => const SizedBox.shrink(),
-        ),
-    ];
-
-    return Semantics(
-      image: true,
-      label: semanticsLabel,
-      child: ExcludeSemantics(
-        child: SizedBox.square(
-          dimension: size._box,
-          child: ClipOval(
-            child: DecoratedBox(
-              decoration: BoxDecoration(
-                color: s?.backgroundColor ?? colors.background,
-                shape: BoxShape.circle,
-              ),
-              child: Stack(fit: StackFit.expand, children: layers),
-            ),
-          ),
+        child: Stack(
+          fit: StackFit.expand,
+          children: [
+            if (fallback case final fb?) _fallbackLayer(theme, fb),
+            if (image case final img?) _imageLayer(img),
+          ],
         ),
       ),
     );
+
+    // A labelled avatar exposes one image node; unlabelled it is decorative
+    // and contributes no semantics, so the monogram never announces.
+    final label = semanticsLabel;
+    if (label == null) return ExcludeSemantics(child: avatar);
+    return Semantics(
+      image: true,
+      label: label,
+      child: ExcludeSemantics(child: avatar),
+    );
   }
+
+  // The fallback fills a muted circle with the centered glyph, its type stepped
+  // to the box and overridable through [style].
+  Widget _fallbackLayer(FossThemeData theme, Widget fb) => DecoratedBox(
+    decoration: BoxDecoration(
+      color: style?.fallbackColor ?? theme.colors.muted,
+      shape: BoxShape.circle,
+    ),
+    child: Center(
+      child: DefaultTextStyle.merge(
+        textAlign: TextAlign.center,
+        style: size
+            ._fallbackType(theme.typography)
+            .medium
+            .copyWith(color: theme.colors.mutedForeground)
+            .merge(style?.fallbackTextStyle),
+        child: fb,
+      ),
+    ),
+  );
+
+  // The image is the only square layer, so it carries the sole clip; a
+  // fallback-only avatar pays for none. The fallback shows through until the
+  // first frame and whenever the image is absent or fails.
+  Widget _imageLayer(ImageProvider img) => ClipOval(
+    child: Image(
+      image: img,
+      fit: BoxFit.cover,
+      frameBuilder: (context, child, frame, _) =>
+          frame == null ? const SizedBox.shrink() : child,
+      errorBuilder: (context, _, _) => const SizedBox.shrink(),
+    ),
+  );
 }
