@@ -10,7 +10,8 @@ Themed from one source, accessible, one import.
 > **Unofficial.** Not affiliated with or endorsed by Cal.com, Inc. or coss.com.
 > See [NOTICE](NOTICE) for attribution.
 
-<img width="2560" height="2490" alt="banner" src="https://github.com/user-attachments/assets/4e5ff237-4db8-48f8-9219-cd1064f4c0b1" />
+
+<img width="2555" height="2240" alt="examples" src="https://github.com/user-attachments/assets/32f01ce5-6622-4dce-9f70-8fc320dd2da9" />
 
 
 ## Install
