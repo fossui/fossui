@@ -1,3 +1,4 @@
+import 'package:flutter/semantics.dart' show SemanticsRole;
 import 'package:flutter/widgets.dart';
 import 'package:fossui/src/theme/theme.dart';
 
@@ -101,8 +102,13 @@ class FossProgress extends StatelessWidget {
 
     return Semantics(
       container: true,
+      role: SemanticsRole.progressBar,
       label: label ?? semanticsLabel,
-      value: '${(fraction * 100).round()}%',
+      // The progressbar role bounds the value; it runs 0..1 like the fraction,
+      // and assistive tech announces the percentage from the range.
+      value: fraction.toStringAsFixed(2),
+      minValue: '0',
+      maxValue: '1',
       child: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -140,10 +146,20 @@ class FossProgress extends StatelessWidget {
       child: Row(
         children: [
           Expanded(
-            child: Text(label ?? '', style: labelStyle),
+            child: Text(
+              label ?? '',
+              style: labelStyle,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
           ),
           if (valueLabel case final valueLabel?)
-            Text(valueLabel, style: valueStyle),
+            Text(
+              valueLabel,
+              style: valueStyle,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
         ],
       ),
     );
