@@ -40,6 +40,44 @@ void main() {
     return ctx;
   }
 
+  // The Padding immediately wrapping the slot whose child is [text].
+  EdgeInsets slotPadding(WidgetTester tester, String text) =>
+      tester
+              .widget<Padding>(
+                find
+                    .ancestor(
+                      of: find.text(text),
+                      matching: find.byType(Padding),
+                    )
+                    .first,
+              )
+              .padding
+          as EdgeInsets;
+
+  // The panel's surface decoration: the drawer's one ShapeDecoration.
+  ShapeDecoration panelDecoration(WidgetTester tester) => tester
+      .widgetList<DecoratedBox>(
+        find.descendant(
+          of: find.byType(FossDrawer),
+          matching: find.byType(DecoratedBox),
+        ),
+      )
+      .map((d) => d.decoration)
+      .whereType<ShapeDecoration>()
+      .first;
+
+  // The filled footer bar: the drawer's one bordered BoxDecoration.
+  BoxDecoration footerDecoration(WidgetTester tester) => tester
+      .widgetList<DecoratedBox>(
+        find.descendant(
+          of: find.byType(FossDrawer),
+          matching: find.byType(DecoratedBox),
+        ),
+      )
+      .map((d) => d.decoration)
+      .whereType<BoxDecoration>()
+      .firstWhere((d) => d.border != null);
+
   group('FossDrawerStyle.merge', () {
     test('other wins per field, null inherits', () {
       const base = FossDrawerStyle(
@@ -413,5 +451,272 @@ void main() {
     );
     await tester.pumpAndSettle();
     expect(find.text('Dark'), findsOneWidget);
+  });
+
+  group('seam padding', () {
+    testWidgets('adjacent slots collapse their touching insets', (
+      tester,
+    ) async {
+      final ctx = await pumpHost(tester);
+      unawaited(
+        showFossDrawer<void>(
+          context: ctx,
+          builder: (context) => const FossDrawer(
+            title: Text('Head'),
+            content: Text('Body'),
+            actions: [Text('OK')],
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      // Header keeps its top and sides at 24, tightens its bottom to 16.
+      expect(
+        slotPadding(tester, 'Head'),
+        const EdgeInsets.fromLTRB(24, 24, 24, 16),
+      );
+      // Content drops both touching edges to 0.
+      expect(
+        slotPadding(tester, 'Body'),
+        const EdgeInsets.fromLTRB(24, 0, 24, 0),
+      );
+    });
+
+    testWidgets('a lone content slot keeps the full inset', (tester) async {
+      final ctx = await pumpHost(tester);
+      unawaited(
+        showFossDrawer<void>(
+          context: ctx,
+          builder: (context) => const FossDrawer(content: Text('Only')),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(slotPadding(tester, 'Only'), const EdgeInsets.all(24));
+    });
+  });
+
+  group('drag', () {
+    testWidgets('a fast fling dismisses before the halfway threshold', (
+      tester,
+    ) async {
+      final ctx = await pumpHost(tester);
+      unawaited(
+        showFossDrawer<void>(
+          context: ctx,
+          builder: (context) => const FossDrawer(
+            title: Text('Flung'),
+            content: SizedBox(height: 400),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      // A short, fast outward fling: well under half the panel, high velocity.
+      await tester.fling(
+        find.text('Flung'),
+        const Offset(0, 60),
+        2000,
+      );
+      await tester.pumpAndSettle();
+      expect(find.text('Flung'), findsNothing);
+    });
+
+    testWidgets('a drag dismiss resolves the future with null', (tester) async {
+      final ctx = await pumpHost(tester);
+      final pending = showFossDrawer<String>(
+        context: ctx,
+        builder: (context) => const FossDrawer(title: Text('Dragaway')),
+      );
+      await tester.pumpAndSettle();
+
+      final gesture = await tester.startGesture(
+        tester.getCenter(find.text('Dragaway')),
+      );
+      await gesture.moveBy(const Offset(0, 500));
+      await gesture.up();
+      await tester.pumpAndSettle();
+
+      expect(await pending, isNull);
+    });
+
+    testWidgets('a below-threshold drag springs back under reduced motion', (
+      tester,
+    ) async {
+      late BuildContext ctx;
+      await tester.pumpWidget(
+        MediaQuery(
+          data: const MediaQueryData(disableAnimations: true),
+          child: host(
+            Builder(
+              builder: (context) {
+                ctx = context;
+                return const SizedBox();
+              },
+            ),
+          ),
+        ),
+      );
+      unawaited(
+        showFossDrawer<void>(
+          context: ctx,
+          builder: (context) => const FossDrawer(title: Text('Snap')),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      final gesture = await tester.startGesture(
+        tester.getCenter(find.text('Snap')),
+      );
+      await gesture.moveBy(const Offset(0, 20));
+      await tester.pump(const Duration(milliseconds: 400));
+      await gesture.up();
+      // The zero-duration settle snaps back in a single frame.
+      await tester.pump();
+      expect(find.text('Snap'), findsOneWidget);
+    });
+  });
+
+  group('surface and variants', () {
+    testWidgets('style overrides reach the panel surface', (tester) async {
+      final ctx = await pumpHost(tester);
+      unawaited(
+        showFossDrawer<void>(
+          context: ctx,
+          builder: (context) => const FossDrawer(
+            title: Text('Styled'),
+            style: FossDrawerStyle(
+              backgroundColor: Color(0xFF101014),
+              borderColor: Color(0xFF00FF00),
+              shadows: [BoxShadow(color: Color(0x22000000), blurRadius: 5)],
+            ),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      final dec = panelDecoration(tester);
+      expect(dec.color, const Color(0xFF101014));
+      expect(dec.shadows, const [
+        BoxShadow(color: Color(0x22000000), blurRadius: 5),
+      ]);
+      expect(
+        (dec.shape as RoundedSuperellipseBorder).side.color,
+        const Color(0xFF00FF00),
+      );
+    });
+
+    testWidgets('the straight variant squares every corner', (tester) async {
+      final ctx = await pumpHost(tester);
+      unawaited(
+        showFossDrawer<void>(
+          context: ctx,
+          builder: (context) => const FossDrawer(
+            title: Text('Square'),
+            variant: FossDrawerVariant.straight,
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      final shape = panelDecoration(tester).shape as RoundedSuperellipseBorder;
+      expect(shape.borderRadius, BorderRadius.zero);
+    });
+
+    testWidgets('the filled footer tints a bordered bar', (tester) async {
+      final ctx = await pumpHost(tester);
+      unawaited(
+        showFossDrawer<void>(
+          context: ctx,
+          builder: (context) => const FossDrawer(
+            title: Text('Filled'),
+            footerVariant: FossDrawerFooterVariant.filled,
+            actions: [Text('OK')],
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      final dec = footerDecoration(tester);
+      final muted = FossThemeData.light.colors.muted;
+      expect(dec.color, muted.withValues(alpha: muted.a * 0.72));
+      if (dec.border case final Border b) {
+        expect(b.top.color, FossThemeData.light.colors.border);
+      }
+    });
+
+    testWidgets('a custom close icon replaces the default glyph', (
+      tester,
+    ) async {
+      final ctx = await pumpHost(tester);
+      unawaited(
+        showFossDrawer<void>(
+          context: ctx,
+          builder: (context) => const FossDrawer(
+            title: Text('Iconed'),
+            showCloseButton: true,
+            closeIcon: Text('xx'),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(find.text('xx'), findsOneWidget);
+    });
+  });
+
+  testWidgets('a left drawer mirrors to the end edge under RTL', (
+    tester,
+  ) async {
+    final ctx = await pumpHost(tester);
+    unawaited(
+      showFossDrawer<void>(
+        context: ctx,
+        side: FossDrawerSide.left,
+        builder: (context) => const Directionality(
+          textDirection: TextDirection.rtl,
+          child: FossDrawer(title: Text('Rail')),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    // A start-anchored panel mirrors to the end (right) edge under RTL, so the
+    // panel's right edge sits at the viewport edge.
+    final panel = tester.getRect(
+      find
+          .descendant(
+            of: find.byType(FossDrawer),
+            matching: find.byType(DecoratedBox),
+          )
+          .first,
+    );
+    final width = tester.view.physicalSize.width / tester.view.devicePixelRatio;
+    expect(panel.right, moreOrLessEquals(width, epsilon: 1));
+  });
+
+  testWidgets('opens at 2x text scale without overflow', (tester) async {
+    final ctx = await pumpHost(tester);
+    unawaited(
+      showFossDrawer<void>(
+        context: ctx,
+        builder: (context) => Builder(
+          builder: (context) => MediaQuery(
+            data: MediaQuery.of(context).copyWith(
+              textScaler: const TextScaler.linear(2),
+            ),
+            child: const FossDrawer(
+              title: Text('Scaled'),
+              description: Text('A supporting line that grows with the text.'),
+              content: Text('Body'),
+            ),
+          ),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.text('Scaled'), findsOneWidget);
+    expect(tester.takeException(), isNull);
   });
 }

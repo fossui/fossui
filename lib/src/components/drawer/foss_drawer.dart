@@ -174,7 +174,16 @@ class FossDrawer extends StatelessWidget {
     final side = _DrawerScope.of(context);
     final theme = context.fossTheme;
     final colors = theme.colors;
+    final sp = theme.spacing;
     final s = style;
+
+    // Adjacent slots collapse their touching insets so the seam reads as one
+    // spacing(4) gap, not two stacked spacing(6) pads: the header drops its
+    // bottom pad above content, content drops its touching edges, and the
+    // footer keeps its own top pad. A lone slot keeps the full inset.
+    final hasHeader = title != null || description != null;
+    final hasContent = content != null;
+    final hasFooter = actions.isNotEmpty;
 
     return _DrawerSurface(
       side: side,
@@ -185,10 +194,18 @@ class FossDrawer extends StatelessWidget {
       borderRadius: s?.borderRadius ?? theme.radii.xl2,
       shadows: s?.shadows ?? theme.shadows.lg,
       showHandle: showHandle,
-      header: _buildHeader(theme, colors, s),
+      header: _buildHeader(theme, colors, s, tightenBottom: hasContent),
       content: content == null
           ? null
-          : Padding(padding: EdgeInsets.all(theme.spacing(6)), child: content),
+          : Padding(
+              padding: EdgeInsets.fromLTRB(
+                sp(6),
+                hasHeader ? 0 : sp(6),
+                sp(6),
+                hasFooter ? 0 : sp(6),
+              ),
+              child: content,
+            ),
       actions: actions,
       closeButton: showCloseButton
           ? _CloseButton(icon: closeIcon, color: colors.mutedForeground)
@@ -199,8 +216,9 @@ class FossDrawer extends StatelessWidget {
   Widget? _buildHeader(
     FossThemeData theme,
     FossColors colors,
-    FossDrawerStyle? s,
-  ) {
+    FossDrawerStyle? s, {
+    required bool tightenBottom,
+  }) {
     if (title == null && description == null) return null;
     final titleStyle = theme.typography.xl.semibold
         .copyWith(color: colors.popoverForeground)
@@ -210,7 +228,12 @@ class FossDrawer extends StatelessWidget {
         .merge(s?.descriptionStyle);
 
     return Padding(
-      padding: EdgeInsets.all(theme.spacing(6)),
+      padding: EdgeInsets.fromLTRB(
+        theme.spacing(6),
+        theme.spacing(6),
+        theme.spacing(6),
+        tightenBottom ? theme.spacing(4) : theme.spacing(6),
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisSize: MainAxisSize.min,
@@ -310,8 +333,10 @@ class _DrawerSurfaceState extends State<_DrawerSurface>
   final GlobalKey _panelKey = GlobalKey();
   late final AnimationController _settle;
 
-  /// Distance the panel has been dragged off its edge, in logical pixels.
-  double _offset = 0;
+  /// Distance the panel has been dragged off its edge, in logical pixels. Held
+  /// in a notifier so the drag drives the translate alone, without rebuilding
+  /// the panel each frame.
+  final ValueNotifier<double> _offset = ValueNotifier<double>(0);
   double _settleFrom = 0;
   double _settleTo = 0;
 
@@ -323,12 +348,13 @@ class _DrawerSurfaceState extends State<_DrawerSurface>
 
   void _onSettleTick() {
     final t = _drawerCurve.transform(_settle.value);
-    setState(() => _offset = _settleFrom + (_settleTo - _settleFrom) * t);
+    _offset.value = _settleFrom + (_settleTo - _settleFrom) * t;
   }
 
   @override
   void dispose() {
     _settle.dispose();
+    _offset.dispose();
     super.dispose();
   }
 
@@ -354,19 +380,23 @@ class _DrawerSurfaceState extends State<_DrawerSurface>
   void _onDragStart(DragStartDetails _) => _settle.stop();
 
   void _onDragUpdate(double primaryDelta) {
-    final next = _offset + primaryDelta * _outwardSign;
-    setState(() => _offset = next < 0 ? 0 : next);
+    final next = _offset.value + primaryDelta * _outwardSign;
+    _offset.value = next < 0 ? 0 : next;
   }
 
   void _onDragEnd(double primaryVelocity) {
     final extent = _panelExtent;
     final outwardVelocity = primaryVelocity * _outwardSign;
+    // A non-positive extent means the panel could not be measured; fail safe to
+    // spring-back rather than dismissing on any release.
+    final offset = _offset.value;
     final dismiss =
-        _offset >= extent * _dismissFraction ||
-        outwardVelocity > _flingVelocity;
+        extent > 0 &&
+        (offset >= extent * _dismissFraction ||
+            outwardVelocity >= _flingVelocity);
     if (dismiss) {
       // Continue off the edge (never animate back inward), then pop.
-      final target = _offset > extent ? _offset : extent;
+      final target = offset > extent ? offset : extent;
       _animateTo(target, then: () => Navigator.of(context).maybePop());
     } else {
       _animateTo(0);
@@ -376,7 +406,7 @@ class _DrawerSurfaceState extends State<_DrawerSurface>
   void _animateTo(double target, {VoidCallback? then}) {
     final reduceMotion =
         MediaQuery.maybeOf(context)?.disableAnimations ?? false;
-    _settleFrom = _offset;
+    _settleFrom = _offset.value;
     _settleTo = target;
     _settle
       ..duration = reduceMotion
@@ -391,15 +421,22 @@ class _DrawerSurfaceState extends State<_DrawerSurface>
   Widget build(BuildContext context) {
     final side = widget.side;
     final axis = _axisOf(side);
-    final translation = switch (side) {
-      FossDrawerSide.bottom => Offset(0, _offset),
-      FossDrawerSide.top => Offset(0, -_offset),
-      FossDrawerSide.left => Offset(-_offset * _ltrSign, 0),
-      FossDrawerSide.right => Offset(_offset * _ltrSign, 0),
-    };
+    final ltrSign = _ltrSign;
 
-    var panel = _buildPanel(context);
-    panel = Transform.translate(offset: translation, child: panel);
+    Widget panel = ValueListenableBuilder<double>(
+      valueListenable: _offset,
+      builder: (context, offset, child) {
+        final translation = switch (side) {
+          FossDrawerSide.bottom => Offset(0, offset),
+          FossDrawerSide.top => Offset(0, -offset),
+          FossDrawerSide.left => Offset(-offset * ltrSign, 0),
+          FossDrawerSide.right => Offset(offset * ltrSign, 0),
+        };
+        return Transform.translate(offset: translation, child: child);
+      },
+      child: _buildPanel(context),
+    );
+
     panel = GestureDetector(
       onVerticalDragStart: axis == Axis.vertical ? _onDragStart : null,
       onVerticalDragUpdate: axis == Axis.vertical
