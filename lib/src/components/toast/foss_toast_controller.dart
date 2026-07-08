@@ -14,12 +14,23 @@ class FossToastEntry {
   /// The current message; replaced by `update`.
   FossToast toast;
 
-  /// The auto-dismiss timer, or null when the toast persists.
-  Timer? timer;
+  // Auto-dismiss machinery, owned by the controller. The timer only runs while
+  // the entry is visible and not pressed; [_remaining] carries the time left so
+  // a pause resumes where it stopped, and [_total] is null when the toast
+  // persists (loading, or a non-positive duration).
+  Duration? _total;
+  Duration _remaining = Duration.zero;
+  Timer? _timer;
+  bool _pressed = false;
+  final Stopwatch _watch = Stopwatch();
 }
 
 /// Owns the queue of live toasts and their auto-dismiss timers. Shared by a
 /// `FossToaster` and read with `FossToastScope.of`. Notifies on every change.
+///
+/// A toast's dismiss timer runs only while the toast is one of the
+/// [maxVisible] on screen and is not being pressed, so a queued toast cannot
+/// expire before it is ever seen, and a press holds it open.
 class FossToastController extends ChangeNotifier {
   /// The default auto-dismiss delay.
   static const Duration defaultDuration = Duration(milliseconds: 5000);
@@ -33,12 +44,15 @@ class FossToastController extends ChangeNotifier {
   /// The live toasts, oldest first.
   List<FossToastEntry> get entries => List.unmodifiable(_entries);
 
-  /// Enqueues [toast] and returns its id. Schedules auto-dismiss unless the
-  /// toast is [FossToastType.loading] or its duration is zero.
+  /// Enqueues [toast] and returns its id. Schedules auto-dismiss once the toast
+  /// is visible, unless it is [FossToastType.loading] or its duration is zero.
   int show(FossToast toast) {
-    final entry = FossToastEntry(id: _nextId++, toast: toast);
+    final total = _totalFor(toast);
+    final entry = FossToastEntry(id: _nextId++, toast: toast)
+      .._total = total
+      .._remaining = total ?? Duration.zero;
     _entries.add(entry);
-    _scheduleDismiss(entry);
+    _reconcile();
     notifyListeners();
     return entry.id;
   }
@@ -48,10 +62,13 @@ class FossToastController extends ChangeNotifier {
   void update(int id, FossToast toast) {
     final entry = _find(id);
     if (entry == null) return;
+    _pause(entry);
+    final total = _totalFor(toast);
     entry
       ..toast = toast
-      ..timer?.cancel();
-    _scheduleDismiss(entry);
+      .._total = total
+      .._remaining = total ?? Duration.zero;
+    _reconcile();
     notifyListeners();
   }
 
@@ -59,25 +76,65 @@ class FossToastController extends ChangeNotifier {
   void dismiss(int id) {
     final entry = _find(id);
     if (entry == null) return;
-    entry.timer?.cancel();
+    _pause(entry);
     _entries.remove(entry);
+    _reconcile();
     notifyListeners();
   }
 
   /// Removes every toast.
   void clear() {
-    for (final entry in _entries) {
-      entry.timer?.cancel();
-    }
-    _entries.clear();
+    _entries
+      ..forEach(_pause)
+      ..clear();
     notifyListeners();
   }
 
-  void _scheduleDismiss(FossToastEntry entry) {
-    if (entry.toast.type == FossToastType.loading) return;
-    final duration = entry.toast.duration ?? defaultDuration;
-    if (duration <= Duration.zero) return;
-    entry.timer = Timer(duration, () => dismiss(entry.id));
+  /// Holds [id] open while it is pressed, resuming its countdown on release.
+  /// No-op if [id] is gone or persists.
+  void setPressed(int id, {required bool pressed}) {
+    final entry = _find(id);
+    if (entry == null || entry._pressed == pressed) return;
+    entry._pressed = pressed;
+    _reconcile();
+  }
+
+  // Runs a timer for every visible, unpressed, auto-dismiss entry, and pauses
+  // the rest. Called after every change; idempotent.
+  void _reconcile() {
+    final firstVisible = _entries.length - maxVisible;
+    for (var i = 0; i < _entries.length; i++) {
+      final entry = _entries[i];
+      final visible = i >= firstVisible;
+      final shouldRun = entry._total != null && visible && !entry._pressed;
+      if (shouldRun && entry._timer == null) {
+        _resume(entry);
+      } else if (!shouldRun && entry._timer != null) {
+        _pause(entry);
+      }
+    }
+  }
+
+  void _resume(FossToastEntry entry) {
+    entry._watch
+      ..reset()
+      ..start();
+    entry._timer = Timer(entry._remaining, () => dismiss(entry.id));
+  }
+
+  void _pause(FossToastEntry entry) {
+    if (entry._timer == null) return;
+    entry._timer?.cancel();
+    entry._timer = null;
+    entry._watch.stop();
+    entry._remaining -= entry._watch.elapsed;
+    if (entry._remaining < Duration.zero) entry._remaining = Duration.zero;
+  }
+
+  Duration? _totalFor(FossToast toast) {
+    if (toast.type == FossToastType.loading) return null;
+    final duration = toast.duration ?? defaultDuration;
+    return duration <= Duration.zero ? null : duration;
   }
 
   FossToastEntry? _find(int id) {
@@ -89,9 +146,7 @@ class FossToastController extends ChangeNotifier {
 
   @override
   void dispose() {
-    for (final entry in _entries) {
-      entry.timer?.cancel();
-    }
+    _entries.forEach(_pause);
     super.dispose();
   }
 }

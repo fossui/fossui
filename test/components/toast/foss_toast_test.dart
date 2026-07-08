@@ -5,8 +5,8 @@ import 'package:fossui/fossui.dart';
 void main() {
   late BuildContext ctx;
 
-  Widget host() => FossTheme(
-    data: FossThemeData.light,
+  Widget host({FossThemeData? data}) => FossTheme(
+    data: data ?? FossThemeData.light,
     child: WidgetsApp(
       color: const Color(0xFF000000),
       pageRouteBuilder: <T>(settings, builder) => PageRouteBuilder<T>(
@@ -155,6 +155,183 @@ void main() {
     expect(find.text('Swipe me'), findsNothing);
   });
 
+  testWidgets('swiping a toast sideways dismisses it', (tester) async {
+    await tester.pumpWidget(host());
+
+    FossToastScope.of(ctx).show(
+      const FossToast(title: Text('Fling me'), duration: Duration(hours: 1)),
+    );
+    await tester.pumpAndSettle();
+    expect(find.text('Fling me'), findsOneWidget);
+
+    await tester.fling(find.text('Fling me'), const Offset(300, 0), 1000);
+    await tester.pumpAndSettle();
+    expect(find.text('Fling me'), findsNothing);
+  });
+
+  testWidgets('a queued toast does not run its timer while hidden', (
+    tester,
+  ) async {
+    await tester.pumpWidget(host());
+
+    // Oldest first, so this auto-dismiss toast sits behind the newer loaders
+    // and stays hidden past the visible cap.
+    final hidden = FossToastScope.of(ctx).show(
+      const FossToast(
+        title: Text('queued'),
+        duration: Duration(milliseconds: 100),
+      ),
+    );
+    for (var i = 0; i < FossToastController.maxVisible; i++) {
+      FossToastScope.of(ctx).show(
+        FossToast(type: FossToastType.loading, title: Text('load $i')),
+      );
+    }
+    await tester.pump();
+    expect(find.text('queued'), findsNothing);
+
+    // Well past its duration: a hidden toast's countdown never ran, so it is
+    // still queued rather than expired unseen.
+    await tester.pump(const Duration(milliseconds: 500));
+    expect(
+      FossToastScope.of(ctx).entries.any((e) => e.id == hidden),
+      isTrue,
+    );
+  });
+
+  testWidgets('pressing a toast holds it open past its duration', (
+    tester,
+  ) async {
+    await tester.pumpWidget(host());
+
+    final id = FossToastScope.of(ctx).show(
+      const FossToast(title: Text('Hold'), duration: Duration(seconds: 5)),
+    );
+    await tester.pumpAndSettle(); // settle the entrance; the 5s timer stays
+
+    final gesture = await tester.startGesture(
+      tester.getCenter(find.text('Hold')),
+    );
+    await tester.pump();
+    await tester.pump(const Duration(seconds: 8)); // past duration, held down
+    expect(
+      FossToastScope.of(ctx).entries.any((e) => e.id == id),
+      isTrue,
+      reason: 'a pressed toast does not auto-dismiss',
+    );
+
+    await gesture.up();
+    await tester.pumpAndSettle();
+  });
+
+  testWidgets('an error stays off the live region, other types stay on it', (
+    tester,
+  ) async {
+    await tester.pumpWidget(host());
+    final handle = tester.ensureSemantics();
+
+    FossToastScope.of(ctx).show(
+      const FossToast(type: FossToastType.info, title: Text('info-toast')),
+    );
+    FossToastScope.of(ctx).show(
+      const FossToast(type: FossToastType.error, title: Text('error-toast')),
+    );
+    await tester.pumpAndSettle();
+
+    Semantics surfaceOf(String text) => tester.widget<Semantics>(
+      find
+          .ancestor(of: find.text(text), matching: find.byType(Semantics))
+          .first,
+    );
+    expect(surfaceOf('info-toast').properties.liveRegion, isTrue);
+    expect(surfaceOf('error-toast').properties.liveRegion, isFalse);
+    handle.dispose();
+  });
+
+  testWidgets('an icon overrides the default leading glyph', (tester) async {
+    await tester.pumpWidget(host());
+
+    FossToastScope.of(ctx).show(
+      const FossToast(
+        type: FossToastType.info,
+        icon: SizedBox(key: Key('custom-icon')),
+        title: Text('x'),
+      ),
+    );
+    await tester.pump();
+
+    expect(find.byKey(const Key('custom-icon')), findsOneWidget);
+  });
+
+  testWidgets('a zero-duration toast persists', (tester) async {
+    await tester.pumpWidget(host());
+
+    FossToastScope.of(ctx).show(
+      const FossToast(title: Text('sticky'), duration: Duration.zero),
+    );
+    await tester.pumpAndSettle();
+    await tester.pump(const Duration(seconds: 10));
+
+    expect(find.text('sticky'), findsOneWidget);
+  });
+
+  testWidgets('a per-instance style reaches the surface decoration', (
+    tester,
+  ) async {
+    await tester.pumpWidget(host());
+
+    FossToastScope.of(ctx).show(
+      const FossToast(
+        title: Text('styled'),
+        style: FossToastStyle(
+          backgroundColor: Color(0xFF102030),
+          borderColor: Color(0xFF405060),
+          borderRadius: 4,
+        ),
+      ),
+    );
+    await tester.pump();
+
+    final decoration =
+        tester
+                .widget<DecoratedBox>(
+                  find
+                      .ancestor(
+                        of: find.text('styled'),
+                        matching: find.byType(DecoratedBox),
+                      )
+                      .first,
+                )
+                .decoration
+            as ShapeDecoration;
+    expect(decoration.color, const Color(0xFF102030));
+    final shape = decoration.shape as RoundedSuperellipseBorder;
+    expect(shape.side.color, const Color(0xFF405060));
+  });
+
+  testWidgets('renders on the popover surface under a dark theme', (
+    tester,
+  ) async {
+    await tester.pumpWidget(host(data: FossThemeData.dark));
+
+    FossToastScope.of(ctx).show(const FossToast(title: Text('dark-toast')));
+    await tester.pump();
+
+    final decoration =
+        tester
+                .widget<DecoratedBox>(
+                  find
+                      .ancestor(
+                        of: find.text('dark-toast'),
+                        matching: find.byType(DecoratedBox),
+                      )
+                      .first,
+                )
+                .decoration
+            as ShapeDecoration;
+    expect(decoration.color, FossThemeData.dark.colors.popover);
+  });
+
   group('FossToastStyle.merge', () {
     test('lays each non-null field of the argument over the receiver', () {
       const base = FossToastStyle(
@@ -211,5 +388,25 @@ void main() {
 
       expect(controller.dispose, returnsNormally);
     });
+
+    test(
+      'show returns a fresh id; update and dismiss on a missing id no-op',
+      () {
+        final controller = FossToastController();
+        addTearDown(controller.dispose);
+
+        final first = controller.show(const FossToast(title: Text('a')));
+        final second = controller.show(const FossToast(title: Text('b')));
+        expect(second, greaterThan(first));
+
+        controller
+          ..update(999, const FossToast(title: Text('x')))
+          ..dismiss(999);
+        expect(controller.entries, hasLength(2));
+
+        controller.dismiss(first);
+        expect(controller.entries, hasLength(1));
+      },
+    );
   });
 }

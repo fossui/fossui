@@ -1,3 +1,6 @@
+import 'dart:async' show unawaited;
+
+import 'package:flutter/semantics.dart' show Assertiveness, SemanticsService;
 import 'package:flutter/widgets.dart';
 import 'package:fossui/src/components/spinner/foss_spinner.dart';
 import 'package:fossui/src/components/toast/foss_toast.dart';
@@ -9,6 +12,10 @@ import 'package:fossui/src/theme/typography/foss_typography.dart';
 
 /// Maximum width of a toast surface in logical pixels.
 const double _maxWidth = 360;
+
+/// The leading glyph extent. Centered in a box as tall as the first text line
+/// so it lands on that line rather than the top of the row.
+const double _iconSize = 16;
 
 /// The slide curve for a toast entering or leaving.
 const Cubic _slideCurve = Cubic(0.22, 1, 0.36, 1);
@@ -113,6 +120,8 @@ class _ToastViewport extends StatelessWidget {
                     id: entry.id,
                     toast: entry.toast,
                     onDismiss: () => controller.dismiss(entry.id),
+                    onPressChange: (pressed) =>
+                        controller.setPressed(entry.id, pressed: pressed),
                   ),
               ],
             ),
@@ -128,12 +137,14 @@ class _FossToastView extends StatefulWidget {
     required this.id,
     required this.toast,
     required this.onDismiss,
+    required this.onPressChange,
     super.key,
   });
 
   final int id;
   final FossToast toast;
   final VoidCallback onDismiss;
+  final ValueChanged<bool> onPressChange;
 
   @override
   State<_FossToastView> createState() => _FossToastViewState();
@@ -146,7 +157,23 @@ class _FossToastViewState extends State<_FossToastView> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (mounted) setState(() => _shown = true);
+      if (!mounted) return;
+      setState(() => _shown = true);
+      // Error toasts interrupt assertively; other types ride the surface's
+      // polite live region. Only a plain-text message can be announced.
+      if (widget.toast.type == FossToastType.error) {
+        final message = _announcement(widget.toast);
+        if (message != null) {
+          unawaited(
+            SemanticsService.sendAnnouncement(
+              View.of(context),
+              message,
+              Directionality.of(context),
+              assertiveness: Assertiveness.assertive,
+            ),
+          );
+        }
+      }
     });
   }
 
@@ -158,18 +185,33 @@ class _FossToastViewState extends State<_FossToastView> {
     final duration = reduceMotion ? Duration.zero : theme.motion.toast;
     final shown = reduceMotion || _shown;
 
+    // A single Dismissible tracks one axis, so a horizontal one (the default)
+    // nests over a downward one to let the toast be flung left, right, or down.
     return Dismissible(
-      key: ValueKey<String>('foss-toast-${widget.id}'),
-      direction: DismissDirection.down,
+      key: ValueKey<String>('foss-toast-h-${widget.id}'),
       onDismissed: (_) => widget.onDismiss(),
-      child: AnimatedSlide(
-        offset: shown ? Offset.zero : const Offset(0, 0.5),
-        duration: duration,
-        curve: _slideCurve,
-        child: AnimatedOpacity(
-          opacity: shown ? 1 : 0,
+      child: Dismissible(
+        key: ValueKey<String>('foss-toast-v-${widget.id}'),
+        direction: DismissDirection.down,
+        onDismissed: (_) => widget.onDismiss(),
+        child: AnimatedSlide(
+          offset: shown ? Offset.zero : const Offset(0, 0.5),
           duration: duration,
-          child: _surface(theme),
+          curve: _slideCurve,
+          child: AnimatedOpacity(
+            opacity: shown ? 1 : 0,
+            duration: duration,
+            // A press holds the toast open; the countdown resumes on release.
+            // The raw pointer listener sits inside the slide so it tracks the
+            // surface as it animates, and fires on down regardless of arena.
+            child: Listener(
+              behavior: HitTestBehavior.opaque,
+              onPointerDown: (_) => widget.onPressChange(true),
+              onPointerUp: (_) => widget.onPressChange(false),
+              onPointerCancel: (_) => widget.onPressChange(false),
+              child: _surface(theme),
+            ),
+          ),
         ),
       ),
     );
@@ -195,9 +237,17 @@ class _FossToastViewState extends State<_FossToastView> {
         .merge(s?.descriptionStyle);
 
     final leading = toast.icon ?? _leadingFor(toast.type, colors);
+    // The leading box matches the first text line's height so the glyph centers
+    // on the line instead of top-aligning to the row.
+    final firstLineStyle = toast.title != null ? titleStyle : descriptionStyle;
+    final leadingBox =
+        (firstLineStyle.fontSize ?? 14) * (firstLineStyle.height ?? 1);
 
     return Semantics(
-      liveRegion: true,
+      // Non-error toasts announce politely through the live region; an error is
+      // announced assertively from initState, so it stays off the live region
+      // to avoid a double read.
+      liveRegion: toast.type != FossToastType.error,
       container: true,
       child: DefaultTextStyle(
         style: theme.typography.sm.copyWith(
@@ -226,7 +276,12 @@ class _FossToastViewState extends State<_FossToastView> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 spacing: sp(2),
                 children: [
-                  if (leading != null) SizedBox(width: 16, child: leading),
+                  if (leading != null)
+                    SizedBox(
+                      width: _iconSize,
+                      height: leadingBox,
+                      child: Center(child: leading),
+                    ),
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -257,35 +312,47 @@ class _FossToastViewState extends State<_FossToastView> {
   }
 }
 
+/// The plain-text message of [toast] for an assertive announcement: the title
+/// then the description, taken from simple [Text] widgets. Null when neither is
+/// plain text, since a rich widget carries no string to announce.
+String? _announcement(FossToast toast) {
+  String? textOf(Widget? widget) => widget is Text ? widget.data : null;
+  final parts = <String>[
+    ?textOf(toast.title),
+    ?textOf(toast.description),
+  ];
+  return parts.isEmpty ? null : parts.join('. ');
+}
+
 /// The default leading slot for [type], or null for [FossToastType.normal].
 Widget? _leadingFor(FossToastType type, FossColors colors) {
   switch (type) {
     case FossToastType.normal:
       return null;
     case FossToastType.loading:
-      return FossSpinner(size: 16, color: colors.mutedForeground);
+      return FossSpinner(size: _iconSize, color: colors.mutedForeground);
     case FossToastType.info:
       return FossGlyphIcon(
         InfoGlyph(colors.info),
-        size: 16,
+        size: _iconSize,
         semanticLabel: 'info',
       );
     case FossToastType.success:
       return FossGlyphIcon(
         SuccessGlyph(colors.success),
-        size: 16,
+        size: _iconSize,
         semanticLabel: 'success',
       );
     case FossToastType.warning:
       return FossGlyphIcon(
         WarningGlyph(colors.warning),
-        size: 16,
+        size: _iconSize,
         semanticLabel: 'warning',
       );
     case FossToastType.error:
       return FossGlyphIcon(
         ErrorGlyph(colors.destructive),
-        size: 16,
+        size: _iconSize,
         semanticLabel: 'error',
       );
   }
