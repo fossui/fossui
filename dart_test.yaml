@@ -1,0 +1,3 @@
+tags:
+  golden:
+    description: Golden image tests, run with --tags golden.

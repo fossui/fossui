@@ -45,7 +45,7 @@ void main() {
       final merged = base.merge(over);
 
       expect(
-        merged.foregroundColor!.resolve(const {}),
+        merged.foregroundColor?.resolve(const {}),
         const Color(0xFFFFFFFF),
       );
     });

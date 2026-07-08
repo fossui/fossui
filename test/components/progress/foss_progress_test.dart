@@ -1,3 +1,4 @@
+import 'package:flutter/semantics.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:fossui/fossui.dart';
@@ -177,10 +178,14 @@ void main() {
       );
       await tester.pumpAndSettle();
 
-      expect(
-        tester.getSemantics(find.byType(FossProgress)),
-        isSemantics(value: '40%', label: 'Uploading'),
-      );
+      final data = tester
+          .getSemantics(find.byType(FossProgress))
+          .getSemanticsData();
+      expect(data.role, SemanticsRole.progressBar);
+      expect(data.label, 'Uploading');
+      expect(data.value, '0.40');
+      expect(data.minValue, '0');
+      expect(data.maxValue, '1');
       handle.dispose();
     });
 
@@ -195,7 +200,7 @@ void main() {
 
       expect(
         tester.getSemantics(find.byType(FossProgress)),
-        isSemantics(value: '40%', label: 'Upload progress'),
+        isSemantics(value: '0.40', label: 'Upload progress'),
       );
       handle.dispose();
     });
@@ -238,6 +243,116 @@ void main() {
       await tester.pumpAndSettle();
       expect(shapeColor(tester, fill: false), FossThemeData.dark.colors.input);
       expect(shapeColor(tester, fill: true), FossThemeData.dark.colors.primary);
+    });
+  });
+
+  group('style through build', () {
+    testWidgets('track and fill colors follow the override', (tester) async {
+      await tester.pumpWidget(
+        host(
+          const FossProgress(
+            value: 0.5,
+            style: FossProgressStyle(
+              trackColor: Color(0xFF102030),
+              fillColor: Color(0xFF00FF00),
+            ),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(shapeColor(tester, fill: false), const Color(0xFF102030));
+      expect(shapeColor(tester, fill: true), const Color(0xFF00FF00));
+    });
+
+    testWidgets('label and value text styles follow the override', (
+      tester,
+    ) async {
+      await tester.pumpWidget(
+        host(
+          const FossProgress(
+            value: 0.5,
+            label: 'Uploading',
+            valueLabel: '50%',
+            style: FossProgressStyle(
+              labelStyle: TextStyle(color: Color(0xFFAA0000)),
+              valueLabelStyle: TextStyle(color: Color(0xFF00AA00)),
+            ),
+          ),
+        ),
+      );
+
+      expect(
+        tester.widget<Text>(find.text('Uploading')).style?.color,
+        const Color(0xFFAA0000),
+      );
+      expect(
+        tester.widget<Text>(find.text('50%')).style?.color,
+        const Color(0xFF00AA00),
+      );
+    });
+  });
+
+  group('geometry and type', () {
+    testWidgets('the track holds its 6px height', (tester) async {
+      await tester.pumpWidget(host(const FossProgress(value: 0.5)));
+      await tester.pumpAndSettle();
+
+      expect(tester.getSize(fillBox).height, 6);
+    });
+
+    testWidgets('an 8px gap separates the row from the track', (tester) async {
+      await tester.pumpWidget(
+        host(
+          const FossProgress(
+            value: 0.5,
+            label: 'Uploading',
+            valueLabel: '50%',
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      final rowBottom = tester.getRect(find.byType(Row)).bottom;
+      final track = find
+          .descendant(
+            of: find.byType(FossProgress),
+            matching: find.byType(DecoratedBox),
+          )
+          .first;
+      expect(
+        tester.getRect(track).top - rowBottom,
+        moreOrLessEquals(8, epsilon: 0.5),
+      );
+    });
+
+    testWidgets('the value uses tabular figures', (tester) async {
+      await tester.pumpWidget(
+        host(const FossProgress(value: 0.5, valueLabel: '50%')),
+      );
+
+      expect(
+        tester.widget<Text>(find.text('50%')).style?.fontFeatures,
+        contains(const FontFeature.tabularFigures()),
+      );
+    });
+  });
+
+  group('overflow', () {
+    testWidgets('a long label ellipsizes at 2x text scale', (tester) async {
+      const label = 'Uploading a very large archive to the remote server now';
+      await tester.pumpWidget(
+        host(
+          const FossProgress(value: 0.5, label: label, valueLabel: '50%'),
+          textScale: 2,
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(tester.takeException(), isNull);
+      final text = tester.widget<Text>(find.text(label));
+      expect(text.maxLines, 1);
+      expect(text.overflow, TextOverflow.ellipsis);
     });
   });
 }

@@ -1,11 +1,9 @@
-# TEST workflow for narayann7/star-history-action.
-# Uses a push trigger on the test branch only so the run fires immediately.
-# For real use, prefer `schedule` (3h/6h/daily) + workflow_dispatch, no push.
-name: Star History (test)
+# Regenerates the star-history chart daily and commits it into the repo.
+name: Star History
 
 on:
-  push:
-    branches: [test/star-history-action]
+  schedule:
+    - cron: '0 0 * * *'   # daily at 00:00 UTC
   workflow_dispatch:
 
 permissions:

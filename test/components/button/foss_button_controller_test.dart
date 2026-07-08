@@ -62,6 +62,26 @@ void main() {
       expect(ran, isFalse);
       expect(controller.status, FossButtonStatus.disabled);
     });
+
+    test('a second run() while already loading is ignored', () async {
+      final controller = FossButtonController();
+      addTearDown(controller.dispose);
+
+      final first = Completer<void>();
+      final firstRun = controller.run(() => first.future);
+      expect(controller.isLoading, isTrue);
+
+      var secondRan = false;
+      // The overlapping call returns immediately without running its action or
+      // racing the status back to idle.
+      await controller.run(() async => secondRan = true);
+      expect(secondRan, isFalse);
+      expect(controller.isLoading, isTrue);
+
+      first.complete();
+      await firstRun;
+      expect(controller.status, FossButtonStatus.idle);
+    });
   });
 
   group('FossButtonController drives the button', () {

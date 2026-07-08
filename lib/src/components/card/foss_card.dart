@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:flutter/widgets.dart';
 import 'package:fossui/src/theme/theme.dart';
 
@@ -130,14 +132,16 @@ class FossCard extends StatelessWidget {
         shape: shape,
         shadows: s?.shadows ?? theme.shadows.xs,
       ),
-      child: ClipPath(
-        clipper: ShapeBorderClipper(shape: shape),
-        child: CustomPaint(
-          foregroundPainter: _RimPainter(
-            color: dark ? _rimDark : _rimLight,
-            radius: radius - 1,
-            topLit: dark,
-          ),
+      // Every slot is inset, so nothing reaches the corners; the surface needs
+      // no clip. Plain text in any slot inherits the card foreground.
+      child: CustomPaint(
+        foregroundPainter: _RimPainter(
+          color: dark ? _rimDark : _rimLight,
+          radius: math.max(radius - 1, 0),
+          topLit: dark,
+        ),
+        child: DefaultTextStyle.merge(
+          style: TextStyle(color: colors.cardForeground),
           child: column,
         ),
       ),

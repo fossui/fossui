@@ -644,4 +644,133 @@ void main() {
       expect(tester.takeException(), isNull);
     });
   });
+
+  group('FossButton surface state', () {
+    testWidgets('an icon-only sm button meets the 48px tap target', (
+      tester,
+    ) async {
+      final handle = tester.ensureSemantics();
+      await tester.pumpWidget(
+        host(
+          FossButton.icon(
+            onPressed: () {},
+            size: FossButtonSize.sm,
+            semanticLabel: 'Add',
+            icon: const Icon(IconData(0x44)),
+          ),
+        ),
+      );
+
+      await expectLater(tester, meetsGuideline(androidTapTargetGuideline));
+      handle.dispose();
+    });
+
+    testWidgets('a ghost button fills with accent on hover', (tester) async {
+      // Hover highlights are suppressed under touch mode; force the pointer
+      // strategy so the hover fill resolves.
+      final previous = FocusManager.instance.highlightStrategy;
+      FocusManager.instance.highlightStrategy =
+          FocusHighlightStrategy.alwaysTraditional;
+      addTearDown(
+        () => FocusManager.instance.highlightStrategy = previous,
+      );
+
+      await tester.pumpWidget(
+        host(
+          FossButton(
+            onPressed: () {},
+            variant: FossButtonVariant.ghost,
+            child: const Text('Go'),
+          ),
+        ),
+      );
+      expect(_decoration(tester).color, const Color(0x00000000));
+
+      final gesture = await tester.createGesture(kind: PointerDeviceKind.mouse);
+      addTearDown(gesture.removePointer);
+      await gesture.addPointer(location: Offset.zero);
+      await tester.pump();
+      await gesture.moveTo(tester.getCenter(find.byType(FossButton)));
+      await tester.pumpAndSettle();
+
+      expect(_decoration(tester).color, FossColors.light.accent);
+    });
+
+    testWidgets('the shadow drops when pressed and when disabled', (
+      tester,
+    ) async {
+      await tester.pumpWidget(
+        host(FossButton(onPressed: () {}, child: const Text('Go'))),
+      );
+      expect(
+        _decoration(tester).shadows,
+        isNotEmpty,
+        reason: 'a resting filled button carries its tinted lift',
+      );
+
+      final gesture = await tester.startGesture(
+        tester.getCenter(find.byType(FossButton)),
+      );
+      await tester.pump();
+      expect(_decoration(tester).shadows, isEmpty, reason: 'pressed drops it');
+      await gesture.up();
+
+      await tester.pumpWidget(
+        host(const FossButton(child: Text('Go'))),
+      );
+      expect(_decoration(tester).shadows, isEmpty, reason: 'disabled drops it');
+    });
+
+    testWidgets('a style override drives the fill and label color', (
+      tester,
+    ) async {
+      await tester.pumpWidget(
+        host(
+          FossButton(
+            onPressed: () {},
+            style: const FossButtonStyle(
+              backgroundColor: WidgetStatePropertyAll(Color(0xFF112233)),
+              foregroundColor: WidgetStatePropertyAll(Color(0xFF445566)),
+            ),
+            child: const Text('Go'),
+          ),
+        ),
+      );
+
+      expect(_decoration(tester).color, const Color(0xFF112233));
+      final label = tester.widget<DefaultTextStyle>(
+        find
+            .ancestor(
+              of: find.text('Go'),
+              matching: find.byType(DefaultTextStyle),
+            )
+            .first,
+      );
+      expect(label.style.color, const Color(0xFF445566));
+    });
+
+    testWidgets('the outline variant lifts to the input fill in dark', (
+      tester,
+    ) async {
+      await tester.pumpWidget(
+        FossTheme(
+          data: FossThemeData.dark,
+          child: host(
+            FossButton(
+              onPressed: () {},
+              variant: FossButtonVariant.outline,
+              child: const Text('Go'),
+            ),
+          ),
+        ),
+      );
+
+      const c = FossColors.dark;
+      final expected = Color.alphaBlend(
+        c.input.withValues(alpha: c.input.a * 0.32),
+        c.background,
+      );
+      expect(_decoration(tester).color, expected);
+    });
+  });
 }

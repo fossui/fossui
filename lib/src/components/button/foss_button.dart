@@ -256,7 +256,10 @@ class _FossButtonState extends State<FossButton> {
               : null,
           onTap: widget.enabled ? widget.onPressed : null,
           child: ConstrainedBox(
-            constraints: const BoxConstraints(minHeight: _minTapTarget),
+            constraints: const BoxConstraints(
+              minWidth: _minTapTarget,
+              minHeight: _minTapTarget,
+            ),
             child: Center(
               widthFactor: 1,
               child: ListenableBuilder(
@@ -441,8 +444,15 @@ _ButtonVisuals _resolve(
       fg = c.secondaryForeground;
       side = BorderSide.none;
     case FossButtonVariant.outline:
-      base = c.popover;
-      hover = _overlay(c.accent, 0.5, c.popover);
+      // Dark mode fills with the input color (32% at rest, 64% interacting)
+      // rather than the flat popover, so the surface reads lifted like a field.
+      if (c.isDark) {
+        base = _overlay(c.input, 0.32, c.background);
+        hover = _overlay(c.input, 0.64, c.background);
+      } else {
+        base = c.popover;
+        hover = _overlay(c.accent, 0.5, c.popover);
+      }
       pressed = hover;
       fg = c.foreground;
       side = BorderSide(color: c.input);

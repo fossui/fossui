@@ -1,10 +1,26 @@
 name: Update goldens
 
 # Goldens render on the CI platform, so the committed references must be
-# generated there too. Run this from the Actions tab (or `gh workflow run`) on a
-# branch; it regenerates the references and commits them back to that branch.
+# generated there too. Runs automatically on every push to a work branch and
+# commits the regenerated references back, so new components never need a manual
+# refresh. Still runnable from the Actions tab (or `gh workflow run`).
 on:
   workflow_dispatch:
+  push:
+    branches-ignore: [main]
+    paths:
+      - 'lib/**'
+      - 'test/**'
+      - 'fonts/**'
+      - 'pubspec.yaml'
+      - 'scripts/dev/goldens.sh'
+      - '.github/workflows/update-goldens.yaml'
+
+# Serialize per branch: the job commits and pushes, so overlapping runs would
+# race. Never cancel a run mid-push.
+concurrency:
+  group: update-goldens-${{ github.ref }}
+  cancel-in-progress: false
 
 env:
   FLUTTER_VERSION: 3.41.9

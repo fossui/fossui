@@ -386,6 +386,95 @@ void main() {
       expect(thumb.height, 24);
     });
 
+    testWidgets('the resting thumb carries the xs shadow', (tester) async {
+      await tester.pumpWidget(_Host(onChanged: (_) {}));
+
+      expect(_thumbDecoration(tester).shadows, FossThemeData.light.shadows.xs);
+    });
+
+    testWidgets('keyboard focus drops the resting shadow', (tester) async {
+      await tester.pumpWidget(_Host(onChanged: (_) {}));
+
+      await tester.sendKeyEvent(LogicalKeyboardKey.tab);
+      await tester.pumpAndSettle();
+
+      expect(_thumbDecoration(tester).shadows, isEmpty);
+    });
+
+    testWidgets('dragging scales the thumb up and drops its shadow', (
+      tester,
+    ) async {
+      await tester.pumpWidget(_Host(onChanged: (_) {}));
+
+      final gesture = await tester.startGesture(_globalFor(tester, _xFor(50)));
+      // Move past the drag slop so the horizontal drag opens the session.
+      await gesture.moveBy(const Offset(20, 0));
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 200));
+
+      final thumb = tester.widget<Transform>(
+        find
+            .descendant(
+              of: find.byType(FossSlider),
+              matching: find.byType(Transform),
+            )
+            .first,
+      );
+      expect(thumb.transform.getMaxScaleOnAxis(), closeTo(1.2, 0.001));
+      expect(_thumbDecoration(tester).shadows, isEmpty);
+
+      await gesture.up();
+    });
+
+    testWidgets('reduced motion reaches the drag scale with no tween', (
+      tester,
+    ) async {
+      await tester.pumpWidget(
+        host(
+          Builder(
+            builder: (context) => MediaQuery(
+              data: MediaQuery.of(context).copyWith(disableAnimations: true),
+              child: SizedBox(
+                width: _width,
+                child: FossSlider(value: 50, onChanged: _noop),
+              ),
+            ),
+          ),
+        ),
+      );
+
+      final gesture = await tester.startGesture(_globalFor(tester, _xFor(50)));
+      await gesture.moveBy(const Offset(20, 0));
+      await tester.pump();
+
+      final thumb = tester.widget<Transform>(
+        find
+            .descendant(
+              of: find.byType(FossSlider),
+              matching: find.byType(Transform),
+            )
+            .first,
+      );
+      expect(thumb.transform.getMaxScaleOnAxis(), closeTo(1.2, 0.001));
+
+      await gesture.up();
+    });
+
+    testWidgets('an unconstrained width falls back to the min track width', (
+      tester,
+    ) async {
+      await tester.pumpWidget(
+        host(
+          Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [FossSlider(value: 50, onChanged: _noop)],
+          ),
+        ),
+      );
+
+      expect(tester.getSize(find.byType(FossSlider)).width, 176);
+    });
+
     testWidgets('the painters compare on an identical rebuild', (tester) async {
       late StateSetter setOuter;
       await tester.pumpWidget(
