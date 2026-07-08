@@ -76,10 +76,12 @@ class FossTooltip extends StatefulWidget {
   /// The preferred side to open on. Defaults to [FossTooltipSide.top].
   final FossTooltipSide side;
 
-  /// Delay before the popup appears after the trigger activates.
+  /// Delay before the popup appears after the trigger activates. `Escape`
+  /// dismisses immediately and bypasses this delay.
   final Duration showDelay;
 
-  /// Delay before the popup dismisses after the trigger ends.
+  /// Delay before the popup dismisses after the trigger ends. `Escape`
+  /// dismisses immediately and bypasses this delay.
   final Duration hideDelay;
 
   /// Overrides the announced text when it should differ from [message].
@@ -107,10 +109,8 @@ class _FossTooltipState extends State<FossTooltip>
   @override
   void initState() {
     super.initState();
-    _animation = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 200),
-    );
+    // Duration is set from the motion token on every forward/reverse.
+    _animation = AnimationController(vsync: this);
     _curve = CurvedAnimation(parent: _animation, curve: Curves.easeOut);
     _scale = Tween<double>(begin: _openScale, end: 1).animate(_curve);
   }
@@ -360,7 +360,7 @@ class _TooltipPopup extends StatelessWidget {
         decoration: ShapeDecoration(
           color: s?.backgroundColor ?? colors.popover,
           shape: shape,
-          shadows: s?.shadows ?? theme.shadows.md,
+          shadows: s?.shadows ?? _softShadow(theme.shadows.md),
         ),
         child: ClipPath(
           clipper: ShapeBorderClipper(
@@ -412,6 +412,13 @@ class _InnerRing extends StatelessWidget {
     );
   }
 }
+
+/// The tooltip wears the medium shadow softened to a 5% tint, a fainter drop
+/// than a surface at the same elevation.
+List<BoxShadow> _softShadow(List<BoxShadow> base) => <BoxShadow>[
+  for (final shadow in base)
+    shadow.copyWith(color: shadow.color.withValues(alpha: 0.05)),
+];
 
 /// Maps the directional [FossTooltipSide] to a physical side, mirroring
 /// [FossTooltipSide.left] and [FossTooltipSide.right] under RTL.

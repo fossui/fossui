@@ -71,6 +71,36 @@ void main() {
     return gesture;
   }
 
+  // The popup surface: the one DecoratedBox in the overlay carrying a
+  // ShapeDecoration (the inner ring uses a plain BoxDecoration).
+  ShapeDecoration popupSurface(WidgetTester tester) => tester
+      .widgetList<DecoratedBox>(
+        find.descendant(
+          of: find.byType(Overlay),
+          matching: find.byType(DecoratedBox),
+        ),
+      )
+      .map((d) => d.decoration)
+      .whereType<ShapeDecoration>()
+      .first;
+
+  // The inner highlight ring: the overlay DecoratedBox with a BoxDecoration
+  // whose border carries the raised edge.
+  Border ringBorder(WidgetTester tester) {
+    final borders = tester
+        .widgetList<DecoratedBox>(
+          find.descendant(
+            of: find.byType(Overlay),
+            matching: find.byType(DecoratedBox),
+          ),
+        )
+        .map((d) => d.decoration)
+        .whereType<BoxDecoration>()
+        .map((d) => d.border)
+        .whereType<Border>();
+    return borders.first;
+  }
+
   group('FossTooltipStyle.merge', () {
     test('null other returns the receiver unchanged', () {
       const base = FossTooltipStyle(borderRadius: 12);
@@ -261,6 +291,11 @@ void main() {
 
       final fade = tester.widget<FadeTransition>(find.byType(FadeTransition));
       expect(fade.opacity.value, 1);
+
+      final scale = tester.widget<ScaleTransition>(
+        find.byType(ScaleTransition),
+      );
+      expect(scale.scale.value, 1, reason: 'no grow-in under reduced motion');
     });
   });
 
@@ -330,6 +365,127 @@ void main() {
     });
   });
 
+  group('surface', () {
+    Future<void> showTip(WidgetTester tester) async {
+      await tester.longPress(find.byKey(triggerKey));
+      await tester.pump(showDelay);
+      await tester.pumpAndSettle();
+    }
+
+    testWidgets('default surface fills popover with the border role and '
+        'radii.md', (tester) async {
+      const theme = FossThemeData.light;
+      await tester.pumpWidget(host(tooltip()));
+      await showTip(tester);
+
+      final surface = popupSurface(tester);
+      expect(surface.color, theme.colors.popover);
+      final shape = surface.shape;
+      expect(shape, isA<RoundedSuperellipseBorder>());
+      if (shape case final RoundedSuperellipseBorder s) {
+        expect(s.side.color, theme.colors.border);
+        expect(s.borderRadius, BorderRadius.circular(theme.radii.md));
+      }
+    });
+
+    testWidgets('the md shadow ships softened to a 5% tint', (tester) async {
+      await tester.pumpWidget(host(tooltip()));
+      await showTip(tester);
+
+      final shadows = popupSurface(tester).shadows ?? const [];
+      expect(shadows, isNotEmpty);
+      for (final shadow in shadows) {
+        expect(shadow.color.a, closeTo(0.05, 0.001));
+      }
+    });
+
+    testWidgets('style overrides reach the popup through build', (
+      tester,
+    ) async {
+      await tester.pumpWidget(
+        host(
+          tooltip(
+            child: FossTooltip(
+              message: 'Copy',
+              style: const FossTooltipStyle(
+                backgroundColor: Color(0xFF0A0A0A),
+                borderColor: Color(0xFF00FF00),
+                borderRadius: 20,
+                shadows: [BoxShadow(color: Color(0x22000000), blurRadius: 9)],
+              ),
+              child: triggerBox(key: triggerKey),
+            ),
+          ),
+        ),
+      );
+      await showTip(tester);
+
+      final surface = popupSurface(tester);
+      expect(surface.color, const Color(0xFF0A0A0A));
+      expect(surface.shadows, const [
+        BoxShadow(color: Color(0x22000000), blurRadius: 9),
+      ]);
+      final shape = surface.shape;
+      if (shape case final RoundedSuperellipseBorder s) {
+        expect(s.side.color, const Color(0xFF00FF00));
+        expect(s.borderRadius, BorderRadius.circular(20));
+      }
+    });
+
+    testWidgets('inner ring draws a top edge in light mode', (tester) async {
+      await tester.pumpWidget(host(tooltip()));
+      await showTip(tester);
+
+      final border = ringBorder(tester);
+      expect(border.top, isNot(BorderSide.none));
+      expect(border.bottom, BorderSide.none);
+    });
+
+    testWidgets('inner ring flips to a bottom edge in dark mode', (
+      tester,
+    ) async {
+      await tester.pumpWidget(host(tooltip(), theme: FossThemeData.dark));
+      await showTip(tester);
+
+      final border = ringBorder(tester);
+      expect(border.bottom, isNot(BorderSide.none));
+      expect(border.top, BorderSide.none);
+    });
+  });
+
+  group('accessibility (shown)', () {
+    testWidgets('the shown popup text stays out of the semantics tree', (
+      tester,
+    ) async {
+      final handle = tester.ensureSemantics();
+      await tester.pumpWidget(host(tooltip(message: 'Copy link')));
+
+      await tester.longPress(find.byKey(triggerKey));
+      await tester.pump(showDelay);
+      await tester.pumpAndSettle();
+
+      expect(popupText('Copy link'), findsOneWidget);
+      expect(find.bySemanticsLabel('Copy link'), findsNothing);
+      handle.dispose();
+    });
+
+    testWidgets('the popup never intercepts pointer input', (tester) async {
+      await tester.pumpWidget(host(tooltip()));
+
+      await tester.longPress(find.byKey(triggerKey));
+      await tester.pump(showDelay);
+      await tester.pumpAndSettle();
+
+      expect(
+        find.ancestor(
+          of: popupText('Copy'),
+          matching: find.byType(IgnorePointer),
+        ),
+        findsOneWidget,
+      );
+    });
+  });
+
   group('extra coverage', () {
     testWidgets('re-requesting show while open restarts the animation', (
       tester,
@@ -373,6 +529,40 @@ void main() {
       final anchor = tester.getRect(find.byKey(triggerKey));
       final popup = tester.getRect(popupText('Copy'));
       expect(popup.center.dx, lessThan(anchor.center.dx));
+    });
+
+    testWidgets('opens on the right when there is room', (tester) async {
+      await tester.pumpWidget(
+        host(
+          tooltip(side: FossTooltipSide.right),
+          alignment: Alignment.centerLeft,
+        ),
+      );
+
+      await tester.longPress(find.byKey(triggerKey));
+      await tester.pump(showDelay);
+      await tester.pumpAndSettle();
+
+      final anchor = tester.getRect(find.byKey(triggerKey));
+      final popup = tester.getRect(popupText('Copy'));
+      expect(popup.center.dx, greaterThan(anchor.center.dx));
+    });
+
+    testWidgets('flips above when there is no room below', (tester) async {
+      await tester.pumpWidget(
+        host(
+          tooltip(side: FossTooltipSide.bottom),
+          alignment: Alignment.bottomCenter,
+        ),
+      );
+
+      await tester.longPress(find.byKey(triggerKey));
+      await tester.pump(showDelay);
+      await tester.pumpAndSettle();
+
+      final anchor = tester.getRect(find.byKey(triggerKey));
+      final popup = tester.getRect(popupText('Copy'));
+      expect(popup.center.dy, lessThan(anchor.center.dy));
     });
 
     testWidgets('rebuilding the host while open relays out the popup', (
