@@ -195,7 +195,7 @@ class _FossSwitchState extends State<FossSwitch> {
       enabled: _enabled,
       mouseCursor: _enabled
           ? SystemMouseCursors.click
-          : SystemMouseCursors.basic,
+          : SystemMouseCursors.forbidden,
       onShowFocusHighlight: (value) =>
           _states.update(WidgetState.focused, value),
       actions: <Type, Action<Intent>>{
@@ -242,6 +242,13 @@ class _FossSwitchState extends State<FossSwitch> {
   }
 }
 
+// The thumb wears the small shadow softened to a 5% tint, a faint lift rather
+// than a drop shadow.
+List<BoxShadow> _thumbShadow(List<BoxShadow> base) => <BoxShadow>[
+  for (final shadow in base)
+    shadow.copyWith(color: shadow.color.withValues(alpha: 0.05)),
+];
+
 /// Builds the default appearance from the theme tokens, then lays a
 /// per-instance [override] over it field by field.
 _SwitchVisuals _resolve(FossThemeData theme, FossSwitchStyle? override) {
@@ -250,7 +257,7 @@ _SwitchVisuals _resolve(FossThemeData theme, FossSwitchStyle? override) {
     activeTrackColor: override?.activeTrackColor ?? c.primary,
     inactiveTrackColor: override?.inactiveTrackColor ?? c.input,
     thumbColor: override?.thumbColor ?? c.background,
-    shadow: override?.shadow ?? theme.shadows.sm,
+    shadow: override?.shadow ?? _thumbShadow(theme.shadows.sm),
     trackWidth: override?.trackWidth ?? _trackWidth,
     trackHeight: override?.trackHeight ?? _trackHeight,
     thumbSize: override?.thumbSize ?? _thumbSize,

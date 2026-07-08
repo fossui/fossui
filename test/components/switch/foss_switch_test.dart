@@ -356,4 +356,107 @@ void main() {
       expect(tester.takeException(), isNull);
     });
   });
+
+  group('FossSwitch geometry and states', () {
+    testWidgets('the thumb shadow is softened to a faint tint', (tester) async {
+      await tester.pumpWidget(host(const FossSwitch(value: false)));
+
+      final thumb =
+          tester.widget<DecoratedBox>(_thumb().first).decoration
+              as ShapeDecoration;
+      expect(thumb.shadows, isNotNull);
+      expect(thumb.shadows!.first.color.a, closeTo(0.05, 0.001));
+    });
+
+    testWidgets('the thumb travels 16px from off to on', (tester) async {
+      await tester.pumpWidget(host(const FossSwitch(value: false)));
+      await tester.pumpAndSettle();
+      final offX = tester.getCenter(_thumb().first).dx;
+
+      await tester.pumpWidget(host(const FossSwitch(value: true)));
+      await tester.pumpAndSettle();
+      final onX = tester.getCenter(_thumb().first).dx;
+
+      expect(onX - offX, closeTo(16, 0.5));
+    });
+
+    testWidgets('a tap-down squishes the thumb along the travel axis', (
+      tester,
+    ) async {
+      await tester.pumpWidget(
+        host(FossSwitch(value: false, onChanged: (_) {})),
+      );
+
+      final gesture = await tester.startGesture(
+        tester.getCenter(find.byType(FossSwitch)),
+      );
+      // A drag past the touch slop presses the switch; hold so the squish
+      // settles at its full stretch.
+      await gesture.moveBy(const Offset(30, 0));
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 150));
+
+      final scales = tester
+          .widgetList<Transform>(
+            find.descendant(
+              of: find.byType(FossSwitch),
+              matching: find.byType(Transform),
+            ),
+          )
+          .map((t) => t.transform.entry(0, 0));
+      expect(scales, contains(closeTo(1.1, 0.01)));
+
+      await gesture.up();
+      await tester.pumpAndSettle();
+    });
+
+    testWidgets('keyboard focus paints the ring, absent when unfocused', (
+      tester,
+    ) async {
+      await tester.pumpWidget(
+        host(FossSwitch(value: false, onChanged: (_) {})),
+      );
+      final ring = find.descendant(
+        of: find.byType(FossSwitch),
+        matching: find.byType(CustomPaint),
+      );
+      expect(ring, findsNothing);
+
+      await tester.sendKeyEvent(LogicalKeyboardKey.tab);
+      await tester.pump();
+
+      expect(ring, findsOneWidget);
+    });
+
+    testWidgets('a disabled switch dims to 0.64', (tester) async {
+      await tester.pumpWidget(host(const FossSwitch(value: false)));
+
+      expect(
+        find.descendant(
+          of: find.byType(FossSwitch),
+          matching: find.byWidgetPredicate(
+            (w) => w is Opacity && w.opacity == 0.64,
+          ),
+        ),
+        findsOneWidget,
+      );
+    });
+
+    testWidgets('reduced motion settles without a pending animation', (
+      tester,
+    ) async {
+      Widget switchAt({required bool on}) => host(
+        MediaQuery(
+          data: const MediaQueryData(disableAnimations: true),
+          child: FossSwitch(value: on, onChanged: (_) {}),
+        ),
+      );
+
+      await tester.pumpWidget(switchAt(on: false));
+      await tester.pumpWidget(switchAt(on: true));
+      await tester.pump();
+
+      expect(tester.binding.hasScheduledFrame, isFalse);
+    });
+  });
 }
