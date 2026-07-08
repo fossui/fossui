@@ -54,17 +54,17 @@ right-to-left layout, and three layers of tests. That bar is written down in
 
 ## Planned
 
-The overlay and focus-management layer already ships under the dialogs, drawer,
-tooltip, and toast above, so what is left builds on top of it.
-
-- [ ] **Label** : text label that pairs with a form control.
-- [ ] **Skeleton** : shimmer placeholder for loading content.
+- [ ] **Accordion** : expandable, stacked sections.
+- [ ] **Calendar** : month grid for date display and selection.
+- [ ] **Command** : searchable command palette.
+- [ ] **Date Picker** : date selection in a calendar popover.
+- [ ] **Meter** : static gauge for a bounded value.
+- [ ] **Number Field** : numeric input with steppers.
+- [ ] **OTP Field** : segmented one-time-code entry.
 - [ ] **Popover** : floating panel anchored to a trigger.
-- [ ] **Accordion and collapsible** : expandable sections.
-- [ ] **Calendar and date picker** : date selection.
-- [ ] **Table and pagination** : tabular data.
-- [ ] **Number field** : numeric input with steppers.
-- [ ] **One-time-code field** : segmented code entry.
+- [ ] **Sheet** : panel that slides in from an edge.
+- [ ] **Toggle** : a two-state pressable button.
+- [ ] **Toggle Group** : a set of toggles, single or multiple.
 
 ## How the order is decided
 
