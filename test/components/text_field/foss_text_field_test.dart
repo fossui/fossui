@@ -208,7 +208,7 @@ void main() {
           builder: (context, child) => MediaQuery.withClampedTextScaling(
             minScaleFactor: 2,
             maxScaleFactor: 2,
-            child: child!,
+            child: child ?? const SizedBox.shrink(),
           ),
         ),
       );
@@ -462,6 +462,163 @@ void main() {
         () => FossTextField(maxLines: null, leading: const SizedBox()),
         throwsAssertionError,
       );
+    });
+
+    testWidgets('resting height scales with the text scale', (tester) async {
+      await tester.pumpWidget(host(const FossTextField(maxLines: null)));
+      final base = tester.getSize(_boxFinder).height;
+
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: Center(child: const FossTextField(maxLines: null)),
+          ),
+          builder: (context, child) => MediaQuery.withClampedTextScaling(
+            minScaleFactor: 2,
+            maxScaleFactor: 2,
+            child: child ?? const SizedBox.shrink(),
+          ),
+        ),
+      );
+
+      expect(tester.getSize(_boxFinder).height, greaterThan(base));
+    });
+  });
+
+  group('FossTextField keyboard hygiene', () {
+    testWidgets('obscured field disables autocorrect and suggestions', (
+      tester,
+    ) async {
+      await tester.pumpWidget(host(const FossTextField(obscureText: true)));
+
+      final editable = tester.widget<EditableText>(find.byType(EditableText));
+      expect(editable.autocorrect, isFalse);
+      expect(editable.enableSuggestions, isFalse);
+    });
+
+    testWidgets('plain field keeps autocorrect and suggestions', (
+      tester,
+    ) async {
+      await tester.pumpWidget(host(const FossTextField()));
+
+      final editable = tester.widget<EditableText>(find.byType(EditableText));
+      expect(editable.autocorrect, isTrue);
+      expect(editable.enableSuggestions, isTrue);
+    });
+
+    testWidgets('a dark theme requests a dark keyboard', (tester) async {
+      await tester.pumpWidget(
+        host(
+          const FossTheme(data: FossThemeData.dark, child: FossTextField()),
+        ),
+      );
+
+      final editable = tester.widget<EditableText>(find.byType(EditableText));
+      expect(editable.keyboardAppearance, Brightness.dark);
+    });
+  });
+
+  group('FossTextField focus release', () {
+    testWidgets('tapping outside releases focus', (tester) async {
+      final node = FocusNode();
+      addTearDown(node.dispose);
+      await tester.pumpWidget(
+        host(
+          Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              FossTextField(focusNode: node),
+              GestureDetector(
+                onTap: () {},
+                child: const SizedBox(
+                  key: Key('sink'),
+                  height: 40,
+                  width: 200,
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
+
+      node.requestFocus();
+      await tester.pump();
+      expect(node.hasFocus, isTrue);
+
+      await tester.tap(find.byKey(const Key('sink')));
+      await tester.pump();
+
+      expect(node.hasFocus, isFalse);
+    });
+
+    testWidgets('disabling a focused field releases focus', (tester) async {
+      final node = FocusNode();
+      addTearDown(node.dispose);
+      await tester.pumpWidget(host(FossTextField(focusNode: node)));
+
+      node.requestFocus();
+      await tester.pump();
+      expect(node.hasFocus, isTrue);
+
+      await tester.pumpWidget(
+        host(FossTextField(focusNode: node, enabled: false)),
+      );
+      await tester.pump();
+
+      expect(node.hasFocus, isFalse);
+    });
+  });
+
+  group('FossTextField theming', () {
+    testWidgets('affixes are sized to 18 at 80% of the text color', (
+      tester,
+    ) async {
+      await tester.pumpWidget(
+        host(const FossTextField(leading: Icon(IconData(0x1)))),
+      );
+
+      final iconTheme = tester.widget<IconTheme>(
+        find
+            .ancestor(
+              of: find.byIcon(const IconData(0x1)),
+              matching: find.byType(IconTheme),
+            )
+            .first,
+      );
+      final fg = FossColors.light.foreground;
+      expect(iconTheme.data.size, 18);
+      expect(iconTheme.data.color, fg.withValues(alpha: fg.a * 0.8));
+    });
+
+    testWidgets('the error caption uses the destructive foreground', (
+      tester,
+    ) async {
+      await tester.pumpWidget(host(const FossTextField(errorText: 'Bad')));
+
+      expect(
+        tester.widget<Text>(find.text('Bad')).style?.color,
+        FossColors.light.destructiveForeground,
+      );
+    });
+
+    testWidgets('style label and helper sizes reach the rendered text', (
+      tester,
+    ) async {
+      await tester.pumpWidget(
+        host(
+          const FossTextField(
+            label: 'L',
+            helperText: 'H',
+            style: FossTextFieldStyle(
+              labelStyle: TextStyle(fontSize: 14),
+              helperStyle: TextStyle(fontSize: 10),
+            ),
+          ),
+        ),
+      );
+
+      expect(tester.widget<Text>(find.text('L')).style?.fontSize, 14);
+      expect(tester.widget<Text>(find.text('H')).style?.fontSize, 10);
     });
   });
 }

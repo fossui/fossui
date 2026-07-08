@@ -4,25 +4,10 @@ import 'package:fossui/src/foundation/foss_field_box.dart';
 import 'package:fossui/src/theme/theme.dart';
 
 part 'foss_text_field_style.dart';
+part 'foss_text_field_view.dart';
+part 'foss_text_field_visuals.dart';
 
-const double _iconSize = 18;
 const double _disabledOpacity = 0.64;
-
-// Leading and trailing icon glyphs sit at 80% of the text color so they read as
-// quieter than the value.
-const double _affixOpacity = 0.8;
-
-// The text selection highlight is the ring color at a low alpha.
-const double _focusRingOpacity = 0.24;
-
-// Placeholder text sits at 72% of the muted-foreground alpha.
-const double _placeholderOpacity = 0.72;
-
-// Dark surfaces lift the fill by the input color at 32% of its alpha.
-const double _darkFillOpacity = 0.32;
-
-// The label tightens its line height to 18px against the 16px base.
-const double _labelLineHeight = 18 / 16;
 
 /// The size of a [FossTextField].
 enum FossTextFieldSize {
@@ -218,6 +203,11 @@ class _FossTextFieldState extends State<FossTextField>
       }
       _focusNode.addListener(_onFocusChanged);
     }
+    // A field disabled mid-edit must not keep focus, or traversal sits on a
+    // dead field and the keyboard stays up.
+    if (oldWidget.enabled && !widget.enabled && _focusNode.hasFocus) {
+      _focusNode.unfocus();
+    }
   }
 
   void _onFocusChanged() => setState(() {});
@@ -315,7 +305,25 @@ class _FossTextFieldState extends State<FossTextField>
           children: [
             if (widget.leading case final leading? when !multiline)
               IconTheme.merge(data: v.iconTheme, child: leading),
-            Expanded(child: _buildEditable(theme, v)),
+            Expanded(
+              child: _FieldEditable(
+                editableKey: _editableKey,
+                controller: _controller,
+                focusNode: _focusNode,
+                colors: colors,
+                visuals: v,
+                enabled: widget.enabled,
+                obscureText: widget.obscureText,
+                keyboardType: widget.keyboardType,
+                textInputAction: widget.textInputAction,
+                minLines: widget.minLines,
+                maxLines: widget.maxLines,
+                label: widget.label,
+                hintText: widget.hintText,
+                onChanged: widget.onChanged,
+                onSubmitted: widget.onSubmitted,
+              ),
+            ),
             if (widget.trailing case final trailing? when !multiline)
               IconTheme.merge(data: v.iconTheme, child: trailing),
           ],
@@ -326,71 +334,15 @@ class _FossTextFieldState extends State<FossTextField>
     if (!widget.enabled) return box;
 
     // The selection gesture detector requests focus on tap and positions the
-    // caret; translucent so taps anywhere in the box reach it.
-    return _gestureBuilder.buildGestureDetector(
-      behavior: HitTestBehavior.translucent,
-      child: box,
-    );
-  }
-
-  Widget _buildEditable(FossThemeData theme, _FieldVisuals v) {
-    final colors = theme.colors;
-    final multiline = widget.maxLines != 1;
-    final editable = EditableText(
-      key: _editableKey,
-      controller: _controller,
-      focusNode: _focusNode,
-      readOnly: !widget.enabled,
-      rendererIgnoresPointer: true,
-      style: v.textStyle.copyWith(color: v.textColor),
-      // The base type's line-height adds leading; distributed proportionally
-      // (the default) most of it lands above the glyph and drops it below
-      // center, so it is split evenly to center the text in the box.
-      textHeightBehavior: const TextHeightBehavior(
-        leadingDistribution: TextLeadingDistribution.even,
-      ),
-      cursorColor: colors.foreground,
-      backgroundCursorColor: colors.mutedForeground,
-      selectionColor: colors.ring.withValues(alpha: _focusRingOpacity),
-      cursorOpacityAnimates: true,
-      keyboardType: widget.keyboardType,
-      textInputAction: widget.textInputAction,
-      obscureText: widget.obscureText,
-      minLines: widget.minLines,
-      maxLines: widget.maxLines,
-      onChanged: widget.onChanged,
-      onSubmitted: widget.onSubmitted,
-      enableInteractiveSelection: widget.enabled,
-    );
-
-    final hint = widget.hintText;
-    return MergeSemantics(
-      child: Semantics(
-        label: widget.label,
-        textField: true,
-        multiline: multiline,
-        enabled: widget.enabled,
-        child: Stack(
-          children: [
-            if (hint != null)
-              ValueListenableBuilder<TextEditingValue>(
-                valueListenable: _controller,
-                builder: (context, value, _) => value.text.isEmpty
-                    ? IgnorePointer(
-                        child: Text(
-                          hint,
-                          maxLines: widget.maxLines,
-                          overflow: multiline
-                              ? TextOverflow.clip
-                              : TextOverflow.ellipsis,
-                          style: v.textStyle.copyWith(color: v.hintColor),
-                        ),
-                      )
-                    : const SizedBox.shrink(),
-              ),
-            editable,
-          ],
-        ),
+    // caret; translucent so taps anywhere in the box reach it. A tap outside
+    // releases focus and dismisses the keyboard, as touch users expect.
+    return TapRegion(
+      onTapOutside: (_) {
+        if (_focusNode.hasFocus) _focusNode.unfocus();
+      },
+      child: _gestureBuilder.buildGestureDetector(
+        behavior: HitTestBehavior.translucent,
+        child: box,
       ),
     );
   }
@@ -401,129 +353,11 @@ class _FossTextFieldState extends State<FossTextField>
   double _multilineMinHeight(FossThemeData theme, _FieldVisuals v) {
     final lines = widget.minLines ?? 3;
     final style = v.textStyle;
-    final lineHeight = (style.height ?? 1.5) * (style.fontSize ?? 16);
+    // Scale the line by the ambient text scaler so the resting textarea keeps
+    // its [lines]-line height as the user's font size grows.
+    final scaler = MediaQuery.textScalerOf(context);
+    final lineHeight =
+        (style.height ?? 1.5) * scaler.scale(style.fontSize ?? 16);
     return lines * lineHeight + (theme.spacing(1.5) - 1) * 2;
   }
-}
-
-/// The size-driven field geometry: resting fill, corner radius, minimum height,
-/// and horizontal inset. Shared so every field surface (single-line input,
-/// chips input) resolves the same box from the same [size].
-({double minHeight, double padX, Color fill, double radius}) fieldMetrics(
-  FossThemeData theme,
-  FossTextFieldSize size,
-) {
-  final c = theme.colors;
-
-  // Horizontal inset from the spacing scale: sm sits tighter than md and lg.
-  // The border paints over the edge without consuming layout, so the inset is
-  // the padding alone and needs no border compensation.
-  final (minHeight, padX) = switch (size) {
-    FossTextFieldSize.sm => (30.0, theme.spacing(2.5)),
-    FossTextFieldSize.md => (34.0, theme.spacing(3)),
-    FossTextFieldSize.lg => (38.0, theme.spacing(3)),
-  };
-
-  // Dark adds a faint lift over the surface: the input color at 32% of its
-  // alpha, composited to opaque. Light is the bare surface.
-  final fill = c.isDark
-      ? Color.alphaBlend(
-          c.input.withValues(alpha: c.input.a * _darkFillOpacity),
-          c.background,
-        )
-      : c.background;
-
-  return (minHeight: minHeight, padX: padX, fill: fill, radius: theme.radii.lg);
-}
-
-/// Builds the default appearance for a [size] from the theme tokens.
-_FieldVisuals _resolve(FossThemeData theme, FossTextFieldSize size) {
-  final c = theme.colors;
-  final m = fieldMetrics(theme, size);
-
-  return _FieldVisuals(
-    background: m.fill,
-    borderColor: c.input,
-    textColor: c.foreground,
-    hintColor: c.mutedForeground.withValues(alpha: _placeholderOpacity),
-    labelColor: c.foreground,
-    helperColor: c.mutedForeground,
-    borderRadius: m.radius,
-    padding: EdgeInsets.symmetric(horizontal: m.padX),
-    minHeight: m.minHeight,
-    textStyle: theme.typography.base,
-    // The label uses the tightened 18px line height.
-    labelStyle: theme.typography.base.medium.copyWith(height: _labelLineHeight),
-    helperStyle: theme.typography.xs,
-    iconSize: _iconSize,
-    gap: theme.spacing(2),
-    shadow: theme.shadows.xs,
-  );
-}
-
-/// Lays a per-instance [override] over the resolved [base], field by field.
-_FieldVisuals _apply(_FieldVisuals base, FossTextFieldStyle? override) {
-  if (override == null) return base;
-  return _FieldVisuals(
-    background: override.backgroundColor ?? base.background,
-    borderColor: override.borderColor ?? base.borderColor,
-    textColor: base.textColor,
-    hintColor: base.hintColor,
-    labelColor: base.labelColor,
-    helperColor: base.helperColor,
-    borderRadius: override.borderRadius ?? base.borderRadius,
-    padding: override.contentPadding ?? base.padding,
-    minHeight: override.minHeight ?? base.minHeight,
-    textStyle: override.textStyle ?? base.textStyle,
-    labelStyle: override.labelStyle ?? base.labelStyle,
-    helperStyle: override.helperStyle ?? base.helperStyle,
-    iconSize: override.iconSize ?? base.iconSize,
-    gap: override.gap ?? base.gap,
-    shadow: override.shadow ?? base.shadow,
-  );
-}
-
-/// The fully resolved, non-null appearance for one size. A [FossTextFieldStyle]
-/// override is laid over it by [_apply], so the widget reads only non-null
-/// fields and never needs the null-assertion operator.
-@immutable
-class _FieldVisuals {
-  const _FieldVisuals({
-    required this.background,
-    required this.borderColor,
-    required this.textColor,
-    required this.hintColor,
-    required this.labelColor,
-    required this.helperColor,
-    required this.borderRadius,
-    required this.padding,
-    required this.minHeight,
-    required this.textStyle,
-    required this.labelStyle,
-    required this.helperStyle,
-    required this.iconSize,
-    required this.gap,
-    required this.shadow,
-  });
-
-  final Color background;
-  final Color borderColor;
-  final Color textColor;
-  final Color hintColor;
-  final Color labelColor;
-  final Color helperColor;
-  final double borderRadius;
-  final EdgeInsetsGeometry padding;
-  final double minHeight;
-  final TextStyle textStyle;
-  final TextStyle labelStyle;
-  final TextStyle helperStyle;
-  final double iconSize;
-  final double gap;
-  final List<BoxShadow> shadow;
-
-  IconThemeData get iconTheme => IconThemeData(
-    size: iconSize,
-    color: textColor.withValues(alpha: textColor.a * _affixOpacity),
-  );
 }
