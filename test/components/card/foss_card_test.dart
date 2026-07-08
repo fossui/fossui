@@ -30,6 +30,20 @@ void main() {
     return padding.padding as EdgeInsets;
   }
 
+  // The card's surface decoration: the outer DecoratedBox.
+  ShapeDecoration surface(WidgetTester tester) =>
+      tester
+              .widget<DecoratedBox>(
+                find
+                    .descendant(
+                      of: find.byType(FossCard),
+                      matching: find.byType(DecoratedBox),
+                    )
+                    .first,
+              )
+              .decoration
+          as ShapeDecoration;
+
   group('FossCardStyle.merge', () {
     test('lays every non-null field of other over this', () {
       const base = FossCardStyle(
@@ -168,5 +182,169 @@ void main() {
     );
 
     expect(tester.takeException(), isNull);
+  });
+
+  group('surface', () {
+    testWidgets('resolves the card, border, radius, and shadow tokens', (
+      tester,
+    ) async {
+      const theme = FossThemeData.light;
+      await tester.pumpWidget(host(const FossCard(content: Text('body'))));
+
+      final dec = surface(tester);
+      expect(dec.color, theme.colors.card);
+      expect(dec.shadows, theme.shadows.xs);
+      final shape = dec.shape as RoundedSuperellipseBorder;
+      expect(shape.side.color, theme.colors.border);
+      expect(shape.borderRadius, BorderRadius.circular(theme.radii.xl2));
+    });
+
+    testWidgets('style overrides drive the surface through build', (
+      tester,
+    ) async {
+      await tester.pumpWidget(
+        host(
+          const FossCard(
+            content: Text('body'),
+            style: FossCardStyle(
+              backgroundColor: Color(0xFF102030),
+              borderColor: Color(0xFF00FF00),
+              borderRadius: 4,
+              shadows: [BoxShadow(color: Color(0x22000000), blurRadius: 7)],
+            ),
+          ),
+        ),
+      );
+
+      final dec = surface(tester);
+      expect(dec.color, const Color(0xFF102030));
+      expect(dec.shadows, const [
+        BoxShadow(color: Color(0x22000000), blurRadius: 7),
+      ]);
+      final shape = dec.shape as RoundedSuperellipseBorder;
+      expect(shape.side.color, const Color(0xFF00FF00));
+      expect(shape.borderRadius, BorderRadius.circular(4));
+    });
+
+    testWidgets('a zero border radius builds without a negative rim', (
+      tester,
+    ) async {
+      await tester.pumpWidget(
+        host(
+          const FossCard(
+            content: Text('body'),
+            style: FossCardStyle(borderRadius: 0),
+          ),
+        ),
+      );
+
+      expect(tester.takeException(), isNull);
+    });
+  });
+
+  group('text styles', () {
+    testWidgets('the title is semibold 18 on the card foreground', (
+      tester,
+    ) async {
+      TextStyle? style;
+      await tester.pumpWidget(
+        host(
+          FossCard(
+            title: Builder(
+              builder: (context) {
+                style = DefaultTextStyle.of(context).style;
+                return const SizedBox();
+              },
+            ),
+          ),
+        ),
+      );
+
+      expect(style?.color, FossThemeData.light.colors.cardForeground);
+      expect(style?.fontWeight, FontWeight.w600);
+      expect(style?.fontSize, 18);
+      expect(style?.height, 1);
+    });
+
+    testWidgets('the description is 14 on the muted foreground', (
+      tester,
+    ) async {
+      TextStyle? style;
+      await tester.pumpWidget(
+        host(
+          FossCard(
+            description: Builder(
+              builder: (context) {
+                style = DefaultTextStyle.of(context).style;
+                return const SizedBox();
+              },
+            ),
+          ),
+        ),
+      );
+
+      expect(style?.color, FossThemeData.light.colors.mutedForeground);
+      expect(style?.fontSize, 14);
+    });
+
+    testWidgets('content and footer inherit the card foreground', (
+      tester,
+    ) async {
+      Color? contentColor;
+      Color? footerColor;
+      await tester.pumpWidget(
+        host(
+          FossCard(
+            content: Builder(
+              builder: (context) {
+                contentColor = DefaultTextStyle.of(context).style.color;
+                return const SizedBox();
+              },
+            ),
+            footer: Builder(
+              builder: (context) {
+                footerColor = DefaultTextStyle.of(context).style.color;
+                return const SizedBox();
+              },
+            ),
+          ),
+        ),
+      );
+
+      final fg = FossThemeData.light.colors.cardForeground;
+      expect(contentColor, fg);
+      expect(footerColor, fg);
+    });
+  });
+
+  testWidgets('a header and footer with no content keep the full inset', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      host(
+        const FossCard(title: Text('Project'), footer: Text('footer')),
+      ),
+    );
+
+    expect(slotPadding(tester, 'Project'), const EdgeInsets.all(24));
+    expect(slotPadding(tester, 'footer'), const EdgeInsets.all(24));
+  });
+
+  testWidgets('a control in the action slot stays tappable', (tester) async {
+    var tapped = false;
+    await tester.pumpWidget(
+      host(
+        FossCard(
+          title: const Text('Project'),
+          action: FossButton(
+            onPressed: () => tapped = true,
+            child: const Text('Add'),
+          ),
+        ),
+      ),
+    );
+
+    await tester.tap(find.text('Add'));
+    expect(tapped, isTrue);
   });
 }
