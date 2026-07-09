@@ -105,21 +105,23 @@ void main() {
       FossToastType.warning,
       FossToastType.error,
     ];
+    // Only the frontmost toast shows its content, so raise each on its own.
     for (final type in types) {
-      FossToastScope.of(ctx).show(
+      final id = FossToastScope.of(ctx).show(
         FossToast(
           type: type,
           title: Text(type.name),
           description: const Text('details'),
         ),
       );
-    }
-    await tester.pump();
+      await tester.pump();
 
-    for (final type in types) {
       expect(find.text(type.name), findsOneWidget);
+      expect(find.text('details'), findsOneWidget);
+
+      FossToastScope.of(ctx).dismiss(id);
+      await tester.pumpAndSettle();
     }
-    expect(find.text('details'), findsNWidgets(types.length));
   });
 
   testWidgets('shows only the most recent toasts past the visible cap', (
@@ -136,6 +138,48 @@ void main() {
 
     expect(find.text('toast 0'), findsNothing);
     expect(find.text('toast 3'), findsOneWidget);
+  });
+
+  testWidgets('only the frontmost toast in the pile shows its content', (
+    tester,
+  ) async {
+    await tester.pumpWidget(host());
+
+    FossToastScope.of(ctx).show(
+      const FossToast(title: Text('older'), duration: Duration(hours: 1)),
+    );
+    FossToastScope.of(ctx).show(
+      const FossToast(title: Text('newer'), duration: Duration(hours: 1)),
+    );
+    await tester.pumpAndSettle();
+
+    // The newer toast is the front; the older one peeks behind as a blank
+    // card, so only the front's title renders.
+    expect(find.text('newer'), findsOneWidget);
+    expect(find.text('older'), findsNothing);
+  });
+
+  testWidgets('dismissing the front promotes the next toast to the front', (
+    tester,
+  ) async {
+    await tester.pumpWidget(host());
+
+    FossToastScope.of(ctx).show(
+      const FossToast(title: Text('older'), duration: Duration(hours: 1)),
+    );
+    FossToastScope.of(ctx).show(
+      const FossToast(title: Text('newer'), duration: Duration(hours: 1)),
+    );
+    await tester.pumpAndSettle();
+    expect(find.text('older'), findsNothing);
+
+    await tester.fling(find.text('newer'), const Offset(300, 0), 1000);
+    await tester.pumpAndSettle();
+
+    // The older toast was a blank card behind; dismissing the front brings it
+    // forward and reveals its content.
+    expect(find.text('newer'), findsNothing);
+    expect(find.text('older'), findsOneWidget);
   });
 
   testWidgets('swiping a toast down dismisses it', (tester) async {
@@ -230,20 +274,27 @@ void main() {
     await tester.pumpWidget(host());
     final handle = tester.ensureSemantics();
 
-    FossToastScope.of(ctx).show(
-      const FossToast(type: FossToastType.info, title: Text('info-toast')),
-    );
-    FossToastScope.of(ctx).show(
-      const FossToast(type: FossToastType.error, title: Text('error-toast')),
-    );
-    await tester.pumpAndSettle();
-
     Semantics surfaceOf(String text) => tester.widget<Semantics>(
       find
           .ancestor(of: find.text(text), matching: find.byType(Semantics))
           .first,
     );
+
+    // Only the frontmost toast renders its surface, so check each type as the
+    // front rather than stacking both at once.
+    final info = FossToastScope.of(ctx).show(
+      const FossToast(type: FossToastType.info, title: Text('info-toast')),
+    );
+    await tester.pumpAndSettle();
     expect(surfaceOf('info-toast').properties.liveRegion, isTrue);
+
+    FossToastScope.of(ctx).dismiss(info);
+    await tester.pumpAndSettle();
+
+    FossToastScope.of(ctx).show(
+      const FossToast(type: FossToastType.error, title: Text('error-toast')),
+    );
+    await tester.pumpAndSettle();
     expect(surfaceOf('error-toast').properties.liveRegion, isFalse);
     handle.dispose();
   });

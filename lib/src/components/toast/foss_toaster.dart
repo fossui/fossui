@@ -20,6 +20,13 @@ const double _iconSize = 16;
 /// The slide curve for a toast entering or leaving.
 const Cubic _slideCurve = Cubic(0.22, 1, 0.36, 1);
 
+/// How much each rear card in the pile shrinks per step behind the front.
+const double _rearScaleStep = 0.1;
+
+/// Depth tint blended over the popover fill per rear card index, so the cards
+/// behind read as set back.
+const double _rearDarken = 0.04;
+
 /// Shares a [FossToastController] with the subtree. Read it with
 /// [FossToastScope.of]; provided by a [FossToaster].
 class FossToastScope extends InheritedNotifier<FossToastController> {
@@ -92,37 +99,64 @@ class _FossToasterState extends State<FossToaster> {
 int showFossToast(BuildContext context, FossToast toast) =>
     FossToastScope.of(context).show(toast);
 
-class _ToastViewport extends StatelessWidget {
+class _ToastViewport extends StatefulWidget {
   const _ToastViewport({required this.controller});
 
   final FossToastController controller;
 
   @override
+  State<_ToastViewport> createState() => _ToastViewportState();
+}
+
+class _ToastViewportState extends State<_ToastViewport> {
+  // A stable key per toast id, so a card keeps its element (and its running
+  // animations) as it moves forward through the pile, even as it changes from a
+  // filled rear into the sizing front. Without this the promotion would remount
+  // and replay the entrance, which reads as a flicker.
+  final Map<int, GlobalKey> _keys = <int, GlobalKey>{};
+
+  GlobalKey _keyFor(int id) => _keys.putIfAbsent(id, GlobalKey.new);
+
+  @override
   Widget build(BuildContext context) {
     final sp = context.fossTheme.spacing;
+    final controller = widget.controller;
     return ListenableBuilder(
       listenable: controller,
       builder: (context, _) {
         final entries = controller.entries;
+        _keys.removeWhere((id, _) => entries.every((e) => e.id != id));
         final visible = entries.length > FossToastController.maxVisible
             ? entries.sublist(entries.length - FossToastController.maxVisible)
             : entries;
+        if (visible.isEmpty) return const SizedBox.shrink();
+        final front = visible.last;
+
+        Widget cardFor(FossToastEntry entry, int depth) => _PileToast(
+          key: _keyFor(entry.id),
+          toast: entry.toast,
+          depth: depth,
+          peek: sp(3),
+          onDismiss: () => controller.dismiss(entry.id),
+          onPressChange: (pressed) =>
+              controller.setPressed(entry.id, pressed: pressed),
+        );
+
         return SafeArea(
           child: Padding(
             padding: EdgeInsets.all(sp(4)),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              spacing: sp(3),
+            child: Stack(
+              alignment: Alignment.bottomCenter,
+              clipBehavior: Clip.none,
               children: [
-                for (final entry in visible)
-                  _FossToastView(
-                    key: ValueKey<int>(entry.id),
-                    id: entry.id,
-                    toast: entry.toast,
-                    onDismiss: () => controller.dismiss(entry.id),
-                    onPressChange: (pressed) =>
-                        controller.setPressed(entry.id, pressed: pressed),
+                // The cards behind fill the front's box so they share its size;
+                // the newest is the non-positioned front that sizes the stack
+                // and paints on top.
+                for (var p = 0; p < visible.length - 1; p++)
+                  Positioned.fill(
+                    child: cardFor(visible[p], visible.length - 1 - p),
                   ),
+                cardFor(front, 0),
               ],
             ),
           ),
@@ -132,30 +166,42 @@ class _ToastViewport extends StatelessWidget {
   }
 }
 
-class _FossToastView extends StatefulWidget {
-  const _FossToastView({
-    required this.id,
+/// One card in the toast pile, placed by [depth] (0 is the front): scaling down
+/// and lifting by [peek] per step, so the cards behind peek out by a uniform
+/// sliver. Only the front shows its content and takes input; the same element
+/// carries a toast from the back to the front, so a promotion animates rather
+/// than remounting.
+class _PileToast extends StatefulWidget {
+  const _PileToast({
     required this.toast,
+    required this.depth,
+    required this.peek,
     required this.onDismiss,
     required this.onPressChange,
     super.key,
   });
 
-  final int id;
   final FossToast toast;
+  final int depth;
+  final double peek;
   final VoidCallback onDismiss;
   final ValueChanged<bool> onPressChange;
 
   @override
-  State<_FossToastView> createState() => _FossToastViewState();
+  State<_PileToast> createState() => _PileToastState();
 }
 
-class _FossToastViewState extends State<_FossToastView> {
+class _PileToastState extends State<_PileToast> {
   bool _shown = false;
+
+  bool get _isFront => widget.depth == 0;
 
   @override
   void initState() {
     super.initState();
+    // A toast is always enqueued as the front, so its first frame runs the
+    // entrance slide. A toast promoted from behind kept its element, so it
+    // never reaches here again; its move forward rides the pile transform.
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
       setState(() => _shown = true);
@@ -184,43 +230,114 @@ class _FossToastViewState extends State<_FossToastView> {
         MediaQuery.maybeOf(context)?.disableAnimations ?? false;
     final duration = reduceMotion ? Duration.zero : theme.motion.toast;
     final shown = reduceMotion || _shown;
+    final depth = widget.depth;
 
-    // A single Dismissible tracks one axis, so a horizontal one (the default)
-    // nests over a downward one to let the toast be flung left, right, or down.
+    // The front carries the message and sizes the stack; the cards behind are
+    // blank surfaces filling that box, so the pile shows one toast over a set
+    // back stack and a promotion reveals the message without a second surface.
+    Widget card = _isFront
+        ? _ToastSurface(toast: widget.toast)
+        : _RearSurface(depth: depth);
+
+    // A press holds the toast open; the countdown resumes on release. The raw
+    // pointer listener fires on down regardless of the gesture arena.
+    card = Listener(
+      behavior: HitTestBehavior.opaque,
+      onPointerDown: (_) => widget.onPressChange(true),
+      onPointerUp: (_) => widget.onPressChange(false),
+      onPointerCancel: (_) => widget.onPressChange(false),
+      child: card,
+    );
+
+    // Entrance: a newly enqueued front slides up and fades in.
+    card = AnimatedSlide(
+      offset: shown ? Offset.zero : const Offset(0, 0.5),
+      duration: duration,
+      curve: _slideCurve,
+      child: AnimatedOpacity(
+        opacity: shown ? 1 : 0,
+        duration: duration,
+        child: card,
+      ),
+    );
+
+    // Pile placement, animated so a change of depth glides between positions.
+    card = AnimatedScale(
+      scale: 1 - _rearScaleStep * depth,
+      alignment: Alignment.topCenter,
+      duration: duration,
+      curve: _slideCurve,
+      child: card,
+    );
+    card = AnimatedContainer(
+      duration: duration,
+      curve: _slideCurve,
+      transform: Matrix4.translationValues(0, -widget.peek * depth, 0),
+      child: card,
+    );
+
+    // Only the front takes input and is read out; the rest peek behind it.
+    card = IgnorePointer(ignoring: !_isFront, child: card);
+    card = ExcludeSemantics(excluding: !_isFront, child: card);
+
+    // A single Dismissible tracks one axis, so a horizontal one nests over a
+    // downward one to let the front be flung left, right, or down. The
+    // directions relax to none behind the front, keeping the tree shape stable
+    // across a promotion so no element is torn down.
     return Dismissible(
-      key: ValueKey<String>('foss-toast-h-${widget.id}'),
+      key: const ValueKey<String>('foss-toast-h'),
+      direction: _isFront ? DismissDirection.horizontal : DismissDirection.none,
+      resizeDuration: null,
       onDismissed: (_) => widget.onDismiss(),
       child: Dismissible(
-        key: ValueKey<String>('foss-toast-v-${widget.id}'),
-        direction: DismissDirection.down,
+        key: const ValueKey<String>('foss-toast-v'),
+        direction: _isFront ? DismissDirection.down : DismissDirection.none,
+        resizeDuration: null,
         onDismissed: (_) => widget.onDismiss(),
-        child: AnimatedSlide(
-          offset: shown ? Offset.zero : const Offset(0, 0.5),
-          duration: duration,
-          curve: _slideCurve,
-          child: AnimatedOpacity(
-            opacity: shown ? 1 : 0,
-            duration: duration,
-            // A press holds the toast open; the countdown resumes on release.
-            // The raw pointer listener sits inside the slide so it tracks the
-            // surface as it animates, and fires on down regardless of arena.
-            child: Listener(
-              behavior: HitTestBehavior.opaque,
-              onPointerDown: (_) => widget.onPressChange(true),
-              onPointerUp: (_) => widget.onPressChange(false),
-              onPointerCancel: (_) => widget.onPressChange(false),
-              child: _surface(theme),
-            ),
-          ),
-        ),
+        child: card,
       ),
     );
   }
+}
 
-  Widget _surface(FossThemeData theme) {
+/// A blank surface for a toast behind the front. It fills the front's box, and
+/// its [_PileToast] scales and lifts it by [depth] to peek out; the fill
+/// darkens by depth so the pile reads as one message over a set-back stack.
+class _RearSurface extends StatelessWidget {
+  const _RearSurface({required this.depth});
+
+  final int depth;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = context.fossTheme;
+    final colors = theme.colors;
+    return DecoratedBox(
+      decoration: _toastDecoration(
+        theme,
+        fill: Color.alphaBlend(
+          colors.foreground.withValues(alpha: _rearDarken * depth),
+          colors.popover,
+        ),
+        border: colors.border,
+        radius: theme.radii.lg,
+      ),
+    );
+  }
+}
+
+/// The front toast surface: the superelliptical card, its leading glyph, and
+/// its title, description, and action.
+class _ToastSurface extends StatelessWidget {
+  const _ToastSurface({required this.toast});
+
+  final FossToast toast;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = context.fossTheme;
     final colors = theme.colors;
     final sp = theme.spacing;
-    final toast = widget.toast;
     final s = toast.style;
 
     final titleStyle = theme.typography.sm.medium
@@ -257,15 +374,11 @@ class _FossToastViewState extends State<_FossToastView> {
         child: ConstrainedBox(
           constraints: const BoxConstraints(maxWidth: _maxWidth),
           child: DecoratedBox(
-            decoration: ShapeDecoration(
-              color: s?.backgroundColor ?? colors.popover,
-              shape: RoundedSuperellipseBorder(
-                side: BorderSide(color: s?.borderColor ?? colors.border),
-                borderRadius: BorderRadius.circular(
-                  s?.borderRadius ?? theme.radii.lg,
-                ),
-              ),
-              shadows: theme.shadows.lg,
+            decoration: _toastDecoration(
+              theme,
+              fill: s?.backgroundColor ?? colors.popover,
+              border: s?.borderColor ?? colors.border,
+              radius: s?.borderRadius ?? theme.radii.lg,
             ),
             child: Padding(
               padding: EdgeInsets.symmetric(
@@ -310,6 +423,25 @@ class _FossToastViewState extends State<_FossToastView> {
       ),
     );
   }
+}
+
+/// The shared toast surface decoration: a superelliptical border over [fill]
+/// with the large shadow. Used by the front toast and each rear pile card so
+/// their shapes stay in lockstep.
+ShapeDecoration _toastDecoration(
+  FossThemeData theme, {
+  required Color fill,
+  required Color border,
+  required double radius,
+}) {
+  return ShapeDecoration(
+    color: fill,
+    shape: RoundedSuperellipseBorder(
+      side: BorderSide(color: border),
+      borderRadius: BorderRadius.circular(radius),
+    ),
+    shadows: theme.shadows.lg,
+  );
 }
 
 /// The plain-text message of [toast] for an assertive announcement: the title
