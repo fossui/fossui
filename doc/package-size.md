@@ -11,10 +11,10 @@ Flutter tree-shakes the Dart code it does not use.
 | Dart code (AOT) | 237 KB | tree-shaken; scales with the components you use |
 | Geist font | 74 KB | fixed cost, always bundled |
 | Runtime deps | ~0 | one small annotation package, no icon dependency |
-| **Total** | **~314 KB** | about 1.9% of a typical 16.7 MB release APK |
+| **Total** | **~314 KB** | Dart plus font |
 
-Only one runtime dependency, `theme_tailor_annotation`. Icon slots take a
-`Widget?`, so there is no icon package to pull in.
+Only one runtime dependency, `theme_tailor_annotation`, and no bundled icon set,
+so nothing beyond the font is pulled in.
 
 The font is the one fixed cost: it does not tree-shake the way Dart code does. It
 is subset to Latin and the 400 to 700 weight range, which keeps it at 74 KB.
