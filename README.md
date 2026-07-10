@@ -4,21 +4,21 @@ An open-source Flutter UI library of themeable, accessible components, inspired
 by coss.com/ui, Cal.com's design system. Themed from one source, one import.
 
 > **Status: beta, under active development.** This pre-release
-> (`0.1.0-beta.2`) ships 21 components, but APIs and tokens can still change
+> (`0.1.0-beta.3`) ships 21 components, but APIs and tokens can still change
 > between releases. Pin an exact version if you depend on it.
 
 > **Unofficial.** Not affiliated with or endorsed by Cal.com, Inc. or coss.com.
 > See [NOTICE](NOTICE) for attribution.
 
 
-<img width="2555" height="2240" alt="examples" src="https://github.com/user-attachments/assets/32f01ce5-6622-4dce-9f70-8fc320dd2da9" />
+![examples](assets/examples.png)
 
 
 ## Install
 
 ```yaml
 dependencies:
-  fossui: ^0.1.0-beta.2
+  fossui: ^0.1.0-beta.3
 ```
 
 ## Usage

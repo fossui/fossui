@@ -1,4 +1,4 @@
-## Unreleased
+## 0.1.0-beta.3
 
 A quality pass over every component: accessibility, visual fidelity, touch
 targets, and golden coverage. No new components, plus one additive theming API
@@ -6,6 +6,11 @@ for one-call rebrands.
 
 ### Added
 
+* `FossNumberField`: a numeric input flanked by decrement and increment steppers.
+  Holds a `num` clamped to `[min, max]`, steps by `step` (and `largeStep` on the
+  page keys), and formats display and typed entry through `format` / `parse`. It
+  reuses the text field box across three sizes, exposes the invalid state through
+  `error`, and takes a `FossNumberFieldStyle` for one-off overrides.
 * `FossThemeData.retheme` layers a compact `FossThemeSpec` over a base theme:
   enumerated color roles, plus single seeds for radius, spacing, shadow tint, and
   font family. `FossRadii.fromBase` derives the radius scale from one value.
@@ -24,7 +29,10 @@ for one-call rebrands.
   slider. Corrected padding on the badge, tabs, and text field. Card content
   inherits the card foreground, and every form error caption shares one color.
 * Toasts swipe to dismiss in any direction, and the drawer drags without
-  rebuilding its panel.
+  rebuilding its panel. A burst of toasts now collapses into a peek pile, so the
+  stack stays compact instead of filling the screen.
+* The bundled font ships lighter, trimmed to the glyphs and weights the library
+  renders, so it adds about half of what it did to an app.
 
 ### Fixed
 
