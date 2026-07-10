@@ -35,6 +35,20 @@ enum FossTooltipSide {
   right,
 }
 
+/// {@category Overlays}
+/// {@template foss.tooltip.preview}
+/// <img src="https://fossui.org/components/tooltip/overview/light.png"
+///   alt="FossTooltip, light theme" width="480"
+///   style="max-width:100%;height:auto" />
+/// <img src="https://fossui.org/components/tooltip/overview/dark.png"
+///   alt="FossTooltip, dark theme" width="480"
+///   style="max-width:100%;height:auto" />
+///
+/// See the [tooltip documentation ↗](https://fossui.org/docs/components/tooltip) or
+/// try it live in the
+/// [playground ↗](https://play.fossui.org/#/?path=components/tooltip/fosstooltip/playground).
+/// {@endtemplate}
+///
 /// Wraps a [child] trigger and shows a small floating hint next to it on hover,
 /// keyboard focus, or long-press, dismissing on exit, blur, `Escape`, or after
 /// [hideDelay].
@@ -44,6 +58,8 @@ enum FossTooltipSide {
 /// the visible popup stays out of the semantics tree. The popup opens on [side]
 /// and flips to the opposite side to stay on screen. Colors, type, radius, and
 /// shadow resolve from the theme; pass a [style] for a one-off override.
+///
+/// {@macro foss.customize}
 ///
 /// ```dart
 /// FossTooltip(
@@ -55,6 +71,8 @@ enum FossTooltipSide {
 /// );
 /// ```
 class FossTooltip extends StatefulWidget {
+  /// {@macro foss.tooltip.preview}
+  ///
   /// Creates a tooltip wrapping [child] that shows [message] on demand.
   const FossTooltip({
     required this.message,

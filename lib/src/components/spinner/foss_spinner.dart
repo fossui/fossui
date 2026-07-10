@@ -2,18 +2,37 @@ import 'dart:async';
 import 'dart:math' as math;
 
 import 'package:flutter/widgets.dart';
+import 'package:fossui/src/components/progress/foss_progress.dart';
 import 'package:fossui/src/theme/theme.dart';
 
+/// {@category Feedback}
+/// {@template foss.spinner.preview}
+/// <img src="https://fossui.org/components/spinner/overview/light.png"
+///   alt="FossSpinner, light theme" width="480"
+///   style="max-width:100%;height:auto" />
+/// <img src="https://fossui.org/components/spinner/overview/dark.png"
+///   alt="FossSpinner, dark theme" width="480"
+///   style="max-width:100%;height:auto" />
+///
+/// See the [spinner documentation ↗](https://fossui.org/docs/components/spinner) or
+/// try it live in the
+/// [playground ↗](https://play.fossui.org/#/?path=components/spinner/fossspinner/playground).
+/// {@endtemplate}
+///
 /// A circular loading indicator: an open arc that spins continuously.
 ///
 /// The arc paints in [color], defaulting to the theme `foreground` token. The
 /// rotation cycle comes from the `spinner` motion token and stops under reduced
 /// motion.
 ///
+/// See also [FossProgress] for determinate progress.
+///
 /// ```dart
 /// const FossSpinner(size: 18);
 /// ```
 class FossSpinner extends StatefulWidget {
+  /// {@macro foss.spinner.preview}
+  ///
   /// Creates a spinner [size] logical pixels across, in [color].
   const FossSpinner({
     this.size = 24,

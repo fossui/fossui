@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/widgets.dart';
+import 'package:fossui/src/components/dialog/foss_dialog.dart';
 import 'package:fossui/src/foundation/foss_modal_route.dart';
 import 'package:fossui/src/icons/foss_glyph.dart';
 import 'package:fossui/src/theme/colors/foss_colors.dart';
@@ -105,6 +106,20 @@ Future<T?> showFossDrawer<T>({
   ),
 );
 
+/// {@category Overlays}
+/// {@template foss.drawer.preview}
+/// <img src="https://fossui.org/components/drawer/overview/light.png"
+///   alt="FossDrawer, light theme" width="480"
+///   style="max-width:100%;height:auto" />
+/// <img src="https://fossui.org/components/drawer/overview/dark.png"
+///   alt="FossDrawer, dark theme" width="480"
+///   style="max-width:100%;height:auto" />
+///
+/// See the [drawer documentation ↗](https://fossui.org/docs/components/drawer) or
+/// try it live in the
+/// [playground ↗](https://play.fossui.org/#/?path=components/drawer/fossdrawer/playground).
+/// {@endtemplate}
+///
 /// An edge-anchored modal panel with slots for a title, description, body, and
 /// actions, plus an optional drag handle and close affordance.
 ///
@@ -112,6 +127,10 @@ Future<T?> showFossDrawer<T>({
 /// reads the side back from context so its corners, border edge, and drag axis
 /// match. The header, body, and footer are each optional; [actions] reuse
 /// `FossButton`. Colors, type, radius, and shadow resolve from the theme.
+///
+/// {@macro foss.customize}
+///
+/// See also [FossDialog] for a centered or bottom-sheet modal.
 ///
 /// ```dart
 /// showFossDrawer<void>(
@@ -124,6 +143,8 @@ Future<T?> showFossDrawer<T>({
 /// );
 /// ```
 class FossDrawer extends StatelessWidget {
+  /// {@macro foss.drawer.preview}
+  ///
   /// Creates a drawer surface. Build it inside a [showFossDrawer] `builder`.
   const FossDrawer({
     this.title,

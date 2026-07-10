@@ -1,4 +1,5 @@
 import 'package:flutter/widgets.dart';
+import 'package:fossui/src/components/drawer/foss_drawer.dart';
 import 'package:fossui/src/foundation/foss_dialog_surface.dart';
 import 'package:fossui/src/foundation/foss_modal_route.dart';
 import 'package:fossui/src/icons/foss_glyph.dart';
@@ -34,6 +35,20 @@ class _DialogPresentationScope extends InheritedWidget {
       oldWidget.presentation != presentation;
 }
 
+/// {@category Overlays}
+/// {@template foss.dialog.preview}
+/// <img src="https://fossui.org/components/dialog/overview/light.png"
+///   alt="FossDialog, light theme" width="480"
+///   style="max-width:100%;height:auto" />
+/// <img src="https://fossui.org/components/dialog/overview/dark.png"
+///   alt="FossDialog, dark theme" width="480"
+///   style="max-width:100%;height:auto" />
+///
+/// See the [dialog documentation ↗](https://fossui.org/docs/components/dialog) or
+/// try it live in the
+/// [playground ↗](https://play.fossui.org/#/?path=components/dialog/fossdialog/playground).
+/// {@endtemplate}
+///
 /// A modal surface with slots for a title, description, body, and actions,
 /// plus a default close affordance. Presents as a bottom sheet by default, or a
 /// centered card via [presentation].
@@ -41,6 +56,11 @@ class _DialogPresentationScope extends InheritedWidget {
 /// Show it with [showFossDialog]. The header, body, and footer are each
 /// optional; [actions] reuse `FossButton` and sit in a trailing-aligned row.
 /// Colors, type, radius, and shadow come from `context.fossTheme`.
+///
+/// {@macro foss.customize}
+///
+/// See also [FossDrawer] for an edge-anchored panel and [FossAlertDialog] for a
+/// decision that cannot be dismissed.
 ///
 /// ```dart
 /// showFossDialog<void>(
@@ -52,6 +72,8 @@ class _DialogPresentationScope extends InheritedWidget {
 /// );
 /// ```
 class FossDialog extends StatelessWidget {
+  /// {@macro foss.dialog.preview}
+  ///
   /// Creates a dialog surface. Build it inside a [showFossDialog] `builder`.
   const FossDialog({
     this.title,

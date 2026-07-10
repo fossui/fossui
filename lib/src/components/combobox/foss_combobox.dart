@@ -3,6 +3,7 @@ import 'dart:math' as math;
 
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
+import 'package:fossui/src/components/select/foss_select.dart';
 import 'package:fossui/src/components/text_field/foss_text_field.dart';
 import 'package:fossui/src/foundation/foss_field_box.dart';
 import 'package:fossui/src/icons/foss_glyph.dart';
@@ -46,6 +47,20 @@ const double _labelLineHeight = 18 / 16;
 bool _defaultFilter(String label, String query) =>
     label.toLowerCase().contains(query.toLowerCase());
 
+/// {@category Inputs}
+/// {@template foss.combobox.preview}
+/// <img src="https://fossui.org/components/combobox/overview/light.png"
+///   alt="FossCombobox, light theme" width="480"
+///   style="max-width:100%;height:auto" />
+/// <img src="https://fossui.org/components/combobox/overview/dark.png"
+///   alt="FossCombobox, dark theme" width="480"
+///   style="max-width:100%;height:auto" />
+///
+/// See the [combobox documentation ↗](https://fossui.org/docs/components/combobox) or
+/// try it live in the
+/// [playground ↗](https://play.fossui.org/#/?path=components/combobox/fosscombobox/playground).
+/// {@endtemplate}
+///
 /// A text field whose dropdown filters a list of suggestions as you type.
 ///
 /// The value is the field string, reported through [onChanged]; picking a
@@ -56,6 +71,10 @@ bool _defaultFilter(String label, String query) =>
 /// Colors, type, and metrics come from `context.fossTheme`; pass a
 /// [FossComboboxStyle] to [style] for a one-off.
 ///
+/// {@macro foss.customize}
+///
+/// See also [FossSelect] for selection without typing.
+///
 /// ```dart
 /// FossAutocomplete(
 ///   label: 'Fruit',
@@ -65,6 +84,8 @@ bool _defaultFilter(String label, String query) =>
 /// );
 /// ```
 class FossAutocomplete extends StatelessWidget {
+  /// {@macro foss.combobox.preview}
+  ///
   /// Creates an autocomplete over string [items].
   const FossAutocomplete({
     required this.items,
@@ -159,6 +180,9 @@ class FossAutocomplete extends StatelessWidget {
   }
 }
 
+/// {@category Inputs}
+/// {@macro foss.combobox.preview}
+///
 /// A text field with a filtered dropdown of predefined items, each carrying a
 /// check when picked.
 ///
@@ -166,6 +190,10 @@ class FossAutocomplete extends StatelessWidget {
 /// pass [value] and rebuild on [onSelected]. Picking a row writes its label
 /// into the field and closes the popup. A null [onSelected] (or
 /// `enabled: false`) disables the field.
+///
+/// {@macro foss.customize}
+///
+/// See also [FossSelect] for selection without typing.
 ///
 /// ```dart
 /// FossCombobox<String>(
@@ -180,6 +208,8 @@ class FossAutocomplete extends StatelessWidget {
 /// );
 /// ```
 class FossCombobox<T> extends StatelessWidget {
+  /// {@macro foss.combobox.preview}
+  ///
   /// Creates a single-select combobox over [items].
   const FossCombobox({
     required this.items,
@@ -276,12 +306,19 @@ class FossCombobox<T> extends StatelessWidget {
   }
 }
 
+/// {@category Inputs}
+/// {@macro foss.combobox.preview}
+///
 /// A combobox that holds several picks at once, shown as removable chips.
 ///
 /// The value is the set of selected items ([values]); rebuild on [onSelected].
 /// Typing filters [items], picking toggles a chip and keeps the popup open, and
 /// Backspace on the empty input removes the last chip. A null [onSelected] (or
 /// `enabled: false`) disables the field.
+///
+/// {@macro foss.customize}
+///
+/// See also [FossSelect] for selection without typing.
 ///
 /// ```dart
 /// FossMultiCombobox<String>(
@@ -296,6 +333,8 @@ class FossCombobox<T> extends StatelessWidget {
 /// );
 /// ```
 class FossMultiCombobox<T> extends StatelessWidget {
+  /// {@macro foss.combobox.preview}
+  ///
   /// Creates a multi-select combobox over [items].
   const FossMultiCombobox({
     required this.items,

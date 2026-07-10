@@ -12,6 +12,12 @@ import 'package:fossui/src/theme/typography/foss_typography.dart';
 /// then read everything through `context.fossTheme`. [FossThemeData.light] and
 /// [FossThemeData.dark] are the defaults; build your own to retheme the app.
 ///
+/// {@template foss.customize}
+/// Customize globally by passing your own [FossThemeData], or per instance
+/// through the widget's `style` object. There are no per-instance token props:
+/// to change color, radius, or spacing, change the theme.
+/// {@endtemplate}
+///
 /// ```dart
 /// MaterialApp(
 ///   theme: FossThemeData.light.toThemeData(),

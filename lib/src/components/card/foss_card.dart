@@ -1,6 +1,7 @@
 import 'dart:math' as math;
 
 import 'package:flutter/widgets.dart';
+import 'package:fossui/src/components/button/foss_button.dart';
 import 'package:fossui/src/theme/theme.dart';
 
 part 'foss_card_style.dart';
@@ -10,6 +11,20 @@ part 'foss_card_style.dart';
 const Color _rimLight = Color(0x0A000000);
 const Color _rimDark = Color(0x0FFFFFFF);
 
+/// {@category Layout}
+/// {@template foss.card.preview}
+/// <img src="https://fossui.org/components/card/overview/light.png"
+///   alt="FossCard, light theme" width="480"
+///   style="max-width:100%;height:auto" />
+/// <img src="https://fossui.org/components/card/overview/dark.png"
+///   alt="FossCard, dark theme" width="480"
+///   style="max-width:100%;height:auto" />
+///
+/// See the [card documentation ↗](https://fossui.org/docs/components/card) or
+/// try it live in the
+/// [playground ↗](https://play.fossui.org/#/?path=components/card/fosscard/playground).
+/// {@endtemplate}
+///
 /// A static content container: a bordered, rounded surface that groups an
 /// optional header (title, description, trailing action), an optional content
 /// body, and an optional footer. Every slot is optional and content-agnostic;
@@ -19,6 +34,10 @@ const Color _rimDark = Color(0x0FFFFFFF);
 /// up: the outer edges keep the full inset while a shared seam reads as half.
 /// Colors, type, radius, and shadow come from `context.fossTheme`; pass a
 /// [FossCardStyle] for a one-off override.
+///
+/// {@macro foss.customize}
+///
+/// See also [FossButton] for the actions a card commonly holds.
 ///
 /// ```dart
 /// FossCard(
@@ -37,6 +56,8 @@ const Color _rimDark = Color(0x0FFFFFFF);
 /// );
 /// ```
 class FossCard extends StatelessWidget {
+  /// {@macro foss.card.preview}
+  ///
   /// Creates a card. Every slot is optional; a card with only [content] is
   /// valid, as is a header with no footer.
   const FossCard({

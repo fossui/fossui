@@ -1,11 +1,29 @@
 part of 'foss_dialog.dart';
 
+/// {@category Overlays}
+/// {@template foss.alert-dialog.preview}
+/// <img src="https://fossui.org/components/alert-dialog/overview/light.png"
+///   alt="FossAlertDialog, light theme" width="480"
+///   style="max-width:100%;height:auto" />
+/// <img src="https://fossui.org/components/alert-dialog/overview/dark.png"
+///   alt="FossAlertDialog, dark theme" width="480"
+///   style="max-width:100%;height:auto" />
+///
+/// See the [alert dialog documentation ↗](https://fossui.org/docs/components/alert-dialog) or
+/// try it live in the
+/// [playground ↗](https://play.fossui.org/#/?path=components/dialog/fossalertdialog/playground).
+/// {@endtemplate}
+///
 /// A non-dismissible modal that interrupts to require a decision.
 ///
 /// The dialog's stricter sibling: it composes a [FossDialog] with the alert
 /// configuration locked (no close affordance and a required, non-empty
 /// [actions] footer). Show it with [showFossAlertDialog].
 /// Colors, type, radius, and shadow come from `context.fossTheme`.
+///
+/// {@macro foss.customize}
+///
+/// See also [FossDialog] for a dismissible modal with the same slots.
 ///
 /// ```dart
 /// showFossAlertDialog<void>(
@@ -22,6 +40,8 @@ part of 'foss_dialog.dart';
 /// );
 /// ```
 class FossAlertDialog extends StatelessWidget {
+  /// {@macro foss.alert-dialog.preview}
+  ///
   /// Creates an alert dialog. [actions] must be non-empty: a non-dismissible
   /// dialog needs a way out.
   const FossAlertDialog({

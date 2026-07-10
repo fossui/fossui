@@ -1,4 +1,5 @@
 import 'package:flutter/widgets.dart';
+import 'package:fossui/src/components/alert/foss_alert.dart';
 import 'package:fossui/src/theme/colors/foss_colors.dart';
 import 'package:fossui/src/theme/foss_theme.dart';
 import 'package:fossui/src/theme/typography/foss_typography.dart';
@@ -85,6 +86,20 @@ enum FossBadgeSize {
   };
 }
 
+/// {@category Feedback}
+/// {@template foss.badge.preview}
+/// <img src="https://fossui.org/components/badge/overview/light.png"
+///   alt="FossBadge, light theme" width="480"
+///   style="max-width:100%;height:auto" />
+/// <img src="https://fossui.org/components/badge/overview/dark.png"
+///   alt="FossBadge, dark theme" width="480"
+///   style="max-width:100%;height:auto" />
+///
+/// See the [badge documentation ↗](https://fossui.org/docs/components/badge) or
+/// try it live in the
+/// [playground ↗](https://play.fossui.org/#/?path=components/badge/fossbadge/playground).
+/// {@endtemplate}
+///
 /// A compact status pill: a content-hugging, single-line label that tags a
 /// count, a state, or a category. Static and non-interactive.
 ///
@@ -98,6 +113,10 @@ enum FossBadgeSize {
 /// When the badge is the only carrier of meaning, pass [semanticsLabel] so
 /// assistive technology announces the state rather than the bare glyph.
 ///
+/// {@macro foss.customize}
+///
+/// See also [FossAlert] for a full-width status message.
+///
 /// ```dart
 /// FossBadge(
 ///   label: const Text('Active'),
@@ -106,6 +125,8 @@ enum FossBadgeSize {
 /// );
 /// ```
 class FossBadge extends StatelessWidget {
+  /// {@macro foss.badge.preview}
+  ///
   /// Creates a badge. [label] is the pill content; the rest are optional.
   const FossBadge({
     required this.label,

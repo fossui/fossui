@@ -4,6 +4,7 @@ import 'dart:math' as math;
 import 'package:flutter/semantics.dart' show SemanticsRole;
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
+import 'package:fossui/src/components/combobox/foss_combobox.dart';
 import 'package:fossui/src/icons/foss_glyph.dart';
 import 'package:fossui/src/theme/theme.dart';
 
@@ -41,6 +42,20 @@ const double _focusRingOpacity = 0.24;
 const Color _rimLight = Color(0x0A000000);
 const Color _rimDark = Color(0x0FFFFFFF);
 
+/// {@category Inputs}
+/// {@template foss.select.preview}
+/// <img src="https://fossui.org/components/select/overview/light.png"
+///   alt="FossSelect, light theme" width="480"
+///   style="max-width:100%;height:auto" />
+/// <img src="https://fossui.org/components/select/overview/dark.png"
+///   alt="FossSelect, dark theme" width="480"
+///   style="max-width:100%;height:auto" />
+///
+/// See the [select documentation ↗](https://fossui.org/docs/components/select) or
+/// try it live in the
+/// [playground ↗](https://play.fossui.org/#/?path=components/select/fossselect/playground).
+/// {@endtemplate}
+///
 /// A pick-from-list control with no typing.
 ///
 /// The trigger shows the current value or a [placeholder]; tapping it opens an
@@ -52,6 +67,11 @@ const Color _rimDark = Color(0x0FFFFFFF);
 /// Colors, type, and metrics come from `context.fossTheme`; pass a
 /// [FossSelectStyle] to [style] for a one-off. For multiple selection without
 /// typing, use [FossMultiSelect].
+///
+/// {@macro foss.customize}
+///
+/// See also [FossMultiSelect] for multiple selection and [FossCombobox] to
+/// filter by typing.
 ///
 /// ```dart
 /// FossSelect<String>(
@@ -65,6 +85,8 @@ const Color _rimDark = Color(0x0FFFFFFF);
 /// );
 /// ```
 class FossSelect<T> extends StatelessWidget {
+  /// {@macro foss.select.preview}
+  ///
   /// Creates a single-select control over [items].
   const FossSelect({
     required this.items,

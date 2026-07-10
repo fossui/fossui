@@ -33,6 +33,20 @@ const Duration _dragScaleDuration = Duration(milliseconds: 150);
 const Color _knobColor = Color(0xFFFFFFFF);
 const Color _thumbRim = Color(0x0A000000);
 
+/// {@category Inputs}
+/// {@template foss.slider.preview}
+/// <img src="https://fossui.org/components/slider/overview/light.png"
+///   alt="FossSlider, light theme" width="480"
+///   style="max-width:100%;height:auto" />
+/// <img src="https://fossui.org/components/slider/overview/dark.png"
+///   alt="FossSlider, dark theme" width="480"
+///   style="max-width:100%;height:auto" />
+///
+/// See the [slider documentation ↗](https://fossui.org/docs/components/slider) or
+/// try it live in the
+/// [playground ↗](https://play.fossui.org/#/?path=components/slider/fossslider/playground).
+/// {@endtemplate}
+///
 /// A horizontal slider: a track with a draggable thumb that picks a [double]
 /// from `[min, max]`.
 ///
@@ -43,6 +57,8 @@ const Color _thumbRim = Color(0x0A000000);
 /// the value, Home and End jump to [min] and [max]. Colors come from
 /// `context.fossTheme`; pass a [FossSliderStyle] to [style] for a one-off.
 ///
+/// {@macro foss.customize}
+///
 /// ```dart
 /// FossSlider(
 ///   value: _volume,
@@ -51,6 +67,8 @@ const Color _thumbRim = Color(0x0A000000);
 /// );
 /// ```
 class FossSlider extends StatefulWidget {
+  /// {@macro foss.slider.preview}
+  ///
   /// Creates a slider at [value], within `[min, max]`.
   const FossSlider({
     required this.value,

@@ -1,4 +1,6 @@
 import 'package:flutter/widgets.dart';
+import 'package:fossui/src/components/checkbox/foss_checkbox.dart';
+import 'package:fossui/src/components/radio/foss_radio.dart';
 import 'package:fossui/src/theme/theme.dart';
 
 part 'foss_switch_style.dart';
@@ -25,6 +27,20 @@ const double _pressScaleX = 1.1;
 const Duration _slideDuration = Duration(milliseconds: 150);
 const Duration _squishDuration = Duration(milliseconds: 100);
 
+/// {@category Inputs}
+/// {@template foss.switch.preview}
+/// <img src="https://fossui.org/components/switch/overview/light.png"
+///   alt="FossSwitch, light theme" width="480"
+///   style="max-width:100%;height:auto" />
+/// <img src="https://fossui.org/components/switch/overview/dark.png"
+///   alt="FossSwitch, dark theme" width="480"
+///   style="max-width:100%;height:auto" />
+///
+/// See the [switch documentation ↗](https://fossui.org/docs/components/switch) or
+/// try it live in the
+/// [playground ↗](https://play.fossui.org/#/?path=components/switch/fossswitch/playground).
+/// {@endtemplate}
+///
 /// An instant on / off toggle: a pill track with a sliding thumb that commits a
 /// boolean the moment it is flipped.
 ///
@@ -37,6 +53,11 @@ const Duration _squishDuration = Duration(milliseconds: 100);
 /// Colors, the track crossfade, and the thumb come from `context.fossTheme`;
 /// pass a [FossSwitchStyle] to [style] for a one-off.
 ///
+/// {@macro foss.customize}
+///
+/// See also [FossCheckbox] for a labelled toggle and [FossRadio] for a single
+/// choice from a set.
+///
 /// ```dart
 /// FossSwitch(
 ///   value: wifiOn,
@@ -45,6 +66,8 @@ const Duration _squishDuration = Duration(milliseconds: 100);
 /// );
 /// ```
 class FossSwitch extends StatefulWidget {
+  /// {@macro foss.switch.preview}
+  ///
   /// Creates a switch showing [value].
   const FossSwitch({
     required this.value,

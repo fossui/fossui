@@ -49,6 +49,20 @@ enum FossButtonSize {
   lg,
 }
 
+/// {@category Inputs}
+/// {@template foss.button.preview}
+/// <img src="https://fossui.org/components/button/variants/light.png"
+///   alt="FossButton variants, light theme" width="480"
+///   style="max-width:100%;height:auto" />
+/// <img src="https://fossui.org/components/button/variants/dark.png"
+///   alt="FossButton variants, dark theme" width="480"
+///   style="max-width:100%;height:auto" />
+///
+/// See the [button documentation ↗](https://fossui.org/docs/components/button) or
+/// try it live in the
+/// [playground ↗](https://play.fossui.org/#/?path=components/button/fossbutton/playground).
+/// {@endtemplate}
+///
 /// A pressable button in the fossui style.
 ///
 /// Pick a look with [variant] and a size with [size]; both read their colors,
@@ -62,6 +76,18 @@ enum FossButtonSize {
 /// Loading and disabled can be set two ways. Declaratively: pass [loading] or a
 /// null [onPressed]. Imperatively: pass a [FossButtonController] and drive it,
 /// which toggles either state without rebuilding the button.
+///
+/// It does not guard against repeated taps: if [onPressed] runs an async
+/// action, gate re-entrancy yourself or drive a [FossButtonController].
+///
+/// {@macro foss.customize}
+///
+/// Every size keeps a 48 logical-pixel minimum tap target, larger than its
+/// visual height. [FossButton.icon] has no visible label, so it requires a
+/// [semanticLabel].
+///
+/// See also [FossButtonStyle] for one-off overrides and [FossButtonController]
+/// to drive loading and disabled imperatively.
 ///
 /// ```dart
 /// FossButton(
@@ -84,6 +110,8 @@ enum FossButtonSize {
 /// );
 /// ```
 class FossButton extends StatefulWidget {
+  /// {@macro foss.button.preview}
+  ///
   /// Creates a button. [child] is the label; a null [onPressed] disables it,
   /// and [loading] shows a spinner in place of the content.
   const FossButton({
@@ -101,6 +129,8 @@ class FossButton extends StatefulWidget {
     super.key,
   }) : _iconOnly = false;
 
+  /// {@macro foss.button.preview}
+  ///
   /// Creates a square, icon-only button sized to its [size]. [icon] is the sole
   /// content and [semanticLabel] names the action for assistive tech, since
   /// there is no visible label.

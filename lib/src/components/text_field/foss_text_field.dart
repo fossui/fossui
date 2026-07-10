@@ -1,5 +1,6 @@
 import 'package:flutter/services.dart' show TextInputAction, TextInputType;
 import 'package:flutter/widgets.dart';
+import 'package:fossui/src/components/combobox/foss_combobox.dart';
 import 'package:fossui/src/foundation/foss_field_box.dart';
 import 'package:fossui/src/theme/theme.dart';
 
@@ -21,6 +22,20 @@ enum FossTextFieldSize {
   lg,
 }
 
+/// {@category Inputs}
+/// {@template foss.text-field.preview}
+/// <img src="https://fossui.org/components/text-field/overview/light.png"
+///   alt="FossTextField, light theme" width="480"
+///   style="max-width:100%;height:auto" />
+/// <img src="https://fossui.org/components/text-field/overview/dark.png"
+///   alt="FossTextField, dark theme" width="480"
+///   style="max-width:100%;height:auto" />
+///
+/// See the [text field documentation ↗](https://fossui.org/docs/components/text-field) or
+/// try it live in the
+/// [playground ↗](https://play.fossui.org/#/?path=components/text_field/fosstextfield/playground).
+/// {@endtemplate}
+///
 /// A text field in the fossui style.
 ///
 /// Pairs an editable box with an optional [label] above and a [helperText] or
@@ -39,6 +54,10 @@ enum FossTextFieldSize {
 /// The [controller] and [focusNode] are optional; when omitted, the field
 /// creates and disposes its own.
 ///
+/// {@macro foss.customize}
+///
+/// See also [FossAutocomplete] for a field with a filtered dropdown.
+///
 /// ```dart
 /// FossTextField(
 ///   label: 'Email',
@@ -50,6 +69,8 @@ enum FossTextFieldSize {
 /// );
 /// ```
 class FossTextField extends StatefulWidget {
+  /// {@macro foss.text-field.preview}
+  ///
   /// Creates a text field. All fields are optional; the most common pairing is
   /// a [label] with an [onChanged] callback or a [controller].
   const FossTextField({

@@ -10,6 +10,20 @@ enum FossSeparatorOrientation {
   vertical,
 }
 
+/// {@category Layout}
+/// {@template foss.separator.preview}
+/// <img src="https://fossui.org/components/separator/overview/light.png"
+///   alt="FossSeparator, light theme" width="480"
+///   style="max-width:100%;height:auto" />
+/// <img src="https://fossui.org/components/separator/overview/dark.png"
+///   alt="FossSeparator, dark theme" width="480"
+///   style="max-width:100%;height:auto" />
+///
+/// See the [separator documentation ↗](https://fossui.org/docs/components/separator) or
+/// try it live in the
+/// [playground ↗](https://play.fossui.org/#/?path=components/separator/fossseparator/playground).
+/// {@endtemplate}
+///
 /// A hairline rule that divides content along a row or a column. Static and
 /// non-interactive: a 1 logical pixel line in the `border` role.
 ///
@@ -39,6 +53,8 @@ enum FossSeparatorOrientation {
 /// );
 /// ```
 class FossSeparator extends StatelessWidget {
+  /// {@macro foss.separator.preview}
+  ///
   /// Creates a hairline separator.
   const FossSeparator({
     this.orientation = FossSeparatorOrientation.horizontal,

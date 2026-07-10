@@ -39,6 +39,20 @@ enum FossAvatarSize {
   };
 }
 
+/// {@category Layout}
+/// {@template foss.avatar.preview}
+/// <img src="https://fossui.org/components/avatar/overview/light.png"
+///   alt="FossAvatar, light theme" width="480"
+///   style="max-width:100%;height:auto" />
+/// <img src="https://fossui.org/components/avatar/overview/dark.png"
+///   alt="FossAvatar, dark theme" width="480"
+///   style="max-width:100%;height:auto" />
+///
+/// See the [avatar documentation ↗](https://fossui.org/docs/components/avatar) or
+/// try it live in the
+/// [playground ↗](https://play.fossui.org/#/?path=components/avatar/fossavatar/playground).
+/// {@endtemplate}
+///
 /// A user's stand-in: a fixed-size circle that shows a profile [image] and
 /// falls back to a [fallback] glyph (usually initials) while the image loads,
 /// when it is absent, or when it fails to load. Static and non-interactive.
@@ -49,6 +63,8 @@ enum FossAvatarSize {
 /// and the fallback text step. Colors, type, and shape come from
 /// `context.fossTheme`; pass a [FossAvatarStyle] for a one-off override.
 ///
+/// {@macro foss.customize}
+///
 /// ```dart
 /// FossAvatar(
 ///   image: NetworkImage('https://example.com/v.png'),
@@ -57,6 +73,8 @@ enum FossAvatarSize {
 /// );
 /// ```
 class FossAvatar extends StatelessWidget {
+  /// {@macro foss.avatar.preview}
+  ///
   /// Creates an avatar. With no [image] the [fallback] fills the circle; with
   /// neither, a bare `background` circle renders.
   const FossAvatar({

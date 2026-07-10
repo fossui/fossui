@@ -1,4 +1,6 @@
 import 'package:flutter/widgets.dart';
+import 'package:fossui/src/components/alert/foss_alert.dart';
+import 'package:fossui/src/components/toast/foss_toaster.dart';
 
 part 'foss_toast_style.dart';
 
@@ -24,9 +26,28 @@ enum FossToastType {
   error,
 }
 
+/// {@category Overlays}
+/// {@template foss.toast.preview}
+/// <img src="https://fossui.org/components/toast/overview/light.png"
+///   alt="FossToast, light theme" width="480"
+///   style="max-width:100%;height:auto" />
+/// <img src="https://fossui.org/components/toast/overview/dark.png"
+///   alt="FossToast, dark theme" width="480"
+///   style="max-width:100%;height:auto" />
+///
+/// See the [toast documentation ↗](https://fossui.org/docs/components/toast) or
+/// try it live in the
+/// [playground ↗](https://play.fossui.org/#/?path=components/toast/fosstoaster/playground).
+/// {@endtemplate}
+///
 /// One transient notification. Enqueue it with `showFossToast` or a
 /// `FossToastController`; the surface stays on the `popover` role for every
 /// [type], which tints only the leading glyph.
+///
+/// {@macro foss.customize}
+///
+/// See also [FossToaster], the host that displays toasts, and [FossAlert] for a
+/// persistent inline message.
 ///
 /// ```dart
 /// showFossToast(
@@ -36,6 +57,8 @@ enum FossToastType {
 /// ```
 @immutable
 class FossToast {
+  /// {@macro foss.toast.preview}
+  ///
   /// Creates a toast message.
   const FossToast({
     this.title,

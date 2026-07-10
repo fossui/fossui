@@ -1,4 +1,5 @@
 import 'package:flutter/widgets.dart';
+import 'package:fossui/src/components/dialog/foss_dialog.dart';
 import 'package:fossui/src/icons/foss_glyph.dart';
 import 'package:fossui/src/theme/colors/foss_colors.dart';
 import 'package:fossui/src/theme/foss_theme.dart';
@@ -37,6 +38,20 @@ enum FossAlertVariant {
   error,
 }
 
+/// {@category Feedback}
+/// {@template foss.alert.preview}
+/// <img src="https://fossui.org/components/alert/overview/light.png"
+///   alt="FossAlert, light theme" width="480"
+///   style="max-width:100%;height:auto" />
+/// <img src="https://fossui.org/components/alert/overview/dark.png"
+///   alt="FossAlert, dark theme" width="480"
+///   style="max-width:100%;height:auto" />
+///
+/// See the [alert documentation ↗](https://fossui.org/docs/components/alert) or
+/// try it live in the
+/// [playground ↗](https://play.fossui.org/#/?path=components/alert/fossalert/playground).
+/// {@endtemplate}
+///
 /// A static inline callout: a leading status glyph, a title, an optional
 /// description, and optional actions, on a bordered surface tinted by the
 /// [variant].
@@ -44,6 +59,10 @@ enum FossAlertVariant {
 /// The whole surface is an `alert` live region; the status glyph is semantic.
 /// Colors, type, radius, and spacing come from `context.fossTheme`. Actions are
 /// any widgets, typically `FossButton`s.
+///
+/// {@macro foss.customize}
+///
+/// See also [FossAlertDialog] for a modal that demands a decision.
 ///
 /// ```dart
 /// FossAlert(
@@ -53,6 +72,8 @@ enum FossAlertVariant {
 /// );
 /// ```
 class FossAlert extends StatelessWidget {
+  /// {@macro foss.alert.preview}
+  ///
   /// Creates an alert. [title] is effectively required; the rest are optional.
   const FossAlert({
     this.title,

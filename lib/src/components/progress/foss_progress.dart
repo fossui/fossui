@@ -1,5 +1,6 @@
 import 'package:flutter/semantics.dart' show SemanticsRole;
 import 'package:flutter/widgets.dart';
+import 'package:fossui/src/components/spinner/foss_spinner.dart';
 import 'package:fossui/src/theme/theme.dart';
 
 part 'foss_progress_style.dart';
@@ -10,6 +11,20 @@ part 'foss_progress_style.dart';
 const double _trackHeight = 6;
 const Curve _fillCurve = Curves.ease;
 
+/// {@category Feedback}
+/// {@template foss.progress.preview}
+/// <img src="https://fossui.org/components/progress/overview/light.png"
+///   alt="FossProgress, light theme" width="480"
+///   style="max-width:100%;height:auto" />
+/// <img src="https://fossui.org/components/progress/overview/dark.png"
+///   alt="FossProgress, dark theme" width="480"
+///   style="max-width:100%;height:auto" />
+///
+/// See the [progress documentation ↗](https://fossui.org/docs/components/progress) or
+/// try it live in the
+/// [playground ↗](https://play.fossui.org/#/?path=components/progress/fossprogress/playground).
+/// {@endtemplate}
+///
 /// A determinate progress bar: a full-width track with a leading fill that
 /// grows from the start to show how far a long task has run. It is static and
 /// non-interactive.
@@ -21,6 +36,10 @@ const Curve _fillCurve = Curves.ease;
 /// Colors, type, and radius come from `context.fossTheme`; pass a
 /// [FossProgressStyle] for a one-off override.
 ///
+/// {@macro foss.customize}
+///
+/// See also [FossSpinner] for indeterminate progress.
+///
 /// ```dart
 /// FossProgress(
 ///   value: 0.4,
@@ -29,6 +48,8 @@ const Curve _fillCurve = Curves.ease;
 /// );
 /// ```
 class FossProgress extends StatelessWidget {
+  /// {@macro foss.progress.preview}
+  ///
   /// Creates a progress bar filled to [value] (`0..1`, clamped). A bare track
   /// with no label row is the default.
   const FossProgress({

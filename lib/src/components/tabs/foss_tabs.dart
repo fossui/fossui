@@ -63,6 +63,20 @@ class FossTab<T> {
   final bool enabled;
 }
 
+/// {@category Layout}
+/// {@template foss.tabs.preview}
+/// <img src="https://fossui.org/components/tabs/overview/light.png"
+///   alt="FossTabs, light theme" width="480"
+///   style="max-width:100%;height:auto" />
+/// <img src="https://fossui.org/components/tabs/overview/dark.png"
+///   alt="FossTabs, dark theme" width="480"
+///   style="max-width:100%;height:auto" />
+///
+/// See the [tabs documentation ↗](https://fossui.org/docs/components/tabs) or
+/// try it live in the
+/// [playground ↗](https://play.fossui.org/#/?path=components/tabs/fosstabs/playground).
+/// {@endtemplate}
+///
 /// A row or column of tabs that toggle between sibling panels, with an animated
 /// indicator marking the active tab.
 ///
@@ -75,6 +89,8 @@ class FossTab<T> {
 /// indicator slide come from `context.fossTheme`; pass a [FossTabsStyle] to
 /// [style] for a one-off.
 ///
+/// {@macro foss.customize}
+///
 /// ```dart
 /// FossTabs<String>(
 ///   value: selected,
@@ -86,6 +102,8 @@ class FossTab<T> {
 /// );
 /// ```
 class FossTabs<T> extends StatefulWidget {
+  /// {@macro foss.tabs.preview}
+  ///
   /// Creates a set of tabs over [tabs].
   const FossTabs({
     required this.tabs,

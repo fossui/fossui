@@ -1,0 +1,11 @@
+dartdoc:
+  categories:
+    Inputs:
+      markdown: doc/categories/inputs.md
+    Overlays:
+      markdown: doc/categories/overlays.md
+    Feedback:
+      markdown: doc/categories/feedback.md
+    Layout:
+      markdown: doc/categories/layout.md
+  categoryOrder: ["Inputs", "Overlays", "Feedback", "Layout"]

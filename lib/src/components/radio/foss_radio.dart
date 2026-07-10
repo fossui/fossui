@@ -1,5 +1,7 @@
 import 'package:flutter/semantics.dart' show SemanticsValidationResult;
 import 'package:flutter/widgets.dart';
+import 'package:fossui/src/components/checkbox/foss_checkbox.dart';
+import 'package:fossui/src/components/switch/foss_switch.dart';
 import 'package:fossui/src/theme/theme.dart';
 
 part 'foss_radio_group.dart';
@@ -31,6 +33,20 @@ const double _cardCheckedFillOpacity = 0.5;
 const Color _rimLight = Color(0x0A000000);
 const Color _rimDark = Color(0x0FFFFFFF);
 
+/// {@category Inputs}
+/// {@template foss.radio.preview}
+/// <img src="https://fossui.org/components/radio/overview/light.png"
+///   alt="FossRadio, light theme" width="480"
+///   style="max-width:100%;height:auto" />
+/// <img src="https://fossui.org/components/radio/overview/dark.png"
+///   alt="FossRadio, dark theme" width="480"
+///   style="max-width:100%;height:auto" />
+///
+/// See the [radio documentation ↗](https://fossui.org/docs/components/radio) or
+/// try it live in the
+/// [playground ↗](https://play.fossui.org/#/?path=components/radio/fossradiogroup/playground).
+/// {@endtemplate}
+///
 /// A single option within a [FossRadioGroup].
 ///
 /// Renders a circular control with an optional [label] and [description]. Reads
@@ -43,6 +59,11 @@ const Color _rimDark = Color(0x0FFFFFFF);
 /// type, and spacing come from `context.fossTheme`; pass a [FossRadioStyle] to
 /// [style] for a one-off.
 ///
+/// {@macro foss.customize}
+///
+/// See also [FossRadioGroup], which hosts the options, and [FossCheckbox] or
+/// [FossSwitch] for related toggles.
+///
 /// ```dart
 /// FossRadio<String>(
 ///   value: 'yearly',
@@ -51,6 +72,8 @@ const Color _rimDark = Color(0x0FFFFFFF);
 /// );
 /// ```
 class FossRadio<T> extends StatefulWidget {
+  /// {@macro foss.radio.preview}
+  ///
   /// Creates a radio option. [value] identifies it within the group.
   const FossRadio({
     required this.value,

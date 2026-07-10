@@ -1,6 +1,8 @@
 import 'package:flutter/foundation.dart' show setEquals;
 import 'package:flutter/semantics.dart' show SemanticsValidationResult;
 import 'package:flutter/widgets.dart';
+import 'package:fossui/src/components/radio/foss_radio.dart';
+import 'package:fossui/src/components/switch/foss_switch.dart';
 import 'package:fossui/src/icons/foss_glyph.dart';
 import 'package:fossui/src/theme/theme.dart';
 
@@ -35,6 +37,20 @@ const double _cardFillOpacity = 0.5;
 const Color _rimLight = Color(0x0A000000);
 const Color _rimDark = Color(0x0FFFFFFF);
 
+/// {@category Inputs}
+/// {@template foss.checkbox.preview}
+/// <img src="https://fossui.org/components/checkbox/overview/light.png"
+///   alt="FossCheckbox, light theme" width="480"
+///   style="max-width:100%;height:auto" />
+/// <img src="https://fossui.org/components/checkbox/overview/dark.png"
+///   alt="FossCheckbox, dark theme" width="480"
+///   style="max-width:100%;height:auto" />
+///
+/// See the [checkbox documentation ↗](https://fossui.org/docs/components/checkbox) or
+/// try it live in the
+/// [playground ↗](https://play.fossui.org/#/?path=components/checkbox/fosscheckbox/playground).
+/// {@endtemplate}
+///
 /// A checkbox: an independent on / off toggle that can also show an
 /// indeterminate state.
 ///
@@ -51,6 +67,11 @@ const Color _rimDark = Color(0x0FFFFFFF);
 ///
 /// For a multi-select set of options, see [FossCheckboxGroup].
 ///
+/// {@macro foss.customize}
+///
+/// See also [FossCheckboxGroup] for a multi-select set, and [FossRadio] or
+/// [FossSwitch] for related toggles.
+///
 /// ```dart
 /// FossCheckbox(
 ///   value: accepted,
@@ -59,6 +80,8 @@ const Color _rimDark = Color(0x0FFFFFFF);
 /// );
 /// ```
 class FossCheckbox extends StatelessWidget {
+  /// {@macro foss.checkbox.preview}
+  ///
   /// Creates a checkbox. [value] is `true`, `false`, or `null` (indeterminate).
   const FossCheckbox({
     this.value = false,
