@@ -23,3 +23,5 @@ jobs:
           repos: ${{ github.repository }}
           # pub.dev renders plain-markdown PNG, not <picture>/SVG dark-mode.
           readme-format: png
+          # First theme is the PNG source; put dark first for a dark chart.
+          themes: dark,light
