@@ -1,7 +1,10 @@
-## Unreleased
+## 0.1.0
 
-A documentation pass, plus a few public API renames for naming consistency
-before the stable cut.
+The first stable release. `fossui` ships 21 themeable, accessible components,
+themed from one source and reached through a single import. It works under
+`MaterialApp`, `CupertinoApp`, or a bare `WidgetsApp`, with no `FossApp` wrapper.
+This cut also lands a documentation pass and a few public API renames for naming
+consistency.
 
 ### Changed
 

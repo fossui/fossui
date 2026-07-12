@@ -3,9 +3,9 @@
 An open-source Flutter UI library of themeable, accessible components, inspired
 by coss.com/ui, Cal.com's design system. Themed from one source, one import.
 
-> **Status: beta, under active development.** This pre-release
-> (`0.1.0-beta.3`) ships 21 components, but APIs and tokens can still change
-> between releases. Pin an exact version if you depend on it.
+> **Under active development.** `0.1.0` ships 21 components. Under 0.x, APIs and
+> tokens can still change between releases, so pin a version you have tested
+> against.
 
 > **Unofficial.** Not affiliated with or endorsed by Cal.com, Inc. or coss.com.
 > See [NOTICE](NOTICE) for attribution.
@@ -18,7 +18,7 @@ by coss.com/ui, Cal.com's design system. Themed from one source, one import.
 
 ```yaml
 dependencies:
-  fossui: ^0.1.0-beta.3
+  fossui: ^0.1.0
 ```
 
 ## Usage
@@ -57,7 +57,7 @@ one clears, and [CHANGELOG.md](CHANGELOG.md) for released versions.
 ## Platforms
 
 Built on `package:flutter/widgets.dart` with no platform channels, so it runs
-anywhere Flutter does. During the beta, mobile is the tested target:
+anywhere Flutter does. Mobile is the tested target:
 
 | Platform | Status |
 | --- | --- |
