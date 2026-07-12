@@ -9,6 +9,7 @@ enum FossCheckboxGroupVariant {
   card,
 }
 
+/// {@category Inputs}
 /// Lays out a set of [FossCheckboxItem] options as a multi-select group.
 ///
 /// Holds the checked [values] and the [onChanged] callback and shares them with

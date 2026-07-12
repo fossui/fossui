@@ -5,4 +5,5 @@
 library;
 
 export 'src/components/components.dart';
+export 'src/foundation/foss_since.dart';
 export 'src/theme/theme.dart';

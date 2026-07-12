@@ -48,6 +48,7 @@ class FossToastScope extends InheritedNotifier<FossToastController> {
   }
 }
 
+/// {@category Overlays}
 /// Hosts transient toasts over its [child]. Mount it once near the app root,
 /// above everything that needs to raise a toast.
 ///

@@ -33,7 +33,7 @@ slots take any `Widget`, so the package has no icon dependency.
 - FossAvatar, FossBadge
 - FossButton (plus `FossButton.icon`), FossCard
 - FossCheckbox (FossCheckboxGroup), FossRadio (FossRadioGroup)
-- FossCombobox, FossSelect, FossMultiSelect
+- FossCombobox (FossMultiCombobox, FossAutocomplete), FossSelect (FossMultiSelect)
 - FossDialog, FossDrawer
 - FossProgress, FossSpinner, FossSlider
 - FossSeparator, FossTabs
@@ -43,5 +43,6 @@ slots take any `Widget`, so the package has no icon dependency.
 ## Links
 
 - Homepage: https://fossui.org
+- Documentation: https://fossui.org/docs
 - Repository: https://github.com/fossui/fossui
 - License: MIT (see NOTICE for attribution)

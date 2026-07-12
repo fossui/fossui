@@ -27,11 +27,6 @@ for one-call rebrands.
 
 ### Added
 
-* `FossNumberField`: a numeric input flanked by decrement and increment steppers.
-  Holds a `num` clamped to `[min, max]`, steps by `step` (and `largeStep` on the
-  page keys), and formats display and typed entry through `format` / `parse`. It
-  reuses the text field box across three sizes, exposes the invalid state through
-  `error`, and takes a `FossNumberFieldStyle` for one-off overrides.
 * `FossThemeData.retheme` layers a compact `FossThemeSpec` over a base theme:
   enumerated color roles, plus single seeds for radius, spacing, shadow tint, and
   font family. `FossRadii.fromBase` derives the radius scale from one value.
@@ -102,6 +97,8 @@ First component release. Everything ships from a single
   `FossSpinner`, `FossSeparator`, `FossTabs`.
 
 ## 0.0.1
+
+### Added
 
 * Initial package scaffold: structure, theming and component barrels, MIT
   license, and attribution NOTICE.

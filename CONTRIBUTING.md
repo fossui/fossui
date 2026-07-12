@@ -48,6 +48,9 @@ so a malformed commit is rejected locally.
 - Describe what changed and why. Link the issue it closes.
 - Add or update tests for the behavior you touch.
 - If a change affects the rendered output, include before and after screenshots.
-- Note any user-facing change in the CHANGELOG.
+- Note any user-facing change in the CHANGELOG under the current `## Unreleased`
+  heading, in one of the fixed sections: `Added`, `Changed`, `Improved`,
+  `Removed`, or `Fixed`. Released version headings and their notes are frozen; do
+  not rewrite them.
 
 Reviews happen when time allows. If a pull request goes quiet, a ping is fine.

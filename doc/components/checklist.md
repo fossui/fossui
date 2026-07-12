@@ -66,6 +66,18 @@ bottom into the pull request and tick it as you go.
   and a runnable example.
 - [ ] A companion showcase page that exercises the variants, sizes, states, and
   themes. This lives in the separate showcase project, not in the package.
+- [ ] The dartdoc preview, docs, and playground links follow the mechanical
+  convention so they stay derivable from the name: preview images at
+  `fossui.org/components/<slug>/overview/{light,dark}.png`, docs at
+  `fossui.org/docs/components/<slug>`, playground at
+  `play.fossui.org/#/?path=components/<folder>/<class-lower>/playground`. The
+  `<slug>` is the class name minus the `Foss` prefix, kebab-cased; the playground
+  is keyed on the component's primary class. Do not invent a new path shape.
+- [ ] Once a component ships, its URLs are frozen: never move or rename one. Add a
+  new asset path rather than changing a published one.
+- [ ] Public API added after the `0.1.0` baseline carries `@FossSince('<version>')`
+  on the class. API that shipped in `0.1.0` stays unannotated; the baseline is
+  implicit.
 
 ## 7. Gate
 
@@ -103,6 +115,8 @@ Tests
 Docs
 [ ] documentation comment on every public member
 [ ] companion showcase page (separate project)
+[ ] preview/docs/playground URLs follow the mechanical slug convention (frozen once shipped)
+[ ] @FossSince on public API added after 0.1.0 (baseline stays unannotated)
 
 Gate
 [ ] analysis clean, formatted, prefixed names

@@ -9,6 +9,7 @@ enum FossRadioGroupVariant {
   card,
 }
 
+/// {@category Inputs}
 /// Lays out a set of [FossRadio] options as a single-choice group.
 ///
 /// Holds the selected [groupValue] and the [onChanged] callback and shares them

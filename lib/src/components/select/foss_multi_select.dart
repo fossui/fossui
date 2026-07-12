@@ -1,5 +1,6 @@
 part of 'foss_select.dart';
 
+/// {@category Inputs}
 /// A pick-several-from-list control with no typing.
 ///
 /// Like [FossSelect] but the value is a set: each row carries a checkbox, a
