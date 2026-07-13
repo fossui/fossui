@@ -83,3 +83,34 @@ jobs:
       # CI is set by GitHub Actions, so only the committed Ahem flavor renders.
       - name: Verify goldens
         run: sh scripts/dev/goldens.sh
+
+  score:
+    name: Pub score
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: stable
+          cache: true
+
+      - name: Cache pub packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.pub-cache
+          key: pub-${{ runner.os }}-${{ env.FLUTTER_VERSION }}-${{ hashFiles('pubspec.yaml') }}
+          restore-keys: pub-${{ runner.os }}-${{ env.FLUTTER_VERSION }}-
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      # Guard the pub.dev score against regression. Threshold 10 tolerates one
+      # category slipping without failing the build; run under the pinned SDK so
+      # the formatter matches the committed tall-style source.
+      - name: Score with pana
+        run: |
+          dart pub global activate pana
+          dart pub global run pana --no-warning --exit-code-threshold 10
