@@ -1,0 +1,62 @@
+name: Coverage
+
+# Build the HTML coverage report on every push to main and publish it to
+# GitHub Pages (fossui.github.io/fossui). Enable Pages once in repo settings
+# with Source set to GitHub Actions.
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+env:
+  FLUTTER_VERSION: 3.41.9
+
+jobs:
+  report:
+    name: Build and publish
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: stable
+          cache: true
+
+      - name: Cache pub packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.pub-cache
+          key: pub-${{ runner.os }}-${{ env.FLUTTER_VERSION }}-${{ hashFiles('pubspec.yaml') }}
+          restore-keys: pub-${{ runner.os }}-${{ env.FLUTTER_VERSION }}-
+
+      - name: Install lcov
+        run: sudo apt-get update && sudo apt-get install -y lcov
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Build HTML report
+        run: sh scripts/dev/coverage.sh --html
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: coverage/html
+
+      - name: Deploy to Pages
+        id: deploy
+        uses: actions/deploy-pages@v4

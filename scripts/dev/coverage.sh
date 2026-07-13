@@ -1,6 +1,7 @@
 #!/usr/bin/env sh
 # Run the test suite with coverage. Locally it also builds and opens an HTML
-# report; in CI it stops at coverage/lcov.info, which the Codecov step uploads.
+# report; in CI it stops at coverage/lcov.info unless --html is passed to build
+# the published report.
 set -eu
 
 usage() {
@@ -9,7 +10,7 @@ Usage: scripts/dev/coverage.sh [options] [-- <flutter test args>]
 
 Runs the test suite with coverage and writes coverage/lcov.info.
 Locally it then builds an HTML report and opens it; in CI (CI=true) it
-stops at lcov.info so the Codecov upload step can take over.
+stops at lcov.info unless --html is passed to build the report.
 
 Goldens are excluded (--exclude-tags golden): they assert pixels, not
 lines, so they add little real coverage.

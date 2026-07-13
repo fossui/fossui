@@ -74,6 +74,8 @@ fvm flutter pub get
 fvm flutter test
 ```
 
+Coverage report: [fossui.github.io/fossui](https://fossui.github.io/fossui).
+
 Contributions are welcome. See [CONTRIBUTING.md](CONTRIBUTING.md) for the
 workflow and the [Code of Conduct](CODE_OF_CONDUCT.md).
 
