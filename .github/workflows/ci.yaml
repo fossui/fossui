@@ -129,6 +129,12 @@ jobs:
       - name: Install dependencies
         run: flutter pub get
 
+      # pana renders the screenshots to WebP to score them; without these tools
+      # every screenshot fails and the example category drops to zero. pub.dev's
+      # analyzer ships them, so this keeps the local score in step with it.
+      - name: Install screenshot tools
+        run: sudo apt-get update && sudo apt-get install -y webp
+
       # Guard the pub.dev score against regression. Threshold 10 tolerates one
       # category slipping without failing the build; run under the pinned SDK so
       # the formatter matches the committed tall-style source.
