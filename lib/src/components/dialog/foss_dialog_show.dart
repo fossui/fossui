@@ -48,7 +48,7 @@ Future<T?> showFossDialog<T>({
 /// `Navigator.pop`.
 ///
 /// Unlike a plain dialog, the scrim does not dismiss it: the user must pick an
-/// action. Back or Esc pop the route with a null result, the cancel path.
+/// action. System back pops the route with a null result, the cancel path.
 ///
 /// ```dart
 /// final confirmed = await showFossAlertDialog<bool>(

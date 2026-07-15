@@ -6,6 +6,12 @@ themed from one source and reached through a single import. It works under
 This cut also lands a documentation pass and a few public API renames for naming
 consistency.
 
+### Added
+
+* `FossSince` annotation marks the version a public API arrived in. Everything in
+  this release is unannotated; the marker starts appearing on APIs added after
+  `0.1.0`.
+
 ### Changed
 
 * Toast naming now lines up with the other variant enums. `FossToastType` is
@@ -14,6 +20,17 @@ consistency.
 * The accessibility label parameter is spelled `semanticLabel` throughout.
   `FossAvatar`, `FossBadge`, `FossProgress`, `FossSwitch`, and `FossTooltip` drop
   the old `semanticsLabel` spelling to match the rest of the set.
+* Picker callbacks line up on `onChanged`. `FossCombobox` and `FossMultiCombobox`
+  report a pick through `onChanged` (was `onSelected`), matching `FossSelect` and
+  the other form fields. `FossSelect.onChanged` narrows to `ValueChanged<T>`,
+  since the field has no clear action and never reported null.
+* `showFossToast` returns a `FossToastHandle` instead of a bare id. Call
+  `.dismiss()` or `.update()` on it to control the toast, no `BuildContext`
+  needed.
+* `FossMultiSelect.selectionLabel` is now `selectionLabelBuilder`, matching the
+  builder-parameter convention.
+* `FossCheckboxGroupScope` and `FossRadioGroupScope` are no longer part of the
+  public API; they were internal plumbing, never meant to be used directly.
 
 ### Improved
 
@@ -21,6 +38,28 @@ consistency.
   the documentation site and live playground, an explicit summary of what the
   component does and does not do, sidebar grouping by category, and cross-links
   between related components. Previews also show on hover over a constructor.
+* Accessibility refinements: the slider stops announcing an unchanged value once
+  it reaches either bound, the drawer names its route for screen readers, and the
+  disabled switch drops the forbidden cursor for the standard pointer.
+* Design fidelity: title-to-description spacing now tracks each surface (tighter on
+  the alert and toast, looser on the dialog and drawer), every form error caption
+  shares the deeper destructive-foreground red, the select trigger padding lines up
+  with the other fields, the toast enter and exit ease over a longer beat with a
+  lighter rear-card tint, the tabs indicator uses a symmetric ease, the alert
+  action row keeps its full gap above the text, and checkbox and radio labels are
+  medium weight.
+
+### Fixed
+
+* A single-select combobox no longer collapses to the chosen row when reopened;
+  the full option list shows again.
+* Tabs seeded with an `initialValue` that names a disabled or missing tab now
+  fall back to the first enabled tab instead of leaving the panel blank.
+* Fields and dialogs render correctly under a theme with a zero corner radius.
+* Right-to-left fixes: the multi-select combobox placeholder and the select popup
+  align to the reading-direction start rather than the physical left.
+* A diagonal swipe on a toast dismisses it once instead of firing its dismiss
+  twice.
 
 ## 0.1.0-beta.3
 

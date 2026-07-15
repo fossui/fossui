@@ -1,7 +1,4 @@
-// Barrel for fossui components.
-//
-// Widgets are exported from here as they are ported (Button, Input,
-// Checkbox, Card, Dialog, ...).
+// Barrel for the fossui components.
 
 export '../foundation/foss_dialog_surface.dart'
     show FossDialogFooterVariant, FossDialogPresentation;
