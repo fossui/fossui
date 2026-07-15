@@ -1,8 +1,8 @@
 # fossui
 
 An open-source Flutter UI library, inspired by Cal.com's design system. Themed
-from one source, accessible, one import. One import gives you the theme system
-and every component.
+from one source and accessible, reached through a single import that gives you
+the theme system and every component.
 
 ```dart
 import 'package:fossui/fossui.dart';

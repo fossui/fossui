@@ -14,7 +14,7 @@ bottom into the pull request and tick it as you go.
   parameters.
 - [ ] The states it supports are decided up front: which of default, hover,
   pressed, focused, disabled, selected, error, and loading apply.
-- [ ] Controlled and uncontrolled use both work where they make sense: a
+- [ ] Both controlled and uncontrolled use work where they make sense: a
   `value` plus `onChanged`, or an optional controller.
 - [ ] A single `FossXStyle` object is the per-instance escape hatch. A named
   constructor is added only for a genuinely distinct shape (for example
@@ -32,7 +32,19 @@ bottom into the pull request and tick it as you go.
 - [ ] No per-instance token properties on the constructor (`color:`,
   `borderRadius:`, `padding:`). Restyle through the theme, not the widget.
 
-## 3. Accessibility
+## 3. State matrix
+
+- [ ] Every state the component claims renders and is visually distinct:
+  default, and whichever of hover, pressed, focused, disabled, selected, error,
+  and loading apply.
+- [ ] In a list or group, at most one item is highlighted at a time; selection
+  follows the component (single or multiple).
+- [ ] Disabled blocks interaction and reads as disabled to assistive technology.
+- [ ] Error recolors the affected surface and announces its message.
+- [ ] Open, close, and value transitions run on the motion tokens and collapse
+  under the reduced-motion preference.
+
+## 4. Accessibility
 
 - [ ] Correct semantics: role, label, hint, value, and flags, with an explicit
   label for icon-only controls.
@@ -44,14 +56,14 @@ bottom into the pull request and tick it as you go.
 - [ ] Right-to-left layout is correct.
 - [ ] Reduced-motion preference is honored.
 
-## 4. Responsiveness
+## 5. Responsiveness
 
 - [ ] Respects incoming constraints. No hardcoded width or height assumptions.
 - [ ] No overflow from narrow to wide. Long text wraps or truncates on purpose.
 - [ ] Verified at small and large sizes, across text scales, in both text
   directions.
 
-## 5. Tests
+## 6. Tests
 
 - [ ] Unit tests for any logic: style resolution, controller behavior, value
   math.
@@ -60,7 +72,7 @@ bottom into the pull request and tick it as you go.
 - [ ] Accessibility assertions for tap target, labeling, and contrast.
 - [ ] Coverage reported.
 
-## 6. Docs
+## 7. Docs
 
 - [ ] A documentation comment on every public member, each with a short summary
   and a runnable example.
@@ -79,7 +91,7 @@ bottom into the pull request and tick it as you go.
   on the class. API that shipped in `0.1.0` stays unannotated; the baseline is
   implicit.
 
-## 7. Gate
+## 8. Gate
 
 - [ ] Static analysis is clean and the code is formatted.
 - [ ] Public names are `Foss`-prefixed; internals are not exported.
@@ -97,6 +109,11 @@ Theming
 [ ] context.fossTheme, no literals
 [ ] light + dark + animated
 [ ] style precedence; no per-instance token props
+
+State matrix
+[ ] every claimed state renders and is distinct
+[ ] one active highlight (selection per component); disabled blocks + announces; error recolors + announces
+[ ] transitions on motion tokens; collapse under reduced motion
 
 Accessibility
 [ ] semantics role/label/flags; label on icon-only

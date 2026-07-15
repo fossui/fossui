@@ -1,7 +1,7 @@
 # Contributing
 
-fossui is in beta, so APIs and tokens can still change between releases. Bug
-reports, fixes, and questions are welcome.
+fossui is under active development and pre-1.0, so APIs and tokens can still
+change between releases. Bug reports, fixes, and questions are welcome.
 
 By taking part you agree to the [Code of Conduct](CODE_OF_CONDUCT.md).
 
@@ -48,9 +48,9 @@ so a malformed commit is rejected locally.
 - Describe what changed and why. Link the issue it closes.
 - Add or update tests for the behavior you touch.
 - If a change affects the rendered output, include before and after screenshots.
-- Note any user-facing change in the CHANGELOG under the current `## Unreleased`
-  heading, in one of the fixed sections: `Added`, `Changed`, `Improved`,
-  `Removed`, or `Fixed`. Released version headings and their notes are frozen; do
-  not rewrite them.
+- Note any user-facing change in the CHANGELOG under an `## Unreleased` heading at
+  the top, adding that heading if it is not there, in one of the fixed sections:
+  `Added`, `Changed`, `Improved`, `Removed`, or `Fixed`. Released version headings
+  and their notes are frozen; do not rewrite them.
 
 Reviews happen when time allows. If a pull request goes quiet, a ping is fine.

@@ -2,9 +2,9 @@
 
 <img src="assets/logo.png" alt="fossui" width="200" />
 
-**Minimal, framework-agnostic Flutter components. Themed from one source.**
+**Minimal, framework-agnostic Flutter components. Themed from one source. Inspired by [coss.com/ui](https://coss.com/ui), Cal.com's design system.**
 
-[![Pub Version](https://img.shields.io/pub/v/fossui?logo=dart&color=0175C2)](https://pub.dev/packages/fossui) [![Pub Points](https://img.shields.io/pub/points/fossui?logo=dart&color=0175C2)](https://pub.dev/packages/fossui/score) [![License: MIT](https://img.shields.io/badge/license-MIT-purple.svg)](LICENSE) [![Platform](https://img.shields.io/badge/platform-Flutter-02569B?logo=flutter&logoColor=white)](https://pub.dev/packages/fossui)
+[![Pub Version](https://img.shields.io/pub/v/fossui?logo=dart&color=0175C2)](https://pub.dev/packages/fossui) [![Pub Points](https://img.shields.io/pub/points/fossui?logo=dart&color=0175C2)](https://pub.dev/packages/fossui/score) [![Pub Likes](https://img.shields.io/pub/likes/fossui?logo=dart&color=0175C2)](https://pub.dev/packages/fossui/score) [![Pub Downloads](https://img.shields.io/pub/dm/fossui?logo=dart&color=0175C2)](https://pub.dev/packages/fossui) [![Coverage](https://img.shields.io/endpoint?url=https://fossui.github.io/fossui/coverage.json)](https://fossui.github.io/fossui) [![License: MIT](https://img.shields.io/badge/license-MIT-purple.svg)](LICENSE) 
 
 </div>
 
@@ -92,7 +92,7 @@ Not using Material? There is no `FossApp` to add. Wrap your tree in a
 `FossTheme` instead, and `context.fossTheme` resolves the same way under
 `CupertinoApp` or a bare `WidgetsApp`.
 
-See [`example/`](example/) for a runnable app.
+See [`example/`](https://pub.dev/packages/fossui/example) for a runnable app.
 
 ## Theming
 
@@ -100,9 +100,9 @@ The defaults give fossui its look, but nothing is locked. Read tokens through
 one accessor:
 
 ```dart
-final t = context.fossTheme;
-final color = t.colors.primary;
-final radius = t.radii.md;
+final theme = context.fossTheme;
+final color = theme.colors.primary;
+final radius = theme.radii.md;
 ```
 
 To reskin the app, layer a `FossThemeSpec` over a base theme. Every field is
@@ -143,18 +143,14 @@ as the documented companion.
 
 ## Platforms
 
-With no platform channels, fossui runs anywhere Flutter does. Mobile is the
-tested target.
-
-| Platform | Status |
-| --- | --- |
-| iOS, Android | Tested and supported |
-| Web, macOS, Windows, Linux | Should work, not yet verified. Use with care. |
+With no platform channels, fossui runs anywhere Flutter does: Android, iOS, web,
+macOS, Windows, and Linux are all supported.
 
 ## Ecosystem
 
 - Documentation: [fossui.org](https://fossui.org)
 - Live gallery: [play.fossui.org](https://play.fossui.org)
+- MCP server: [mcp.fossui.org](https://mcp.fossui.org)
 - Package: [pub.dev/packages/fossui](https://pub.dev/packages/fossui)
 
 ## Development
