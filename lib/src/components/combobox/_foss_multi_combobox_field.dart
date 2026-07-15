@@ -283,7 +283,7 @@ class _FossMultiComboboxFieldState<T> extends State<_FossMultiComboboxField<T>>
         SizedBox(
           width: 140,
           child: Stack(
-            alignment: Alignment.centerLeft,
+            alignment: AlignmentDirectional.centerStart,
             children: [
               if (showPlaceholder)
                 IgnorePointer(

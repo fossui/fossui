@@ -8,7 +8,7 @@ void main() {
     expect(FossMotion.standard.spinner, const Duration(milliseconds: 1000));
     expect(FossMotion.standard.overlay, const Duration(milliseconds: 200));
     expect(FossMotion.standard.drawer, const Duration(milliseconds: 450));
-    expect(FossMotion.standard.toast, const Duration(milliseconds: 250));
+    expect(FossMotion.standard.toast, const Duration(milliseconds: 500));
     expect(FossMotion.standard.progress, const Duration(milliseconds: 500));
   });
 

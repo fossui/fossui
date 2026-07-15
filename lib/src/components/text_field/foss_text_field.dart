@@ -54,6 +54,10 @@ enum FossTextFieldSize {
 /// The [controller] and [focusNode] are optional; when omitted, the field
 /// creates and disposes its own.
 ///
+/// Text can be selected and edited, but the field shows no copy and paste
+/// selection toolbar: it builds on the widgets layer and takes no platform
+/// selection controls.
+///
 /// {@macro foss.customize}
 ///
 /// See also [FossAutocomplete] for a field with a filtered dropdown.
@@ -100,6 +104,9 @@ class FossTextField extends StatefulWidget {
        );
 
   /// Holds the editable text. Created and disposed internally when null.
+  ///
+  /// Swapping a provided controller for null carries the text over, but not the
+  /// selection or the listeners on the old controller.
   final TextEditingController? controller;
 
   /// Manages keyboard focus. Created and disposed internally when null.
@@ -252,7 +259,9 @@ class _FossTextFieldState extends State<FossTextField>
     final box = _buildBox(theme, v, hasError: hasError, focused: focused);
 
     final caption = widget.errorText ?? widget.helperText;
-    final captionColor = hasError ? theme.colors.destructive : v.helperColor;
+    final captionColor = hasError
+        ? theme.colors.destructiveForeground
+        : v.helperColor;
 
     return Column(
       mainAxisSize: MainAxisSize.min,

@@ -210,7 +210,7 @@ class _TabIndicator extends StatelessWidget {
       width: width,
       height: height,
       duration: duration,
-      curve: Curves.fastOutSlowIn,
+      curve: Curves.easeInOut,
       child: child,
     );
   }

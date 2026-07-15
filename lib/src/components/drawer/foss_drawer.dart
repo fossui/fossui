@@ -2,6 +2,8 @@ import 'dart:async';
 
 import 'package:flutter/widgets.dart';
 import 'package:fossui/src/components/dialog/foss_dialog.dart';
+import 'package:fossui/src/foundation/foss_dialog_surface.dart'
+    show dialogRouteLabel;
 import 'package:fossui/src/foundation/foss_modal_route.dart';
 import 'package:fossui/src/icons/foss_glyph.dart';
 import 'package:fossui/src/theme/colors/foss_colors.dart';
@@ -10,9 +12,6 @@ import 'package:fossui/src/theme/radii/foss_radii.dart';
 import 'package:fossui/src/theme/typography/foss_typography.dart';
 
 part 'foss_drawer_style.dart';
-
-/// The spring-like curve the panel rides in and out on.
-const Cubic _drawerCurve = Cubic(0.32, 0.72, 0, 1);
 
 /// Maximum width of a side panel in logical pixels.
 const double _sidePanelMaxWidth = 448;
@@ -215,6 +214,7 @@ class FossDrawer extends StatelessWidget {
       borderRadius: s?.borderRadius ?? theme.radii.xl2,
       shadows: s?.shadows ?? theme.shadows.lg,
       showHandle: showHandle,
+      semanticLabel: dialogRouteLabel(title),
       header: _buildHeader(theme, colors, s, tightenBottom: hasContent),
       content: content == null
           ? null
@@ -258,7 +258,7 @@ class FossDrawer extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisSize: MainAxisSize.min,
-        spacing: theme.spacing(1),
+        spacing: theme.spacing(2),
         children: [
           if (title case final title?)
             DefaultTextStyle.merge(style: titleStyle, child: title),
@@ -307,7 +307,7 @@ class _DrawerSlide extends StatelessWidget {
     };
     return SlideTransition(
       position: Tween<Offset>(begin: begin, end: Offset.zero).animate(
-        CurvedAnimation(parent: animation, curve: _drawerCurve),
+        CurvedAnimation(parent: animation, curve: kSheetCurve),
       ),
       child: child,
     );
@@ -326,6 +326,7 @@ class _DrawerSurface extends StatefulWidget {
     required this.borderRadius,
     required this.shadows,
     required this.showHandle,
+    required this.semanticLabel,
     required this.header,
     required this.content,
     required this.actions,
@@ -340,6 +341,9 @@ class _DrawerSurface extends StatefulWidget {
   final double borderRadius;
   final List<BoxShadow> shadows;
   final bool showHandle;
+
+  /// Names the modal route for assistive technology, from the title text.
+  final String? semanticLabel;
   final Widget? header;
   final Widget? content;
   final List<Widget> actions;
@@ -368,7 +372,7 @@ class _DrawerSurfaceState extends State<_DrawerSurface>
   }
 
   void _onSettleTick() {
-    final t = _drawerCurve.transform(_settle.value);
+    final t = kSheetCurve.transform(_settle.value);
     _offset.value = _settleFrom + (_settleTo - _settleFrom) * t;
   }
 
@@ -510,9 +514,12 @@ class _DrawerSurfaceState extends State<_DrawerSurface>
         shape: shape,
         textDirection: Directionality.of(context),
       ),
-      // Keep the title, body, and close affordance as distinct semantics
-      // nodes rather than merging into one panel node.
+      // Name the route for assistive tech, and keep the title, body, and close
+      // affordance as distinct nodes rather than merging into one panel node.
       child: Semantics(
+        scopesRoute: true,
+        namesRoute: true,
+        label: widget.semanticLabel,
         explicitChildNodes: true,
         child: Stack(
           children: [

@@ -116,7 +116,7 @@ class _FossRadioState<T> extends State<FossRadio<T>> {
   @override
   Widget build(BuildContext context) {
     final theme = context.fossTheme;
-    final group = FossRadioGroupScope.of<T>(context);
+    final group = _FossRadioGroupScope.of<T>(context);
     if (group == null) {
       throw FlutterError(
         'FossRadio<$T> must be placed inside a FossRadioGroup<$T>.',
@@ -395,7 +395,7 @@ _RadioVisuals _resolve(FossThemeData theme) {
     circleSize: _circleSize,
     dotSize: _dotSize,
     gap: theme.spacing(2),
-    labelStyle: theme.typography.base,
+    labelStyle: theme.typography.base.medium,
     descriptionStyle: theme.typography.xs,
   );
 }

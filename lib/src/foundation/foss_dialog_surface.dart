@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:flutter/widgets.dart';
 import 'package:fossui/src/theme/foss_theme.dart';
 import 'package:fossui/src/theme/spacing/foss_spacing.dart';
@@ -101,7 +103,7 @@ Widget? buildDialogHeader({
   return Column(
     crossAxisAlignment: CrossAxisAlignment.start,
     mainAxisSize: MainAxisSize.min,
-    spacing: theme.spacing(1),
+    spacing: theme.spacing(2),
     children: [
       if (title case final title?)
         DefaultTextStyle.merge(style: titleStyle, child: title),
@@ -220,7 +222,7 @@ class FossDialogSurface extends StatelessWidget {
           child: CustomPaint(
             foregroundPainter: _RimPainter(
               color: theme.colors.isDark ? _rimDark : _rimLight,
-              radius: visual.borderRadius - 1,
+              radius: math.max(0, visual.borderRadius - 1),
               topLit: theme.colors.isDark,
             ),
             child: _slots(context, safeBottom: 0),

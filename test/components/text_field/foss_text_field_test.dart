@@ -590,12 +590,14 @@ void main() {
       expect(iconTheme.data.color, fg.withValues(alpha: fg.a * 0.8));
     });
 
-    testWidgets('the error caption uses the destructive color', (tester) async {
+    testWidgets('the error caption uses the destructive-foreground color', (
+      tester,
+    ) async {
       await tester.pumpWidget(host(const FossTextField(errorText: 'Bad')));
 
       expect(
         tester.widget<Text>(find.text('Bad')).style?.color,
-        FossColors.light.destructive,
+        FossColors.light.destructiveForeground,
       );
     });
 

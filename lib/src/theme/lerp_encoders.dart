@@ -16,7 +16,7 @@ class DoubleLerpEncoder extends ThemeEncoder<double> {
   const DoubleLerpEncoder();
 
   @override
-  double lerp(double a, double b, double t) => lerpDouble(a, b, t)!;
+  double lerp(double a, double b, double t) => lerpDouble(a, b, t) ?? b;
 }
 
 /// Interpolates a `List<BoxShadow>` so elevation eases on theme transitions

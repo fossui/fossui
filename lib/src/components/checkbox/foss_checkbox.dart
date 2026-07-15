@@ -149,7 +149,7 @@ class FossCheckbox extends StatelessWidget {
             child: Text(
               text,
               style: theme.typography.xs.copyWith(
-                color: theme.colors.destructive,
+                color: theme.colors.destructiveForeground,
               ),
             ),
           ),
@@ -473,7 +473,7 @@ _CheckboxVisuals _resolve(FossThemeData theme, FossCheckboxStyle? override) {
     boxSize: override?.boxSize ?? _boxSize,
     glyphSize: override?.glyphSize ?? _glyphSize,
     gap: override?.gap ?? theme.spacing(2),
-    labelStyle: override?.labelStyle ?? theme.typography.base,
+    labelStyle: override?.labelStyle ?? theme.typography.base.medium,
     descriptionStyle: override?.descriptionStyle ?? theme.typography.xs,
   );
 }

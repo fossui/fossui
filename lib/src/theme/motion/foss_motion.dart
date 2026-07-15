@@ -63,7 +63,7 @@ class FossMotion extends ThemeExtension<FossMotion>
     spinner: Duration(milliseconds: 1000),
     overlay: Duration(milliseconds: 200),
     drawer: Duration(milliseconds: 450),
-    toast: Duration(milliseconds: 250),
+    toast: Duration(milliseconds: 500),
     progress: Duration(milliseconds: 500),
   );
 }

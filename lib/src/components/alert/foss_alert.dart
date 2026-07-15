@@ -167,7 +167,7 @@ class FossAlert extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisSize: MainAxisSize.min,
-                  spacing: sp(1),
+                  spacing: sp(0.5),
                   children: [
                     if (title case final title?)
                       DefaultTextStyle.merge(style: titleStyle, child: title),
@@ -178,7 +178,7 @@ class FossAlert extends StatelessWidget {
                       ),
                     if (actions.isNotEmpty)
                       Padding(
-                        padding: EdgeInsets.only(top: sp(1)),
+                        padding: EdgeInsets.only(top: sp(2)),
                         child: Align(
                           alignment: AlignmentDirectional.centerEnd,
                           child: Wrap(
