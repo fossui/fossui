@@ -2,9 +2,10 @@
 
 <img src="assets/logo.png" alt="fossui" width="200" />
 
-**Minimal, framework-agnostic Flutter components. Themed from one source. Inspired by [coss.com/ui](https://coss.com/ui), Cal.com's design system.**
+**Minimal, framework-agnostic Flutter components.<br/>
+Themed from one source. Inspired by [coss.com/ui](https://coss.com/ui), Cal.com's design system.**
 
-[![Pub Version](https://img.shields.io/pub/v/fossui?logo=dart&color=0175C2)](https://pub.dev/packages/fossui) [![Pub Points](https://img.shields.io/pub/points/fossui?logo=dart&color=0175C2)](https://pub.dev/packages/fossui/score) [![Pub Likes](https://img.shields.io/pub/likes/fossui?logo=dart&color=0175C2)](https://pub.dev/packages/fossui/score) [![Pub Downloads](https://img.shields.io/pub/dm/fossui?logo=dart&color=0175C2)](https://pub.dev/packages/fossui) [![Coverage](https://img.shields.io/endpoint?url=https://fossui.github.io/fossui/coverage.json)](https://fossui.github.io/fossui) [![License: MIT](https://img.shields.io/badge/license-MIT-purple.svg)](LICENSE) 
+[![Pub Version](https://img.shields.io/pub/v/fossui?logo=dart&color=0175C2)](https://pub.dev/packages/fossui) [![Pub Points](https://img.shields.io/pub/points/fossui?logo=dart&color=0175C2)](https://pub.dev/packages/fossui/score) [![Coverage](https://img.shields.io/endpoint?url=https://fossui.github.io/fossui/coverage.json)](https://fossui.github.io/fossui) 
 
 </div>
 
@@ -18,11 +19,6 @@ or a bare `WidgetsApp`, and reads its own theme first rather than replacing
 yours. The look is drawn from [coss.com/ui](https://coss.com/ui), Cal.com's
 design system: clean and neutral, with superellipse corners. One import, one
 theme, light and dark out of the box.
-
-> [!NOTE]
-> Under active development. `0.1.0` ships 21 components. Under 0.x, APIs and
-> tokens can still change between releases, so pin a version you have tested
-> against.
 
 > [!IMPORTANT]
 > Unofficial and independent. Not affiliated with or endorsed by Cal.com, Inc.
@@ -88,9 +84,9 @@ void main() => runApp(
     );
 ```
 
-Not using Material? There is no `FossApp` to add. Wrap your tree in a
-`FossTheme` instead, and `context.fossTheme` resolves the same way under
-`CupertinoApp` or a bare `WidgetsApp`.
+No wrapper lock-in. `FossTheme` drops into any app, and `context.fossTheme`
+resolves identically under `MaterialApp`, `CupertinoApp`, or a bare
+`WidgetsApp`.
 
 See [`example/`](https://pub.dev/packages/fossui/example) for a runnable app.
 

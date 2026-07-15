@@ -67,6 +67,11 @@ fi
 
 genhtml coverage/lcov.info -o coverage/html --quiet
 echo "HTML report: coverage/html/index.html"
+
+# CI builds the report to publish it, not to view it; opening it there hits a
+# headless runner with no browser and fails. Only open on a local run.
+[ "${CI:-}" = "true" ] && exit 0
+
 if command -v open >/dev/null 2>&1; then
   open coverage/html/index.html
 elif command -v xdg-open >/dev/null 2>&1; then
