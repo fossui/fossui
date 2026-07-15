@@ -52,6 +52,17 @@ jobs:
       - name: Build HTML report
         run: sh scripts/dev/coverage.sh --html
 
+      - name: Coverage badge endpoint
+        run: |
+          pct=$(awk -F: '/^LF:/{f+=$2} /^LH:/{h+=$2} END{if(f>0) printf "%d", 100*h/f}' coverage/lcov.info)
+          if [ "$pct" -ge 90 ]; then color=brightgreen
+          elif [ "$pct" -ge 80 ]; then color=green
+          elif [ "$pct" -ge 70 ]; then color=yellowgreen
+          elif [ "$pct" -ge 60 ]; then color=yellow
+          elif [ "$pct" -ge 50 ]; then color=orange
+          else color=red; fi
+          printf '{"schemaVersion":1,"label":"coverage","message":"%s%%","color":"%s"}\n' "$pct" "$color" > coverage/html/coverage.json
+
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:

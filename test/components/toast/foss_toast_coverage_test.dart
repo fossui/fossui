@@ -46,4 +46,32 @@ void main() {
     expect(tester.takeException(), isNull);
     expect(find.text('Heads up'), findsOneWidget);
   });
+
+  testWidgets('a handle updates then dismisses its toast', (tester) async {
+    await tester.pumpWidget(host());
+    final handle = showFossToast(
+      ctx,
+      const FossToast(
+        variant: FossToastVariant.info,
+        title: Text('First'),
+        duration: Duration(minutes: 1),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    handle.update(
+      const FossToast(
+        variant: FossToastVariant.info,
+        title: Text('Second'),
+        duration: Duration(minutes: 1),
+      ),
+    );
+    await tester.pumpAndSettle();
+    expect(find.text('First'), findsNothing);
+    expect(find.text('Second'), findsOneWidget);
+
+    handle.dismiss();
+    await tester.pumpAndSettle();
+    expect(find.text('Second'), findsNothing);
+  });
 }

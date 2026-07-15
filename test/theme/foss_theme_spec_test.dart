@@ -23,6 +23,13 @@ void main() {
       );
     });
 
+    test('a runtime-built spec forwards its field', () {
+      // Non-const construction so the const constructor runs at runtime.
+      final base = FossThemeData.light.colors;
+      final spec = FossThemeSpec(primary: base.secondary);
+      expect(FossThemeData.light.retheme(spec).colors.primary, base.secondary);
+    });
+
     test('base swap starts from the dark set', () {
       final theme = FossThemeData.dark.retheme(
         const FossThemeSpec(primary: Color(0xFF51F0A8)),

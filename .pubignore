@@ -12,7 +12,6 @@ pubspec.lock
 test/
 dart_test.yaml
 scripts/
-codecov.yml
 lefthook.yml
 CONTRIBUTING.md
 CODE_OF_CONDUCT.md

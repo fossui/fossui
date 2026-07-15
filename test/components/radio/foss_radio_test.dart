@@ -343,30 +343,30 @@ void main() {
       expect(picked, 'a');
     });
 
-    testWidgets('the ring repaints when its color changes', (tester) async {
-      var error = false;
-      late StateSetter rebuild;
+    testWidgets('the focus ring repaints when the option rebuilds', (
+      tester,
+    ) async {
+      String? group;
       await tester.pumpWidget(
         host(
           StatefulBuilder(
-            builder: (context, setState) {
-              rebuild = setState;
-              return FossRadioGroup<String>(
-                errorText: error ? 'Required' : null,
-                onChanged: (_) {},
-                children: const [FossRadio(value: 'a', label: 'Apple')],
-              );
-            },
+            builder: (context, setState) => FossRadioGroup<String>(
+              groupValue: group,
+              onChanged: (v) => setState(() => group = v),
+              children: const [FossRadio(value: 'a', label: 'Apple')],
+            ),
           ),
         ),
       );
 
+      // Focus mounts the ring, then selecting rebuilds the same option in
+      // place so its painter is reassigned and shouldRepaint runs.
       await tester.sendKeyEvent(LogicalKeyboardKey.tab);
-      await tester.pump();
-      rebuild(() => error = true);
-      await tester.pump();
+      await tester.pumpAndSettle();
+      await tester.sendKeyEvent(LogicalKeyboardKey.space);
+      await tester.pumpAndSettle();
 
-      expect(tester.takeException(), isNull);
+      expect(group, 'a');
     });
   });
 
