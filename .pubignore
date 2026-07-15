@@ -10,11 +10,23 @@ staging/
 .DS_Store
 pubspec.lock
 test/
+dart_test.yaml
 scripts/
 codecov.yml
 lefthook.yml
 CONTRIBUTING.md
 CODE_OF_CONDUCT.md
+
+# Star-history chart, meaningful only on the GitHub README. Keeping it out trims
+# ~108 KB from the archive.
+assets/star-history/
+
+# README hero imagery, resolved from the repository via relative links on
+# pub.dev. Keeping it out trims ~650 KB. The pubspec screenshots (showcase,
+# alert-button, switch-slider, select-checkbox) stay: pub.dev reads those from
+# the archive.
+assets/demo.gif
+assets/logo.png
 
 # Internal maintainer notes. doc/categories/ and dartdoc_options.yaml stay: they
 # are dartdoc input. These are unreferenced prose that would otherwise ship unrendered.

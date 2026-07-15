@@ -6,6 +6,7 @@ version: 0.1.0
 homepage: https://fossui.org
 repository: https://github.com/fossui/fossui
 issue_tracker: https://github.com/fossui/fossui/issues
+documentation: https://fossui.org/docs
 
 topics:
   - ui
@@ -13,6 +14,24 @@ topics:
   - design-system
   - components
   - theming
+
+screenshots:
+  - path: assets/showcase.png
+    description: Overview of fossui components rendered in the dark theme.
+  - path: assets/alert-button.png
+    description: Alert variants plus button styles, sizes, and loading states.
+  - path: assets/switch-slider.png
+    description: Switches and sliders across default, disabled, and custom states.
+  - path: assets/select-checkbox.png
+    description: Select and checkbox controls with single and multiple selection.
+
+platforms:
+  android:
+  ios:
+  linux:
+  macos:
+  web:
+  windows:
 
 environment:
   sdk: ^3.11.5
