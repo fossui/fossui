@@ -12,6 +12,7 @@ export 'checkbox/foss_checkbox.dart';
 export 'combobox/foss_combobox.dart';
 export 'dialog/foss_dialog.dart';
 export 'drawer/foss_drawer.dart';
+export 'meter/foss_meter.dart';
 export 'progress/foss_progress.dart';
 export 'radio/foss_radio.dart';
 export 'select/foss_select.dart';

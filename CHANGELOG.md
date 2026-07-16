@@ -5,6 +5,8 @@
 * `FossAccordion` presents a vertical stack of collapsible sections. It is
   keyboard navigable, supports single or multiple open sections, and takes a
   `FossAccordionStyle` for one-off overrides.
+* `FossMeter` renders a static gauge for a bounded value, themed through
+  `FossMeterStyle`.
 
 ## 0.1.0
 
