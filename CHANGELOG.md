@@ -5,8 +5,15 @@
 * `FossAccordion` presents a vertical stack of collapsible sections. It is
   keyboard navigable, supports single or multiple open sections, and takes a
   `FossAccordionStyle` for one-off overrides.
+* `FossCalendar` shows a single month grid with single, multiple, or range
+  selection (`FossCalendar.single` / `.multiple` / `.range`), a `FossDateRange`
+  value type, `minDate` / `maxDate` and `isDateEnabled` bounds, keyboard grid
+  navigation, and a `FossCalendarStyle` for one-off overrides.
 * `FossMeter` renders a static gauge for a bounded value, themed through
   `FossMeterStyle`.
+* `FossNumberField` pairs a numeric input with decrement and increment steppers,
+  clamping to `[min, max]` with `step` and `largeStep`, `format` / `parse`
+  callbacks, three sizes, and a `FossNumberFieldStyle` for one-off overrides.
 
 ## 0.1.0
 
