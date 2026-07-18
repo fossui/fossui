@@ -2,16 +2,10 @@ import 'dart:async';
 
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
-import 'package:fossui/src/theme/colors/foss_colors.dart';
+import 'package:fossui/src/foundation/anchored_overlay.dart';
 import 'package:fossui/src/theme/foss_theme.dart';
 
 part 'foss_tooltip_style.dart';
-
-/// Gap between the popup and the anchor, in logical pixels.
-const double _sideOffset = 4;
-
-/// Keeps the popup this far off the viewport edge when it would overflow.
-const double _viewportMargin = 8;
 
 /// Vertical padding inside the popup.
 const double _verticalPadding = 4;
@@ -220,9 +214,9 @@ class _FossTooltipState extends State<FossTooltip>
       // The hint never intercepts input; it floats above the page.
       child: IgnorePointer(
         child: CustomSingleChildLayout(
-          delegate: _TooltipLayout(
+          delegate: AnchoredLayout(
             anchor: anchor,
-            side: _physicalSide(widget.side, Directionality.of(context)),
+            side: _anchorSide(widget.side, Directionality.of(context)),
           ),
           child: FadeTransition(
             opacity: _curve,
@@ -269,88 +263,6 @@ class _FossTooltipState extends State<FossTooltip>
   }
 }
 
-/// Positions the popup against the anchor, flipping to the opposite side and
-/// clamping into the viewport so it never overflows the screen.
-class _TooltipLayout extends SingleChildLayoutDelegate {
-  _TooltipLayout({required this.anchor, required this.side});
-
-  final Rect anchor;
-  final FossTooltipSide side;
-
-  @override
-  BoxConstraints getConstraintsForChild(BoxConstraints constraints) =>
-      BoxConstraints(
-        maxWidth: constraints.maxWidth - _viewportMargin * 2,
-        maxHeight: constraints.maxHeight,
-      );
-
-  @override
-  Offset getPositionForChild(Size size, Size child) {
-    final position = _place(child, _resolveSide(size, child));
-    return Offset(
-      _clamp(position.dx, size.width - child.width),
-      _clamp(position.dy, size.height - child.height),
-    );
-  }
-
-  /// Keeps [value] within `[margin, upper]`, collapsing to the margin when the
-  /// child is larger than the available room.
-  double _clamp(double value, double upper) {
-    final hi = upper - _viewportMargin;
-    return hi < _viewportMargin
-        ? _viewportMargin
-        : value.clamp(_viewportMargin, hi);
-  }
-
-  Offset _place(Size child, FossTooltipSide side) => switch (side) {
-    FossTooltipSide.top => Offset(
-      anchor.center.dx - child.width / 2,
-      anchor.top - _sideOffset - child.height,
-    ),
-    FossTooltipSide.bottom => Offset(
-      anchor.center.dx - child.width / 2,
-      anchor.bottom + _sideOffset,
-    ),
-    FossTooltipSide.left => Offset(
-      anchor.left - _sideOffset - child.width,
-      anchor.center.dy - child.height / 2,
-    ),
-    FossTooltipSide.right => Offset(
-      anchor.right + _sideOffset,
-      anchor.center.dy - child.height / 2,
-    ),
-  };
-
-  FossTooltipSide _resolveSide(Size size, Size child) {
-    bool fitsTop() =>
-        anchor.top - _sideOffset - child.height >= _viewportMargin;
-    bool fitsBottom() =>
-        anchor.bottom + _sideOffset + child.height <=
-        size.height - _viewportMargin;
-    bool fitsLeft() =>
-        anchor.left - _sideOffset - child.width >= _viewportMargin;
-    bool fitsRight() =>
-        anchor.right + _sideOffset + child.width <=
-        size.width - _viewportMargin;
-
-    return switch (side) {
-      FossTooltipSide.top when !fitsTop() && fitsBottom() =>
-        FossTooltipSide.bottom,
-      FossTooltipSide.bottom when !fitsBottom() && fitsTop() =>
-        FossTooltipSide.top,
-      FossTooltipSide.left when !fitsLeft() && fitsRight() =>
-        FossTooltipSide.right,
-      FossTooltipSide.right when !fitsRight() && fitsLeft() =>
-        FossTooltipSide.left,
-      _ => side,
-    };
-  }
-
-  @override
-  bool shouldRelayout(_TooltipLayout old) =>
-      old.anchor != anchor || old.side != side;
-}
-
 /// The resting popup: popover surface, 1px border, drop shadow, an inset
 /// highlight ring, and the centered hint text.
 class _TooltipPopup extends StatelessWidget {
@@ -378,7 +290,7 @@ class _TooltipPopup extends StatelessWidget {
         decoration: ShapeDecoration(
           color: s?.backgroundColor ?? colors.popover,
           shape: shape,
-          shadows: s?.shadows ?? _softShadow(theme.shadows.md),
+          shadows: s?.shadows ?? overlaySoftShadow(theme.shadows.md),
         ),
         child: ClipPath(
           clipper: ShapeBorderClipper(
@@ -399,7 +311,7 @@ class _TooltipPopup extends StatelessWidget {
                   textWidthBasis: TextWidthBasis.longestLine,
                 ),
               ),
-              Positioned.fill(child: _InnerRing(colors: colors)),
+              Positioned.fill(child: OverlayInnerRing(colors: colors)),
             ],
           ),
         ),
@@ -408,43 +320,14 @@ class _TooltipPopup extends StatelessWidget {
   }
 }
 
-/// The raised-edge highlight inside the border: a top line in light mode, a
-/// bottom line in dark mode, derived from the foreground role at low alpha.
-class _InnerRing extends StatelessWidget {
-  const _InnerRing({required this.colors});
-
-  final FossColors colors;
-
-  @override
-  Widget build(BuildContext context) {
-    final dark = colors.isDark;
-    final highlight = colors.foreground.withValues(alpha: dark ? 0.06 : 0.04);
-    final edge = BorderSide(color: highlight);
-    return DecoratedBox(
-      decoration: BoxDecoration(
-        border: Border(
-          top: dark ? BorderSide.none : edge,
-          bottom: dark ? edge : BorderSide.none,
-        ),
-      ),
-    );
-  }
-}
-
-/// The tooltip wears the medium shadow softened to a 5% tint, a fainter drop
-/// than a surface at the same elevation.
-List<BoxShadow> _softShadow(List<BoxShadow> base) => <BoxShadow>[
-  for (final shadow in base)
-    shadow.copyWith(color: shadow.color.withValues(alpha: 0.05)),
-];
-
-/// Maps the directional [FossTooltipSide] to a physical side, mirroring
+/// Maps the directional [FossTooltipSide] to a physical [AnchorSide], mirroring
 /// [FossTooltipSide.left] and [FossTooltipSide.right] under RTL.
-FossTooltipSide _physicalSide(FossTooltipSide side, TextDirection direction) {
-  if (direction == TextDirection.ltr) return side;
+AnchorSide _anchorSide(FossTooltipSide side, TextDirection direction) {
+  final mirror = direction == TextDirection.rtl;
   return switch (side) {
-    FossTooltipSide.left => FossTooltipSide.right,
-    FossTooltipSide.right => FossTooltipSide.left,
-    FossTooltipSide.top || FossTooltipSide.bottom => side,
+    FossTooltipSide.top => AnchorSide.top,
+    FossTooltipSide.bottom => AnchorSide.bottom,
+    FossTooltipSide.left => mirror ? AnchorSide.right : AnchorSide.left,
+    FossTooltipSide.right => mirror ? AnchorSide.left : AnchorSide.right,
   };
 }

@@ -299,6 +299,55 @@ class _InputsState extends State<_Inputs> {
   }
 }
 
+/// A button trigger wired to a [FossPopoverController]: the enabled button
+/// consumes its own tap, so it drives the popover through the controller, which
+/// also lets the content close itself.
+class _PopoverDemo extends StatefulWidget {
+  const _PopoverDemo();
+
+  @override
+  State<_PopoverDemo> createState() => _PopoverDemoState();
+}
+
+class _PopoverDemoState extends State<_PopoverDemo> {
+  final _controller = FossPopoverController();
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = context.fossTheme;
+    return FossPopover(
+      controller: _controller,
+      builder: (context) => Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text('Dimensions', style: theme.typography.sm.medium),
+          SizedBox(height: theme.spacing(1)),
+          Text(
+            'Set the width and height of the panel.',
+            style: theme.typography.sm.copyWith(
+              color: theme.colors.mutedForeground,
+            ),
+          ),
+          SizedBox(height: theme.spacing(3)),
+          Align(
+            alignment: Alignment.centerRight,
+            child: FossButton(
+              size: FossButtonSize.sm,
+              onPressed: _controller.close,
+              child: const Text('Done'),
+            ),
+          ),
+        ],
+      ),
+      child: FossButton(
+        onPressed: _controller.toggle,
+        child: const Text('Open popover'),
+      ),
+    );
+  }
+}
+
 class _Feedback extends StatelessWidget {
   const _Feedback();
 
@@ -368,6 +417,7 @@ class _Feedback extends StatelessWidget {
             ],
           ),
         ),
+        const _Section(label: 'Popover', child: _PopoverDemo()),
         _Section(
           label: 'Card',
           child: FossCard(
