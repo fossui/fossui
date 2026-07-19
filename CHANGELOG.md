@@ -35,6 +35,17 @@
   imperative open / close / toggle, an optional `modal` scrim with focus trap,
   outside-tap and `Escape` dismiss, and a `FossPopoverStyle` for one-off
   overrides.
+* `FossToggle` is a two-state pressable button that holds an on / off state
+  (`pressed` + `onPressedChanged`, null disables). It renders a label, a
+  `leading` icon, or a square icon-only control, with `standard` and `outline`
+  variants, three sizes, keyboard toggle, a focus ring, and a `FossToggleStyle`
+  for one-off overrides.
+* `FossToggleGroup` binds a set of toggles to one selection
+  (`FossToggleGroup.single` / `.multiple`), propagating `variant` and `size` to
+  every `FossToggleGroupItem`. The `outline` variant joins the items into a
+  segmented bar with a shared border and rounded outer ends; `standard` spaces
+  them. It supports horizontal or vertical `orientation`, group and per-item
+  disable, and a `FossToggleGroupStyle` for one-off overrides.
 
 ## 0.1.0
 

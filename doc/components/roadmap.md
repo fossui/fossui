@@ -56,13 +56,11 @@ right-to-left layout, and three layers of tests. That bar is written down in
 
 - [ ] **Accordion** : expandable, stacked sections.
 - [ ] **Calendar** : month grid for date display and selection.
-- [ ] **Command** : searchable command palette.
 - [ ] **Date Picker** : date selection in a calendar popover.
 - [ ] **Meter** : static gauge for a bounded value.
 - [ ] **Number Field** : numeric input with steppers.
 - [ ] **OTP Field** : segmented one-time-code entry.
 - [ ] **Popover** : floating panel anchored to a trigger.
-- [ ] **Sheet** : panel that slides in from an edge.
 - [ ] **Toggle** : a two-state pressable button.
 - [ ] **Toggle Group** : a set of toggles, single or multiple.
 

@@ -30,4 +30,6 @@ export 'text_field/foss_text_field.dart';
 export 'toast/foss_toast.dart';
 export 'toast/foss_toast_controller.dart';
 export 'toast/foss_toaster.dart';
+export 'toggle/foss_toggle.dart';
+export 'toggle_group/foss_toggle_group.dart';
 export 'tooltip/foss_tooltip.dart';
