@@ -77,6 +77,7 @@ class FossDateRange {
 
 enum _SelectionMode { single, multiple, range }
 
+/// {@category Inputs}
 /// A month grid for viewing and picking dates: a seven-column day grid under a
 /// month caption with previous and next navigation.
 ///

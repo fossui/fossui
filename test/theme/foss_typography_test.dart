@@ -6,9 +6,9 @@ void main() {
   const t = FossTypography.standard;
   final styles = [t.xs, t.sm, t.base, t.lg, t.xl, t.xl2];
 
-  test('every style uses the Geist family', () {
+  test('every style resolves the bundled family', () {
     for (final s in styles) {
-      expect(s.fontFamily, 'Geist');
+      expect(s.fontFamily, 'packages/fossui/Geist');
     }
   });
 

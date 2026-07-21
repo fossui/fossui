@@ -29,16 +29,28 @@ All are `Foss`-prefixed. Variants and sizes are enums passed as named params; a
 single `style` object per component is the one-off override escape hatch. Icon
 slots take any `Widget`, so the package has no icon dependency.
 
-- FossAlert, FossAlertDialog
-- FossAvatar, FossBadge
-- FossButton (plus `FossButton.icon`), FossCard
+Forms and inputs:
+
+- FossButton (plus `FossButton.icon`), FossTextField
 - FossCheckbox (FossCheckboxGroup), FossRadio (FossRadioGroup)
-- FossCombobox (FossMultiCombobox, FossAutocomplete), FossSelect (FossMultiSelect)
-- FossDialog, FossDrawer
-- FossProgress, FossSpinner, FossSlider
-- FossSeparator, FossTabs
-- FossSwitch, FossTextField
-- FossToast, FossToaster, FossTooltip
+- FossSwitch, FossToggle, FossToggleGroup, FossSlider
+- FossSelect (FossMultiSelect), FossCombobox (FossMultiCombobox, FossAutocomplete)
+- FossNumberField, FossOtpField
+- FossCalendar, FossDatePicker
+
+Layout and surfaces:
+
+- FossCard, FossSeparator, FossTabs, FossAccordion
+
+Feedback and status:
+
+- FossSpinner, FossProgress, FossSkeleton, FossMeter
+- FossBadge, FossAvatar, FossAlert
+
+Overlays:
+
+- FossPopover, FossDialog, FossAlertDialog, FossDrawer
+- FossTooltip, FossToast (FossToaster)
 
 ## Links
 

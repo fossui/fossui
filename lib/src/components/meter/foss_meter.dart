@@ -11,6 +11,7 @@ part 'foss_meter_style.dart';
 const double _trackHeight = 8;
 const Curve _fillCurve = Curves.ease;
 
+/// {@category Feedback}
 /// A static gauge: a full-width track with a leading fill that shows one
 /// measurement inside a fixed range (disk used, a quota, a rating). It is the
 /// display-only sibling of the progress bar: bounded and non-interactive.

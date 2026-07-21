@@ -60,6 +60,7 @@ class FossAccordionItem {
   final bool enabled;
 }
 
+/// {@category Layout}
 /// A stack of collapsible sections: each header toggles a panel of content open
 /// or closed, with a rotating chevron and an animated height.
 ///

@@ -19,6 +19,7 @@ const double _placeholderOpacity = 0.72;
 // The text selection highlight is the ring color at a low alpha.
 const double _selectionOpacity = 0.24;
 
+/// {@category Inputs}
 /// A numeric input flanked by a decrement and an increment button.
 ///
 /// Type a number, or step it with the buttons and the keyboard. The value is a

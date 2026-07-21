@@ -67,7 +67,7 @@ class _TolerantComparator extends LocalFileComparator {
 Future<void> _loadGeist() async {
   final file = File('fonts/Geist-Variable.ttf');
   if (!file.existsSync()) return;
-  final loader = FontLoader('Geist')
+  final loader = FontLoader('packages/fossui/Geist')
     ..addFont(file.readAsBytes().then((b) => b.buffer.asByteData()));
   await loader.load();
 }

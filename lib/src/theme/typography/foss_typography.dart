@@ -4,6 +4,11 @@ import 'package:theme_tailor_annotation/theme_tailor_annotation.dart';
 
 part 'foss_typography.tailor.dart';
 
+// The bundled font resolves under a package-qualified family name; the bare
+// name would only match a font the consumer declared, so the default scale
+// renders with no setup on their side.
+const _family = 'packages/fossui/Geist';
+
 /// Text styles per size step. Each carries family, size, line height, and
 /// letter spacing; set weight with the [FossTextStyleWeight] getters (`.medium`
 /// for labels and buttons, `.semibold` for headings, `.bold` for emphasis).
@@ -52,27 +57,27 @@ class FossTypography extends ThemeExtension<FossTypography>
   /// The default type scale.
   static const standard = FossTypography(
     xs: TextStyle(
-      fontFamily: 'Geist',
+      fontFamily: _family,
       fontSize: 12,
       height: 14 / 12,
       letterSpacing: 0.12,
     ),
-    sm: TextStyle(fontFamily: 'Geist', fontSize: 14, height: 20 / 14),
-    base: TextStyle(fontFamily: 'Geist', fontSize: 16, height: 24 / 16),
+    sm: TextStyle(fontFamily: _family, fontSize: 14, height: 20 / 14),
+    base: TextStyle(fontFamily: _family, fontSize: 16, height: 24 / 16),
     lg: TextStyle(
-      fontFamily: 'Geist',
+      fontFamily: _family,
       fontSize: 18,
       height: 28 / 18,
       letterSpacing: -0.18,
     ),
     xl: TextStyle(
-      fontFamily: 'Geist',
+      fontFamily: _family,
       fontSize: 20,
       height: 28 / 20,
       letterSpacing: -0.20,
     ),
     xl2: TextStyle(
-      fontFamily: 'Geist',
+      fontFamily: _family,
       fontSize: 24,
       height: 32 / 24,
       letterSpacing: -0.36,
