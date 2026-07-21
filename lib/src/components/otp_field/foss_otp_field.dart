@@ -10,6 +10,7 @@ import 'package:flutter/services.dart'
         TextInputType;
 import 'package:flutter/widgets.dart';
 import 'package:fossui/src/foundation/foss_field_box.dart';
+import 'package:fossui/src/foundation/foss_since.dart';
 import 'package:fossui/src/theme/theme.dart';
 
 part 'foss_otp_field_style.dart';
@@ -68,7 +69,7 @@ enum FossOtpValidation {
 /// one-off, pass a [FossOtpFieldStyle] to [style].
 ///
 /// The code is a plain [String] of up to [length] characters. Use it controlled
-/// with [value] and [onChanged], or uncontrolled; [onCompleted] fires once when
+/// with [value] and [onChanged], or uncontrolled; [onCompleted] fires each time
 /// the row fills. Set [obscure] to mask each character with a dot, and [groups]
 /// (summing to [length]) to split the row with a separator, for example
 /// `groups: [3, 3]`. Passing `enabled: false` disables the whole field.
@@ -82,6 +83,7 @@ enum FossOtpValidation {
 ///   onCompleted: (code) => verify(code),
 /// );
 /// ```
+@FossSince('0.1.1')
 class FossOtpField extends StatefulWidget {
   /// {@macro foss.otp-field.preview}
   ///
@@ -113,7 +115,9 @@ class FossOtpField extends StatefulWidget {
   /// Called with the whole code on every edit.
   final ValueChanged<String>? onChanged;
 
-  /// Called once with the code the moment the row fills to [length].
+  /// Called with the code each time the row fills to [length]. Fires on every
+  /// transition into the full state, so deleting a digit and retyping it fires
+  /// again.
   final ValueChanged<String>? onCompleted;
 
   /// The size. Defaults to [FossOtpFieldSize.md].
@@ -150,8 +154,6 @@ class FossOtpField extends StatefulWidget {
 
 class _FossOtpFieldState extends State<FossOtpField>
     with SingleTickerProviderStateMixin {
-  final GlobalKey<EditableTextState> _editableKey =
-      GlobalKey<EditableTextState>();
   late final TextEditingController _controller;
   late final FocusNode _focusNode;
   late final AnimationController _blink;
@@ -194,7 +196,10 @@ class _FossOtpFieldState extends State<FossOtpField>
       final v = _clamped(incoming);
       if (v != _controller.text) {
         // Suppress the echo: mark this write seen before it fires the listener.
+        // Resync completeness too, so a later user edit still fires onCompleted
+        // exactly once against the true prior state.
         _lastText = v;
+        _wasComplete = v.length == widget.length;
         _controller.value = TextEditingValue(
           text: v,
           selection: TextSelection.collapsed(offset: v.length),
@@ -236,7 +241,8 @@ class _FossOtpFieldState extends State<FossOtpField>
   void _handleTap() {
     if (!widget.enabled) return;
     _focusNode.requestFocus();
-    // Drop the caret at the first empty slot, where the next character lands.
+    // Drop the caret past the entered digits: the row fills left to right, so
+    // end-of-text is the next empty slot regardless of where the tap landed.
     _controller.selection = TextSelection.collapsed(
       offset: _controller.text.length,
     );
@@ -334,7 +340,6 @@ class _FossOtpFieldState extends State<FossOtpField>
     }
 
     final editable = EditableText(
-      key: _editableKey,
       controller: _controller,
       focusNode: _focusNode,
       readOnly: !widget.enabled,
@@ -361,6 +366,10 @@ class _FossOtpFieldState extends State<FossOtpField>
         label: widget.semanticsLabel ?? 'Verification code',
         textField: true,
         enabled: widget.enabled,
+        // Read back progress: masked as dots when obscured, else the digits.
+        value: widget.obscure
+            ? '•' * _controller.text.length
+            : _controller.text,
         // A tap outside releases focus and dismisses the keyboard, as touch
         // users expect.
         child: TapRegion(

@@ -1,4 +1,5 @@
 import 'package:flutter/widgets.dart';
+import 'package:fossui/src/foundation/foss_since.dart';
 import 'package:fossui/src/theme/theme.dart';
 
 part 'foss_toggle_style.dart';
@@ -22,7 +23,8 @@ enum FossToggleVariant {
   /// Borderless: transparent at rest, filling on hover and when pressed.
   standard,
 
-  /// Bordered surface that sits on the background and lifts with a shadow.
+  /// Bordered surface that sits on the background and lifts with a shadow. The
+  /// shadow flattens in the on-state, reading the toggle as pressed in.
   outline,
 }
 
@@ -81,6 +83,7 @@ enum FossToggleSize {
 ///   child: const Text('Bold'),
 /// );
 /// ```
+@FossSince('0.1.1')
 class FossToggle extends StatefulWidget {
   /// {@macro foss.toggle.preview}
   ///
@@ -260,8 +263,9 @@ class _FossToggleState extends State<FossToggle> {
     final iconColor = fg.withValues(alpha: fg.a * _iconOpacity);
     final icon = IconThemeData(size: visuals.iconSize, color: iconColor);
     final leading = widget.leading;
+    final child = widget.child;
 
-    if (iconOnly) {
+    if (iconOnly || child == null) {
       return IconTheme.merge(
         data: icon,
         child: leading ?? const SizedBox.shrink(),
@@ -279,7 +283,7 @@ class _FossToggleState extends State<FossToggle> {
             maxLines: 1,
             softWrap: false,
             overflow: TextOverflow.ellipsis,
-            child: widget.child!,
+            child: child,
           ),
         ),
       ],

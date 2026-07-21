@@ -1,4 +1,5 @@
 import 'package:flutter/widgets.dart';
+import 'package:fossui/src/foundation/foss_since.dart';
 import 'package:fossui/src/theme/colors/foss_colors.dart';
 import 'package:fossui/src/theme/foss_theme.dart';
 import 'package:fossui/src/theme/typography/foss_typography.dart';
@@ -117,6 +118,7 @@ enum FossTextColor {
 ///   color: FossTextColor.mutedForeground,
 /// );
 /// ```
+@FossSince('0.1.1')
 class FossText extends StatelessWidget {
   /// {@macro foss.text.preview}
   ///

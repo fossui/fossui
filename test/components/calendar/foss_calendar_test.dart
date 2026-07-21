@@ -1,4 +1,5 @@
 import 'package:flutter/gestures.dart';
+import 'package:flutter/semantics.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -390,6 +391,31 @@ void main() {
       await tester.tap(find.bySemanticsLabel('Next month'));
       await tester.pump();
       expect(find.text('April 2026'), findsOneWidget);
+    });
+
+    testWidgets('a day cell activates through the semantics tap action', (
+      tester,
+    ) async {
+      DateTime? picked;
+      final handle = tester.ensureSemantics();
+      await tester.pumpWidget(
+        host(
+          FossCalendar.single(
+            selected: null,
+            onSelected: (d) => picked = d,
+            initialMonth: _march,
+          ),
+        ),
+      );
+
+      tester.semantics.performAction(
+        find.semantics.byLabel('March 15, 2026'),
+        SemanticsAction.tap,
+      );
+      await tester.pump();
+
+      expect(picked, DateTime(2026, 3, 15));
+      handle.dispose();
     });
 
     testWidgets('renders at text scale 2.0 without exception', (tester) async {

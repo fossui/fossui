@@ -61,6 +61,19 @@ class FossAccordionItem {
 }
 
 /// {@category Layout}
+/// {@template foss.accordion.preview}
+/// <img src="https://fossui.org/components/accordion/overview/light.png"
+///   alt="FossAccordion, light theme" width="480"
+///   style="max-width:100%;height:auto" />
+/// <img src="https://fossui.org/components/accordion/overview/dark.png"
+///   alt="FossAccordion, dark theme" width="480"
+///   style="max-width:100%;height:auto" />
+///
+/// See the [accordion documentation ↗](https://fossui.org/docs/components/accordion)
+/// or try it live in the
+/// [playground ↗](https://play.fossui.org/#/?path=components/accordion/fossaccordion/playground).
+/// {@endtemplate}
+///
 /// A stack of collapsible sections: each header toggles a panel of content open
 /// or closed, with a rotating chevron and an animated height.
 ///
@@ -72,6 +85,8 @@ class FossAccordionItem {
 ///
 /// Colors, type, the chevron rotation, and the panel slide come from
 /// `context.fossTheme`; pass a [FossAccordionStyle] to [style] for a one-off.
+///
+/// {@macro foss.customize}
 ///
 /// ```dart
 /// FossAccordion(
@@ -92,6 +107,8 @@ class FossAccordionItem {
 /// ```
 @FossSince('0.1.1')
 class FossAccordion extends StatefulWidget {
+  /// {@macro foss.accordion.preview}
+  ///
   /// Creates an accordion over [children].
   const FossAccordion({
     required this.children,
@@ -163,6 +180,21 @@ class _FossAccordionState extends State<FossAccordion> {
       _nodes.remove(value)?.dispose();
     }
     if (_focused != null && !values.contains(_focused)) _focused = null;
+    // Uncontrolled: drop open ids whose item was removed. Prune now so the
+    // render is correct; defer the notify to after the frame, since firing
+    // onValueChanged during a parent rebuild would setState mid-build.
+    if (widget.value == null) {
+      final pruned = _internal.intersection(values);
+      if (pruned.length != _internal.length) {
+        _internal = pruned;
+        final notify = widget.onValueChanged;
+        if (notify != null) {
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            if (mounted) notify(pruned);
+          });
+        }
+      }
+    }
   }
 
   @override

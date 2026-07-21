@@ -1,9 +1,22 @@
 import 'dart:async';
 
 import 'package:flutter/widgets.dart';
+import 'package:fossui/src/foundation/foss_since.dart';
 import 'package:fossui/src/theme/theme.dart';
 
 /// {@category Feedback}
+/// {@template foss.skeleton.preview}
+/// <img src="https://fossui.org/components/skeleton/overview/light.png"
+///   alt="FossSkeleton, light theme" width="480"
+///   style="max-width:100%;height:auto" />
+/// <img src="https://fossui.org/components/skeleton/overview/dark.png"
+///   alt="FossSkeleton, dark theme" width="480"
+///   style="max-width:100%;height:auto" />
+///
+/// See the [skeleton documentation ↗](https://fossui.org/docs/components/skeleton)
+/// or try it live in the
+/// [playground ↗](https://play.fossui.org/#/?path=components/skeleton/fossskeleton/playground).
+/// {@endtemplate}
 ///
 /// A placeholder that stands in for content while it loads.
 ///
@@ -18,7 +31,10 @@ import 'package:fossui/src/theme/theme.dart';
 /// const FossSkeleton(width: 200, height: 16);
 /// const FossSkeleton.circle(size: 40);
 /// ```
+@FossSince('0.1.1')
 class FossSkeleton extends StatefulWidget {
+  /// {@macro foss.skeleton.preview}
+  ///
   /// Creates a rectangular placeholder [width] by [height] logical pixels,
   /// with corners rounded to the theme `sm` radius.
   const FossSkeleton({this.width, this.height, super.key}) : _circle = false;
@@ -90,39 +106,43 @@ class _FossSkeletonState extends State<FossSkeleton>
     final isDark = colors.background.computeLuminance() < 0.5;
     final highlight = Color.fromRGBO(255, 255, 255, isDark ? 0.04 : 0.64);
 
-    return SizedBox(
-      width: widget.width,
-      height: widget.height,
-      child: reduceMotion
-          ? base
-          : Stack(
-              fit: StackFit.expand,
-              children: [
-                base,
-                ClipPath(
-                  clipper: ShapeBorderClipper(shape: shape),
-                  child: AnimatedBuilder(
-                    animation: _controller,
-                    builder: (context, child) => DecoratedBox(
-                      decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                          colors: [
-                            const Color(0x00FFFFFF),
-                            highlight,
-                            const Color(0x00FFFFFF),
-                          ],
-                          stops: const [0.35, 0.5, 0.65],
-                          // Tile the band so one sweeps in as the last sweeps
-                          // out: a continuous shimmer with no flat beat.
-                          tileMode: TileMode.repeated,
-                          transform: _SweepTranslate(_controller.value),
+    // A skeleton is a decorative loading placeholder; keep it out of the
+    // semantics tree so a reader is not read an empty box.
+    return ExcludeSemantics(
+      child: SizedBox(
+        width: widget.width,
+        height: widget.height,
+        child: reduceMotion
+            ? base
+            : Stack(
+                fit: StackFit.expand,
+                children: [
+                  base,
+                  ClipPath(
+                    clipper: ShapeBorderClipper(shape: shape),
+                    child: AnimatedBuilder(
+                      animation: _controller,
+                      builder: (context, child) => DecoratedBox(
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            colors: [
+                              const Color(0x00FFFFFF),
+                              highlight,
+                              const Color(0x00FFFFFF),
+                            ],
+                            stops: const [0.35, 0.5, 0.65],
+                            // Tile the band so one sweeps in as the last sweeps
+                            // out: a continuous shimmer with no flat beat.
+                            tileMode: TileMode.repeated,
+                            transform: _SweepTranslate(_controller.value),
+                          ),
                         ),
                       ),
                     ),
                   ),
-                ),
-              ],
-            ),
+                ],
+              ),
+      ),
     );
   }
 }

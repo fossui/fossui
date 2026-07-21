@@ -12,6 +12,19 @@ const double _trackHeight = 8;
 const Curve _fillCurve = Curves.ease;
 
 /// {@category Feedback}
+/// {@template foss.meter.preview}
+/// <img src="https://fossui.org/components/meter/overview/light.png"
+///   alt="FossMeter, light theme" width="480"
+///   style="max-width:100%;height:auto" />
+/// <img src="https://fossui.org/components/meter/overview/dark.png"
+///   alt="FossMeter, dark theme" width="480"
+///   style="max-width:100%;height:auto" />
+///
+/// See the [meter documentation ↗](https://fossui.org/docs/components/meter)
+/// or try it live in the
+/// [playground ↗](https://play.fossui.org/#/?path=components/meter/fossmeter/playground).
+/// {@endtemplate}
+///
 /// A static gauge: a full-width track with a leading fill that shows one
 /// measurement inside a fixed range (disk used, a quota, a rating). It is the
 /// display-only sibling of the progress bar: bounded and non-interactive.
@@ -25,6 +38,8 @@ const Curve _fillCurve = Curves.ease;
 /// jumps under reduced motion. Colors, type, and radius come from
 /// `context.fossTheme`; pass a [FossMeterStyle] for a one-off override.
 ///
+/// {@macro foss.customize}
+///
 /// ```dart
 /// FossMeter(
 ///   value: 40,
@@ -33,6 +48,8 @@ const Curve _fillCurve = Curves.ease;
 /// ```
 @FossSince('0.1.1')
 class FossMeter extends StatelessWidget {
+  /// {@macro foss.meter.preview}
+  ///
   /// Creates a gauge showing [value] within `[min, max]` (clamped). The value
   /// is shown at the end of the label row unless [showValue] is false.
   const FossMeter({
@@ -79,7 +96,10 @@ class FossMeter extends StatelessWidget {
     final s = style;
 
     final span = max - min;
-    final fraction = span > 0 ? ((value - min) / span).clamp(0.0, 1.0) : 0.0;
+    final raw = span > 0 ? (value - min) / span : 0.0;
+    // A non-finite value (NaN from a bad computation) must read as empty, not
+    // as a full bar: NaN.clamp returns the upper bound on the current SDK.
+    final fraction = raw.isFinite ? raw.clamp(0.0, 1.0) : 0.0;
     // The default value text is the fill as a whole-number percentage of the
     // range; a caller formatter takes the raw value and bounds instead.
     final format = formatValue;
@@ -128,7 +148,9 @@ class FossMeter extends StatelessWidget {
       // Flutter carries no ARIA meter role, so the gauge announces its value
       // and range through the value fields rather than a role.
       label: label ?? semanticsLabel,
-      value: valueText,
+      // Announce on the raw scale so value and bounds agree; the visible
+      // percent text is for sighted users only.
+      value: '$value',
       minValue: '$min',
       maxValue: '$max',
       child: Column(

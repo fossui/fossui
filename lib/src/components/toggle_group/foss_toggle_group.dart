@@ -1,5 +1,7 @@
+import 'package:flutter/semantics.dart' show SemanticsRole;
 import 'package:flutter/widgets.dart';
 import 'package:fossui/src/components/toggle/foss_toggle.dart';
+import 'package:fossui/src/foundation/foss_since.dart';
 import 'package:fossui/src/theme/theme.dart';
 
 part 'foss_toggle_group_style.dart';
@@ -101,6 +103,7 @@ class FossToggleGroupItem {
 ///   ],
 /// );
 /// ```
+@FossSince('0.1.1')
 class FossToggleGroup extends StatelessWidget {
   /// {@macro foss.toggleGroup.preview}
   ///
@@ -187,6 +190,11 @@ class FossToggleGroup extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    assert(
+      children.map((c) => c.value).toSet().length == children.length,
+      'FossToggleGroup item values must be unique; a duplicate makes two cells '
+      'share selection state.',
+    );
     final theme = context.fossTheme;
     final resolved = _GroupVisuals.resolve(theme, style);
     final outline = variant == FossToggleVariant.outline;
@@ -247,6 +255,9 @@ class FossToggleGroup extends StatelessWidget {
 
     return Semantics(
       container: true,
+      // A single-select group is a radio group; multiple-select has no matching
+      // role, so it stays a bare container.
+      role: _single ? SemanticsRole.radioGroup : SemanticsRole.none,
       child: FocusTraversalGroup(
         policy: WidgetOrderTraversalPolicy(),
         child: bar,

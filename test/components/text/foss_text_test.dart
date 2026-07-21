@@ -118,6 +118,11 @@ void main() {
   });
 
   group('named constructors', () {
+    // A runtime string keeps each construction non-const, so the named
+    // constructor body executes (and is covered) rather than folding to a
+    // compile-time constant.
+    final t = 'T'.substring(0);
+
     void expectPreset(
       WidgetTester tester,
       double fontSize,
@@ -129,32 +134,32 @@ void main() {
     }
 
     testWidgets('caption is xs / regular', (tester) async {
-      await tester.pumpWidget(host(const FossText.caption('T')));
+      await tester.pumpWidget(host(FossText.caption(t)));
       expectPreset(tester, 12, FontWeight.w400);
     });
 
     testWidgets('body is sm / regular', (tester) async {
-      await tester.pumpWidget(host(const FossText.body('T')));
+      await tester.pumpWidget(host(FossText.body(t)));
       expectPreset(tester, 14, FontWeight.w400);
     });
 
     testWidgets('label is sm / medium', (tester) async {
-      await tester.pumpWidget(host(const FossText.label('T')));
+      await tester.pumpWidget(host(FossText.label(t)));
       expectPreset(tester, 14, FontWeight.w500);
     });
 
     testWidgets('title is lg / semibold', (tester) async {
-      await tester.pumpWidget(host(const FossText.title('T')));
+      await tester.pumpWidget(host(FossText.title(t)));
       expectPreset(tester, 18, FontWeight.w600);
     });
 
     testWidgets('heading is xl / semibold', (tester) async {
-      await tester.pumpWidget(host(const FossText.heading('T')));
+      await tester.pumpWidget(host(FossText.heading(t)));
       expectPreset(tester, 20, FontWeight.w600);
     });
 
     testWidgets('display is xl2 / bold', (tester) async {
-      await tester.pumpWidget(host(const FossText.display('T')));
+      await tester.pumpWidget(host(FossText.display(t)));
       expectPreset(tester, 24, FontWeight.w700);
     });
 

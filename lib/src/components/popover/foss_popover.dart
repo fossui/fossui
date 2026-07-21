@@ -4,6 +4,7 @@ import 'package:flutter/semantics.dart' show SemanticsRole;
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:fossui/src/foundation/anchored_overlay.dart';
+import 'package:fossui/src/foundation/foss_since.dart';
 import 'package:fossui/src/theme/foss_theme.dart';
 
 part 'foss_popover_style.dart';
@@ -117,6 +118,7 @@ class FossPopoverController {
 ///   child: FossButton(child: const Text('Open')),
 /// );
 /// ```
+@FossSince('0.1.1')
 class FossPopover extends StatefulWidget {
   /// {@macro foss.popover.preview}
   ///
@@ -230,8 +232,8 @@ class _FossPopoverState extends State<FossPopover>
     }
     // In controlled mode the parent owns the state; sync the surface to it
     // after the frame, since driving the overlay during a build is unsafe.
-    if (widget.open != null && widget.open != old.open) {
-      final target = widget.open!;
+    final target = widget.open;
+    if (target != null && target != old.open) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (!mounted || _isOpen != target) return;
         target ? _show() : _hide();
@@ -303,7 +305,9 @@ class _FossPopoverState extends State<FossPopover>
 
   void _hide() {
     _detachScrollDismiss();
-    _triggerFocus.requestFocus();
+    // Only pull focus back to the trigger when it still lives in the surface;
+    // a programmatic close must not steal focus the user moved elsewhere.
+    if (_surfaceScope.hasFocus) _triggerFocus.requestFocus();
     if (_reduceMotion) {
       _animation.value = 0;
       _portal.hide();
@@ -403,6 +407,7 @@ class _FossPopoverState extends State<FossPopover>
     if (!widget.modal) return surface;
     return Stack(
       children: [
+        const Positioned.fill(child: BlockSemantics()),
         Positioned.fill(
           child: _Scrim(animation: _curve, onTap: _dismiss),
         ),
@@ -412,9 +417,12 @@ class _FossPopoverState extends State<FossPopover>
   }
 
   Widget _surfaceContent() {
-    // The FocusScope keeps Tab traversal inside the surface (the focus trap);
-    // modal adds the scrim. Non-modal dismisses on an outside tap via TapRegion
-    // while leaving the background interactive.
+    // The FocusScope traps Tab inside the surface for a modal popover; a
+    // non-modal one leaves the background interactive, so Tab can exit.
+    // Non-modal dismisses on an outside tap via TapRegion.
+    _surfaceScope.traversalEdgeBehavior = widget.modal
+        ? TraversalEdgeBehavior.closedLoop
+        : TraversalEdgeBehavior.leaveFlutterView;
     return FocusScope(
       node: _surfaceScope,
       onKeyEvent: _onKey,

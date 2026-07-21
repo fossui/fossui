@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:fossui/src/components/text_field/foss_text_field.dart'
@@ -20,14 +22,28 @@ const double _placeholderOpacity = 0.72;
 const double _selectionOpacity = 0.24;
 
 /// {@category Inputs}
+/// {@template foss.number_field.preview}
+/// <img src="https://fossui.org/components/number_field/overview/light.png"
+///   alt="FossNumberField, light theme" width="480"
+///   style="max-width:100%;height:auto" />
+/// <img src="https://fossui.org/components/number_field/overview/dark.png"
+///   alt="FossNumberField, dark theme" width="480"
+///   style="max-width:100%;height:auto" />
+///
+/// See the [number field documentation ↗](https://fossui.org/docs/components/number-field)
+/// or try it live in the
+/// [playground ↗](https://play.fossui.org/#/?path=components/number_field/fossnumberfield/playground).
+/// {@endtemplate}
+///
 /// A numeric input flanked by a decrement and an increment button.
 ///
 /// Type a number, or step it with the buttons and the keyboard. The value is a
 /// [num] held in `[min, max]`, moved by [step] (and [largeStep] on the page
-/// keys). Sizing, radius, fill, border, and state colors come from the same
-/// tokens as [FossTextField] through `context.fossTheme`, so the two controls
-/// line up pixel for pixel; a global retheme restyles both. For a one-off, pass
-/// a [FossNumberFieldStyle] to [style].
+/// keys). A stepper press moves the value one [step]; it does not auto-repeat
+/// on a held press. Sizing, radius, fill, border, and state colors come from
+/// the same tokens as [FossTextField] through `context.fossTheme`, so the two
+/// controls line up pixel for pixel; a global retheme restyles both. For a
+/// one-off, pass a [FossNumberFieldStyle] to [style].
 ///
 /// Drive it controlled with [value] plus [onChanged], or uncontrolled with
 /// [initialValue]. [onChanged] fires with the parsed value, or null when the
@@ -37,6 +53,8 @@ const double _selectionOpacity = 0.24;
 /// Display and typed entry route through [format] and [parse]; the defaults are
 /// a plain decimal string and a permissive number parse, with no locale
 /// dependency. Pass your own to render currency or a locale.
+///
+/// {@macro foss.customize}
 ///
 /// ```dart
 /// FossNumberField(
@@ -48,6 +66,8 @@ const double _selectionOpacity = 0.24;
 /// ```
 @FossSince('0.1.1')
 class FossNumberField extends StatefulWidget {
+  /// {@macro foss.number_field.preview}
+  ///
   /// Creates a number field. All fields are optional; drive it with [value] +
   /// [onChanged] or seed it with [initialValue].
   const FossNumberField({
@@ -229,7 +249,7 @@ class _FossNumberFieldState extends State<FossNumberField>
   void _step(num delta) {
     if (!widget.enabled) return;
     final base = _value ?? widget.min ?? 0;
-    _emit(_clamp(base + delta), syncText: true);
+    _emit(_clamp(_addStep(base, delta)), syncText: true);
   }
 
   void _onTextChanged(String text) => _emit(_parse(text), syncText: false);
@@ -366,10 +386,10 @@ class _FossNumberFieldState extends State<FossNumberField>
     final base = _value ?? widget.min ?? 0;
     final increased = valueText.isEmpty
         ? ''
-        : _displayText(_clamp(base + widget.step));
+        : _displayText(_clamp(_addStep(base, widget.step)));
     final decreased = valueText.isEmpty
         ? ''
-        : _displayText(_clamp(base - widget.step));
+        : _displayText(_clamp(_addStep(base, -widget.step)));
 
     return Semantics(
       label: widget.semanticsLabel,
@@ -416,6 +436,23 @@ String _defaultFormat(num value) {
   if (value is int) return value.toString();
   final d = value.toDouble();
   return d == d.truncateToDouble() ? d.toStringAsFixed(0) : d.toString();
+}
+
+// Adds a step without accumulating IEEE-754 drift: quantizes the sum to the
+// decimal precision of its operands, so 0.1 + 0.1 + 0.1 lands on 0.3, not
+// 0.30000000000000004. Integer arithmetic passes through exactly.
+num _addStep(num base, num delta) {
+  if (base is int && delta is int) return base + delta;
+  final places = math.max(_decimals(base), _decimals(delta));
+  final factor = math.pow(10, places).toDouble();
+  return ((base + delta) * factor).roundToDouble() / factor;
+}
+
+int _decimals(num value) {
+  if (value is int) return 0;
+  final text = value.toString();
+  final dot = text.indexOf('.');
+  return dot < 0 ? 0 : text.length - dot - 1;
 }
 
 /// The default parse: a permissive number read, null when the text is not a
@@ -471,7 +508,7 @@ class _StepperState extends State<_Stepper> {
         : v.glyphColor;
 
     // The hover fill rounds the inner corner so it sits within the box radius.
-    final innerRadius = Radius.circular(v.borderRadius - 1);
+    final innerRadius = Radius.circular(math.max(0, v.borderRadius - 1));
     final fill = _hovered && widget.interactive
         ? DecoratedBox(
             decoration: ShapeDecoration(

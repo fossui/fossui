@@ -147,6 +147,16 @@ void main() {
       ).getConstraintsForChild(BoxConstraints.tight(viewport));
       expect(constraints.maxWidth, viewport.width - margin * 2);
     });
+
+    test('constraints subtract the vertical margin', () {
+      // A tall child must be bounded to the viewport height so it shrinks to
+      // fit rather than overflowing off-screen after the clamp.
+      final constraints = AnchoredLayout(
+        anchor: anchor,
+        side: AnchorSide.bottom,
+      ).getConstraintsForChild(BoxConstraints.tight(viewport));
+      expect(constraints.maxHeight, viewport.height - margin * 2);
+    });
   });
 
   group('shouldRelayout', () {

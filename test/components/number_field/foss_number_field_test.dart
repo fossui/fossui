@@ -60,6 +60,30 @@ void main() {
 
       expect(seen, 6);
     });
+
+    testWidgets('a fractional step does not accumulate float drift', (
+      tester,
+    ) async {
+      num? seen;
+      await tester.pumpWidget(
+        host(
+          FossNumberField(
+            initialValue: 0,
+            step: 0.1,
+            onChanged: (v) => seen = v,
+          ),
+        ),
+      );
+
+      for (var i = 0; i < 3; i++) {
+        await tester.tap(find.bySemanticsLabel('Increment'));
+        await tester.pump();
+      }
+
+      expect(seen, 0.3);
+      expect(find.text('0.3'), findsOneWidget);
+      expect(find.textContaining('0.30000'), findsNothing);
+    });
   });
 
   group('clamp', () {

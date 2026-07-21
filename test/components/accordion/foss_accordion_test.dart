@@ -146,6 +146,38 @@ void main() {
       _expectOpen(tester, 'Title A', open: true);
       _expectOpen(tester, 'Title B', open: true);
     });
+
+    testWidgets('removing an open section prunes it and emits', (tester) async {
+      Set<String>? emitted;
+      await tester.pumpWidget(
+        host(
+          FossAccordion(
+            initialValue: const {'b'},
+            onValueChanged: (v) => emitted = v,
+            children: _items,
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      // The parent drops item 'b'; the uncontrolled open set must shed it.
+      const without = <FossAccordionItem>[
+        FossAccordionItem(value: 'a', title: Text('Title A'), child: Text('A')),
+        FossAccordionItem(value: 'c', title: Text('Title C'), child: Text('C')),
+      ];
+      await tester.pumpWidget(
+        host(
+          FossAccordion(
+            initialValue: const {'b'},
+            onValueChanged: (v) => emitted = v,
+            children: without,
+          ),
+        ),
+      );
+      await tester.pump();
+
+      expect(emitted, isEmpty);
+    });
   });
 
   group('controlled', () {

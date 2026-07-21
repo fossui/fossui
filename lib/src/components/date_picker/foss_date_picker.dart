@@ -70,6 +70,19 @@ bool _isSameDay(DateTime a, DateTime b) =>
     a.year == b.year && a.month == b.month && a.day == b.day;
 
 /// {@category Inputs}
+/// {@template foss.date_picker.preview}
+/// <img src="https://fossui.org/components/date_picker/overview/light.png"
+///   alt="FossDatePicker, light theme" width="480"
+///   style="max-width:100%;height:auto" />
+/// <img src="https://fossui.org/components/date_picker/overview/dark.png"
+///   alt="FossDatePicker, dark theme" width="480"
+///   style="max-width:100%;height:auto" />
+///
+/// See the [date picker documentation ↗](https://fossui.org/docs/components/date-picker)
+/// or try it live in the
+/// [playground ↗](https://play.fossui.org/#/?path=components/date_picker/fossdatepicker/playground).
+/// {@endtemplate}
+///
 /// A date field that opens a calendar in a modal dialog and shows the chosen
 /// date back in its trigger.
 ///
@@ -137,6 +150,8 @@ class FossDatePicker extends StatefulWidget {
        _onRange = onRange,
        _rangeFormat = rangeFormat;
 
+  /// {@macro foss.date_picker.preview}
+  ///
   /// Creates a single-date picker. [selected] is the chosen day (null for
   /// none); [onSelected] fires with the picked day. [format] overrides the
   /// built-in `March 6th, 2026` label.
@@ -317,8 +332,8 @@ class _FossDatePickerState extends State<FossDatePicker> {
     super.didUpdateWidget(old);
     // Controlled mode: sync the route to the parent-owned open value after the
     // frame, since pushing a route during a build is unsafe.
-    if (widget.open != null && widget.open != old.open) {
-      final target = widget.open!;
+    final target = widget.open;
+    if (target != null && target != old.open) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (!mounted) return;
         if (target && !_routeShowing) _showDialog();

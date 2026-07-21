@@ -110,6 +110,12 @@ void main() {
       expect(fillFactor(tester), 0);
     });
 
+    testWidgets('a non-finite value reads empty, not full', (tester) async {
+      await tester.pumpWidget(host(const FossMeter(value: double.nan)));
+      await tester.pumpAndSettle();
+      expect(fillFactor(tester), 0);
+    });
+
     testWidgets('animates toward a new value over the motion duration', (
       tester,
     ) async {
@@ -219,7 +225,7 @@ void main() {
           .getSemantics(find.byType(FossMeter))
           .getSemanticsData();
       expect(data.label, 'Storage');
-      expect(data.value, '40%');
+      expect(data.value, '40');
       expect(data.minValue, '0');
       expect(data.maxValue, '100');
       handle.dispose();
@@ -242,7 +248,7 @@ void main() {
 
       expect(
         tester.getSemantics(find.byType(FossMeter)),
-        isSemantics(value: '40%', label: 'Disk usage'),
+        isSemantics(value: '40', label: 'Disk usage'),
       );
       handle.dispose();
     });

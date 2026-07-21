@@ -78,6 +78,19 @@ class FossDateRange {
 enum _SelectionMode { single, multiple, range }
 
 /// {@category Inputs}
+/// {@template foss.calendar.preview}
+/// <img src="https://fossui.org/components/calendar/overview/light.png"
+///   alt="FossCalendar, light theme" width="480"
+///   style="max-width:100%;height:auto" />
+/// <img src="https://fossui.org/components/calendar/overview/dark.png"
+///   alt="FossCalendar, dark theme" width="480"
+///   style="max-width:100%;height:auto" />
+///
+/// See the [calendar documentation ↗](https://fossui.org/docs/components/calendar)
+/// or try it live in the
+/// [playground ↗](https://play.fossui.org/#/?path=components/calendar/fosscalendar/playground).
+/// {@endtemplate}
+///
 /// A month grid for viewing and picking dates: a seven-column day grid under a
 /// month caption with previous and next navigation.
 ///
@@ -93,6 +106,8 @@ enum _SelectionMode { single, multiple, range }
 /// displayed month with [focusedMonth] and [onMonthChanged], or leave it to the
 /// widget by seeding [initialMonth]. Colors, type, and radius come from
 /// `context.fossTheme`; pass a [FossCalendarStyle] to [style] for a one-off.
+///
+/// {@macro foss.customize}
 ///
 /// ```dart
 /// FossCalendar.single(
@@ -138,6 +153,8 @@ class FossCalendar extends StatefulWidget {
        _rangeSelected = rangeSelected,
        _onRange = onRange;
 
+  /// {@macro foss.calendar.preview}
+  ///
   /// Creates a single-day calendar. [selected] is the highlighted day (null for
   /// none); [onSelected] fires with the tapped day.
   ///
@@ -743,6 +760,9 @@ class _FossCalendarState extends State<FossCalendar> {
         selected: fill != _DayFill.none,
         enabled: selectable,
         label: _dayLabel(day, today: today),
+        // The gesture is excluded from semantics, so the tap action lives on
+        // the node itself for screen-reader activation.
+        onTap: selectable ? () => _handleTap(day) : null,
         child: GestureDetector(
           behavior: HitTestBehavior.opaque,
           excludeFromSemantics: true,
@@ -892,6 +912,7 @@ class _NavButtonState extends State<_NavButton> {
       button: true,
       enabled: widget.enabled,
       label: widget.semanticLabel,
+      onTap: widget.enabled ? widget.onTap : null,
       child: FocusableActionDetector(
         enabled: widget.enabled,
         mouseCursor: widget.enabled

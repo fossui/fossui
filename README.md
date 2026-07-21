@@ -121,10 +121,10 @@ The library covers input, feedback, overlays, and layout:
 
 | Group | Components |
 | --- | --- |
-| Actions and input | Button, TextField, Select, Combobox, Checkbox, Radio, Switch, Slider |
-| Feedback | Alert, Badge, Progress, Spinner, Toast, Tooltip |
-| Overlays | Dialog, Drawer (sheet and bottom sheet) |
-| Layout and media | Card, Tabs, Separator, Avatar |
+| Actions and input | Button, TextField, NumberField, OtpField, Select, Combobox, Checkbox, Radio, Switch, Toggle, ToggleGroup, Slider, DatePicker |
+| Feedback | Alert, Badge, Meter, Progress, Skeleton, Spinner, Toast, Tooltip |
+| Overlays | Dialog, Drawer (sheet and bottom sheet), Popover |
+| Layout and media | Accordion, Card, Tabs, Separator, Text, Calendar, Avatar |
 
 See the [components roadmap](doc/components/roadmap.md) for what is shipped and
 what is planned, and the [component checklist](doc/components/checklist.md) for

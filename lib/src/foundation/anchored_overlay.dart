@@ -70,7 +70,7 @@ class AnchoredLayout extends SingleChildLayoutDelegate {
   BoxConstraints getConstraintsForChild(BoxConstraints constraints) =>
       BoxConstraints(
         maxWidth: constraints.maxWidth - kAnchorViewportMargin * 2,
-        maxHeight: constraints.maxHeight,
+        maxHeight: constraints.maxHeight - kAnchorViewportMargin * 2,
       );
 
   @override

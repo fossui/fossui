@@ -348,6 +348,30 @@ void main() {
       expect(find.text('5'), findsNothing);
       expect(find.text('6'), findsNothing);
     });
+
+    testWidgets('user completion after a controlled reset still fires', (
+      tester,
+    ) async {
+      final completed = <String>[];
+      await tester.pumpWidget(
+        host(
+          FossOtpField(length: 4, value: '1234', onCompleted: completed.add),
+        ),
+      );
+      // The parent resets the row to a partial value.
+      await tester.pumpWidget(
+        host(FossOtpField(length: 4, value: '12', onCompleted: completed.add)),
+      );
+      await tester.pump();
+      completed.clear();
+
+      // Typing the row back to full fires onCompleted: the completeness guard
+      // was resynced by the controlled write, so it is still authoritative.
+      await tester.enterText(find.byType(EditableText), '1234');
+      await tester.pump();
+
+      expect(completed, ['1234']);
+    });
   });
 
   group('accessibility', () {
