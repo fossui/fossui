@@ -579,7 +579,12 @@ class _DrawerSurfaceState extends State<_DrawerSurface>
         if (handleInline && side == FossDrawerSide.bottom) _handle(theme, side),
         ?widget.header,
         if (widget.content case final content?)
-          Flexible(child: SingleChildScrollView(child: content)),
+          Flexible(
+            child: _ScrollFade(
+              fadeExtent: theme.spacing(6),
+              child: SingleChildScrollView(child: content),
+            ),
+          ),
         if (widget.actions.isNotEmpty)
           _Footer(
             variant: widget.footerVariant,
@@ -686,6 +691,81 @@ class _CloseButton extends StatelessWidget {
           ),
         ),
       ),
+    );
+  }
+}
+
+/// Fades the scroll edges of [child] that still have content beyond them: the
+/// top once it has been scrolled past, the bottom while more remains below. A
+/// non-scrolling child renders untouched. The fade tracks only edge crossings,
+/// so it repaints on the transition, not on every scroll frame.
+class _ScrollFade extends StatefulWidget {
+  const _ScrollFade({required this.fadeExtent, required this.child});
+
+  /// Length of each edge fade, in logical pixels.
+  final double fadeExtent;
+  final Widget child;
+
+  @override
+  State<_ScrollFade> createState() => _ScrollFadeState();
+}
+
+class _ScrollFadeState extends State<_ScrollFade> {
+  bool _fadeTop = false;
+  bool _fadeBottom = false;
+
+  // depth 0 is the wrapped scroll view itself; a nested scrollable inside the
+  // content bubbles up at a higher depth and must not drive the edge fade.
+  bool _sync(ScrollMetrics metrics, int depth) {
+    if (depth != 0 ||
+        !metrics.hasContentDimensions ||
+        axisDirectionToAxis(metrics.axisDirection) != Axis.vertical) {
+      return false;
+    }
+    final top = metrics.extentBefore > 0;
+    final bottom = metrics.extentAfter > 0;
+    if (top != _fadeTop || bottom != _fadeBottom) {
+      setState(() {
+        _fadeTop = top;
+        _fadeBottom = bottom;
+      });
+    }
+    return false;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    // ScrollMetricsNotification covers size changes with no scroll (content or
+    // viewport resize); ScrollNotification covers the scroll itself.
+    final listener = NotificationListener<ScrollMetricsNotification>(
+      onNotification: (n) => _sync(n.metrics, n.depth),
+      child: NotificationListener<ScrollNotification>(
+        onNotification: (n) => _sync(n.metrics, n.depth),
+        child: widget.child,
+      ),
+    );
+    if (!_fadeTop && !_fadeBottom) return listener;
+
+    return ShaderMask(
+      blendMode: BlendMode.dstIn,
+      shaderCallback: (rect) {
+        final f = (widget.fadeExtent / rect.height).clamp(0.0, 0.5);
+        return LinearGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          colors: [
+            if (_fadeTop) const Color(0x00000000) else const Color(0xFF000000),
+            const Color(0xFF000000),
+            const Color(0xFF000000),
+            if (_fadeBottom)
+              const Color(0x00000000)
+            else
+              const Color(0xFF000000),
+          ],
+          stops: [0, f, 1 - f, 1],
+        ).createShader(rect);
+      },
+      child: listener,
     );
   }
 }

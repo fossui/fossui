@@ -719,4 +719,76 @@ void main() {
     expect(find.text('Scaled'), findsOneWidget);
     expect(tester.takeException(), isNull);
   });
+
+  group('content scroll fade', () {
+    testWidgets('does not fade when content fits', (tester) async {
+      final ctx = await pumpHost(tester);
+      unawaited(
+        showFossDrawer<void>(
+          context: ctx,
+          builder: (context) => const FossDrawer(content: Text('Short body')),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(find.byType(ShaderMask), findsNothing);
+    });
+
+    testWidgets('fades the scroll edge when content overflows', (tester) async {
+      final ctx = await pumpHost(tester);
+      unawaited(
+        showFossDrawer<void>(
+          context: ctx,
+          builder: (context) =>
+              const FossDrawer(content: SizedBox(height: 4000)),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(find.byType(ShaderMask), findsOneWidget);
+    });
+
+    testWidgets('keeps fading after scrolling to the end', (tester) async {
+      final ctx = await pumpHost(tester);
+      unawaited(
+        showFossDrawer<void>(
+          context: ctx,
+          builder: (context) =>
+              const FossDrawer(content: SizedBox(height: 4000)),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      await tester.drag(
+        find.byType(SingleChildScrollView),
+        const Offset(0, -4000),
+      );
+      await tester.pumpAndSettle();
+
+      // At the bottom the top edge now fades; the mask stays present.
+      expect(find.byType(ShaderMask), findsOneWidget);
+    });
+
+    testWidgets('ignores a nested scrollable inside fitting content', (
+      tester,
+    ) async {
+      final ctx = await pumpHost(tester);
+      unawaited(
+        showFossDrawer<void>(
+          context: ctx,
+          builder: (context) => FossDrawer(
+            // The drawer body itself fits; only an inner list overflows. Its
+            // scroll must not drive the drawer edge fade.
+            content: SizedBox(
+              height: 80,
+              child: ListView(children: const [SizedBox(height: 4000)]),
+            ),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(find.byType(ShaderMask), findsNothing);
+    });
+  });
 }

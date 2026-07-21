@@ -76,6 +76,24 @@ List<GoldenTestScenario> _scenarios(FossThemeData data) => [
       ),
     ),
   ),
+  GoldenTestScenario(
+    name: 'scroll fade',
+    child: themed(
+      data,
+      _frame(
+        FossDrawer(
+          title: const Text('Terms'),
+          content: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: List.generate(
+              20,
+              (i) => Text('Line ${i + 1} of the scrollable body.'),
+            ),
+          ),
+        ),
+      ),
+    ),
+  ),
 ];
 
 void main() {

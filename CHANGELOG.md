@@ -58,6 +58,11 @@
   them. It supports horizontal or vertical `orientation`, group and per-item
   disable, and a `FossToggleGroupStyle` for one-off overrides.
 
+### Improved
+
+* `FossDrawer` now fades its content at whichever scroll edge still has more to
+  show, cueing that the panel body scrolls.
+
 ### Fixed
 
 * The default type scale now renders in the bundled Geist font in consumer
