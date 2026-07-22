@@ -2,10 +2,10 @@
 
 <img src="assets/logo.png" alt="fossui" width="200" />
 
-**Minimal, framework-agnostic Flutter components.<br/>
+**The Fresh, Minimal Flutter UI kit.<br/>
 Themed from one source. Inspired by [coss.com/ui](https://coss.com/ui), Cal.com's design system.**
 
-[![Pub Version](https://img.shields.io/pub/v/fossui?logo=dart&color=0175C2)](https://pub.dev/packages/fossui) [![Pub Points](https://img.shields.io/pub/points/fossui?logo=dart&color=0175C2)](https://pub.dev/packages/fossui/score) [![Coverage](https://img.shields.io/endpoint?url=https://fossui.github.io/fossui/coverage.json)](https://fossui.github.io/fossui) 
+[![Pub Version](https://img.shields.io/pub/v/fossui?logo=dart&color=0175C2)](https://pub.dev/packages/fossui) [![Pub Likes](https://img.shields.io/pub/likes/fossui?logo=dart&color=0175C2)](https://pub.dev/packages/fossui) [![GitHub stars](https://img.shields.io/github/stars/fossui/fossui?logo=github)](https://github.com/fossui/fossui) [![Coverage](https://img.shields.io/endpoint?url=https://coverage.fossui.org/coverage.json)](https://coverage.fossui.org)
 
 </div>
 
@@ -127,9 +127,10 @@ The library covers input, feedback, overlays, and layout:
 | Overlays | Dialog, Drawer (sheet and bottom sheet), Popover |
 | Layout and media | Accordion, Card, Tabs, Separator, Text, Calendar, Avatar |
 
-See the [components roadmap](doc/components/roadmap.md) for what is shipped and
-what is planned, and the [component checklist](doc/components/checklist.md) for
-the bar each one clears.
+See the [components roadmap](https://github.com/fossui/fossui/blob/main/doc/components/roadmap.md)
+for what is shipped and what is planned, and the
+[component checklist](https://github.com/fossui/fossui/blob/main/doc/components/checklist.md)
+for the bar each one clears.
 
 ## Icons
 
@@ -173,9 +174,18 @@ fvm flutter pub get
 fvm flutter test
 ```
 
-Coverage report: [fossui.github.io/fossui](https://fossui.github.io/fossui).
-Contributions are welcome. See [CONTRIBUTING.md](CONTRIBUTING.md) and the
+The test suite runs on every change and holds full line coverage; browse the
+live report at [coverage.fossui.org](https://coverage.fossui.org).
+
+Contributions are welcome. Start with [CONTRIBUTING.md](CONTRIBUTING.md) and the
 [Code of Conduct](CODE_OF_CONDUCT.md).
+
+## Acknowledgements
+
+The look and component API are drawn from [coss.com/ui](https://coss.com/ui), the
+Cal.com design system, with ideas from [Base UI](https://github.com/mui/base-ui)
+and [shadcn/ui](https://github.com/shadcn-ui/ui). Full attribution is in
+[NOTICE](NOTICE).
 
 ## Support
 
