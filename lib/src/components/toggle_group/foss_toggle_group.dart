@@ -67,7 +67,7 @@ class FossToggleGroupItem {
 /// See the
 /// [toggle group documentation ↗](https://fossui.org/docs/components/toggle-group)
 /// or try it live in the
-/// [playground ↗](https://play.fossui.org/#/?path=components/toggle-group/fosstogglegroup/playground).
+/// [playground ↗](https://play.fossui.org/components/#/?path=components/toggle-group/fosstogglegroup/playground).
 /// {@endtemplate}
 ///
 /// Binds a row or column of toggles to one shared selection. Each

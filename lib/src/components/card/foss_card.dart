@@ -22,7 +22,7 @@ const Color _rimDark = Color(0x0FFFFFFF);
 ///
 /// See the [card documentation ↗](https://fossui.org/docs/components/card) or
 /// try it live in the
-/// [playground ↗](https://play.fossui.org/#/?path=components/card/fosscard/playground).
+/// [playground ↗](https://play.fossui.org/components/#/?path=components/card/fosscard/playground).
 /// {@endtemplate}
 ///
 /// A static content container: a bordered, rounded surface that groups an

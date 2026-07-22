@@ -40,7 +40,7 @@ enum FossTooltipSide {
 ///
 /// See the [tooltip documentation ↗](https://fossui.org/docs/components/tooltip) or
 /// try it live in the
-/// [playground ↗](https://play.fossui.org/#/?path=components/tooltip/fosstooltip/playground).
+/// [playground ↗](https://play.fossui.org/components/#/?path=components/tooltip/fosstooltip/playground).
 /// {@endtemplate}
 ///
 /// Wraps a [child] trigger and shows a small floating hint next to it on hover,

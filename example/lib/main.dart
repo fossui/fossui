@@ -65,6 +65,7 @@ class _Home extends StatelessWidget {
             FossTab(value: 'controls', label: 'Controls', content: _Controls()),
             FossTab(value: 'inputs', label: 'Inputs', content: _Inputs()),
             FossTab(value: 'feedback', label: 'Feedback', content: _Feedback()),
+            FossTab(value: 'layout', label: 'Layout', content: _Layout()),
           ],
         ),
       ),
@@ -128,6 +129,8 @@ class _ControlsState extends State<_Controls> {
   bool _terms = false;
   String _plan = 'pro';
   double _volume = 40;
+  bool _bold = false;
+  String? _align = 'left';
 
   Future<void> _confirmDelete() => showFossDialog<void>(
     context: context,
@@ -237,6 +240,40 @@ class _ControlsState extends State<_Controls> {
             onChanged: (v) => setState(() => _volume = v),
           ),
         ),
+        _Section(
+          label: 'Toggle',
+          child: FossToggle(
+            pressed: _bold,
+            leading: const Icon(Icons.format_bold),
+            semanticLabel: 'Bold',
+            onPressedChanged: (v) => setState(() => _bold = v),
+            child: const Text('Bold'),
+          ),
+        ),
+        _Section(
+          label: 'Toggle group',
+          child: FossToggleGroup.single(
+            value: _align,
+            onChanged: (v) => setState(() => _align = v),
+            children: const [
+              FossToggleGroupItem(
+                value: 'left',
+                leading: Icon(Icons.format_align_left),
+                semanticLabel: 'Align left',
+              ),
+              FossToggleGroupItem(
+                value: 'center',
+                leading: Icon(Icons.format_align_center),
+                semanticLabel: 'Align center',
+              ),
+              FossToggleGroupItem(
+                value: 'right',
+                leading: Icon(Icons.format_align_right),
+                semanticLabel: 'Align right',
+              ),
+            ],
+          ),
+        ),
       ],
     );
   }
@@ -251,6 +288,23 @@ class _Inputs extends StatefulWidget {
 
 class _InputsState extends State<_Inputs> {
   String? _plan;
+  num? _quantity = 1;
+  DateTime? _date;
+  String? _fruit;
+  Set<String> _labels = {'design'};
+
+  static const _fruits = <FossComboboxItem<String>>[
+    FossComboboxItem(value: 'apple', label: 'Apple'),
+    FossComboboxItem(value: 'banana', label: 'Banana'),
+    FossComboboxItem(value: 'cherry', label: 'Cherry'),
+    FossComboboxItem(value: 'mango', label: 'Mango'),
+  ];
+
+  static const _tags = <FossComboboxItem<String>>[
+    FossComboboxItem(value: 'design', label: 'Design'),
+    FossComboboxItem(value: 'eng', label: 'Engineering'),
+    FossComboboxItem(value: 'ops', label: 'Operations'),
+  ];
 
   @override
   Widget build(BuildContext context) {
@@ -287,6 +341,65 @@ class _InputsState extends State<_Inputs> {
             ],
           ),
         ),
+        _Section(
+          label: 'Number field',
+          child: FossNumberField(
+            value: _quantity,
+            min: 0,
+            max: 10,
+            onChanged: (v) => setState(() => _quantity = v),
+          ),
+        ),
+        _Section(
+          label: 'Combobox',
+          child: FossCombobox<String>(
+            label: 'Fruit',
+            hintText: 'Search fruit',
+            value: _fruit,
+            items: _fruits,
+            onChanged: (v) => setState(() => _fruit = v),
+          ),
+        ),
+        const _Section(
+          label: 'Autocomplete',
+          child: FossAutocomplete(
+            label: 'Fruit',
+            hintText: 'Type to search',
+            items: ['Apple', 'Banana', 'Cherry', 'Mango'],
+          ),
+        ),
+        _Section(
+          label: 'Multi combobox',
+          child: FossMultiCombobox<String>(
+            label: 'Tags',
+            hintText: 'Add tags',
+            values: _labels,
+            items: _tags,
+            onChanged: (v) => setState(() => _labels = v),
+          ),
+        ),
+        _Section(
+          label: 'Multi select',
+          child: FossMultiSelect<String>(
+            label: 'Tags',
+            placeholder: 'Choose tags',
+            values: _labels,
+            items: const [
+              FossSelectItem(value: 'design', label: 'Design'),
+              FossSelectItem(value: 'eng', label: 'Engineering'),
+              FossSelectItem(value: 'ops', label: 'Operations'),
+            ],
+            onChanged: (v) => setState(() => _labels = v),
+          ),
+        ),
+        _Section(
+          label: 'Date picker',
+          child: FossDatePicker.single(
+            selected: _date,
+            onSelected: (d) => setState(() => _date = d),
+          ),
+        ),
+        const _Section(label: 'One-time code', child: FossOtpField(length: 6)),
         const _Section(
           label: 'Validation',
           child: FossTextField(
@@ -402,6 +515,29 @@ class _Feedback extends StatelessWidget {
             valueLabel: '72%',
           ),
         ),
+        const _Section(
+          label: 'Meter',
+          child: FossMeter(value: 40, label: 'Storage'),
+        ),
+        _Section(
+          label: 'Skeleton',
+          child: Row(
+            children: [
+              const FossSkeleton.circle(size: 40),
+              SizedBox(width: spacing(3)),
+              const Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    FossSkeleton(width: 160, height: 12),
+                    SizedBox(height: 8),
+                    FossSkeleton(width: 100, height: 12),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
         _Section(
           label: 'Avatar, spinner, tooltip',
           child: Row(
@@ -427,6 +563,91 @@ class _Feedback extends StatelessWidget {
               alignment: Alignment.centerRight,
               child: FossButton(onPressed: () {}, child: const Text('Upgrade')),
             ),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _Layout extends StatefulWidget {
+  const _Layout();
+
+  @override
+  State<_Layout> createState() => _LayoutState();
+}
+
+class _LayoutState extends State<_Layout> {
+  DateTime? _day;
+
+  Future<void> _openDrawer() => showFossDrawer<void>(
+    context: context,
+    builder: (context) => const FossDrawer(
+      showHandle: true,
+      title: Text('Details'),
+      content: Text('A panel that slides up from the bottom edge.'),
+    ),
+  );
+
+  @override
+  Widget build(BuildContext context) {
+    return _Page(
+      children: [
+        const _Section(
+          label: 'Text',
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              FossText.title('Type scale'),
+              SizedBox(height: 8),
+              FossText.body('Body copy in the muted foreground role.'),
+            ],
+          ),
+        ),
+        const _Section(
+          label: 'Separator',
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Text('Above'),
+              SizedBox(height: 12),
+              FossSeparator(),
+              SizedBox(height: 12),
+              Text('Below'),
+            ],
+          ),
+        ),
+        const _Section(
+          label: 'Accordion',
+          child: FossAccordion(
+            initialValue: {'a'},
+            children: [
+              FossAccordionItem(
+                value: 'a',
+                title: Text('Is it accessible?'),
+                child: Text('Yes. It follows the accessibility pattern.'),
+              ),
+              FossAccordionItem(
+                value: 'b',
+                title: Text('Is it themeable?'),
+                child: Text('Yes. Colors and type come from the theme.'),
+              ),
+            ],
+          ),
+        ),
+        _Section(
+          label: 'Calendar',
+          child: FossCalendar.single(
+            selected: _day,
+            onSelected: (d) => setState(() => _day = d),
+          ),
+        ),
+        _Section(
+          label: 'Drawer',
+          child: FossButton(
+            variant: FossButtonVariant.outline,
+            onPressed: _openDrawer,
+            child: const Text('Open drawer'),
           ),
         ),
       ],

@@ -51,7 +51,7 @@ enum FossToggleSize {
 ///
 /// See the [toggle documentation ↗](https://fossui.org/docs/components/toggle) or
 /// try it live in the
-/// [playground ↗](https://play.fossui.org/#/?path=components/toggle/fosstoggle/playground).
+/// [playground ↗](https://play.fossui.org/components/#/?path=components/toggle/fosstoggle/playground).
 /// {@endtemplate}
 ///
 /// A button that holds a two-state pressed look: tap it to turn it on, tap

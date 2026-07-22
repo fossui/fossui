@@ -46,7 +46,7 @@ class _DialogPresentationScope extends InheritedWidget {
 ///
 /// See the [dialog documentation ↗](https://fossui.org/docs/components/dialog) or
 /// try it live in the
-/// [playground ↗](https://play.fossui.org/#/?path=components/dialog/fossdialog/playground).
+/// [playground ↗](https://play.fossui.org/components/#/?path=components/dialog/fossdialog/playground).
 /// {@endtemplate}
 ///
 /// A modal surface with slots for a title, description, body, and actions,

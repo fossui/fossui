@@ -22,7 +22,7 @@ const Curve _fillCurve = Curves.ease;
 ///
 /// See the [meter documentation ↗](https://fossui.org/docs/components/meter)
 /// or try it live in the
-/// [playground ↗](https://play.fossui.org/#/?path=components/meter/fossmeter/playground).
+/// [playground ↗](https://play.fossui.org/components/#/?path=components/meter/fossmeter/playground).
 /// {@endtemplate}
 ///
 /// A static gauge: a full-width track with a leading fill that shows one

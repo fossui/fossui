@@ -92,7 +92,7 @@ enum FossTextColor {
 ///
 /// See the [text documentation ↗](https://fossui.org/docs/components/text) or
 /// try it live in the
-/// [playground ↗](https://play.fossui.org/#/?path=components/text/fosstext/playground).
+/// [playground ↗](https://play.fossui.org/components/#/?path=components/text/fosstext/playground).
 /// {@endtemplate}
 ///
 /// On-brand text in one line. [FossText] renders a string in a [FossTypography]

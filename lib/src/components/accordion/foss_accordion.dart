@@ -71,7 +71,7 @@ class FossAccordionItem {
 ///
 /// See the [accordion documentation ↗](https://fossui.org/docs/components/accordion)
 /// or try it live in the
-/// [playground ↗](https://play.fossui.org/#/?path=components/accordion/fossaccordion/playground).
+/// [playground ↗](https://play.fossui.org/components/#/?path=components/accordion/fossaccordion/playground).
 /// {@endtemplate}
 ///
 /// A stack of collapsible sections: each header toggles a panel of content open

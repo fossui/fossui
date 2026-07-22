@@ -33,7 +33,7 @@ enum FossTextFieldSize {
 ///
 /// See the [text field documentation ↗](https://fossui.org/docs/components/text-field) or
 /// try it live in the
-/// [playground ↗](https://play.fossui.org/#/?path=components/text_field/fosstextfield/playground).
+/// [playground ↗](https://play.fossui.org/components/#/?path=components/text_field/fosstextfield/playground).
 /// {@endtemplate}
 ///
 /// A text field in the fossui style.

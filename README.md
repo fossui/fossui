@@ -38,9 +38,10 @@ theme, light and dark out of the box.
   token: color, type, radius, spacing, shadow, motion. Reskin the whole app,
   light and dark, in one call.
 - **Light on dependencies.** One runtime dependency and no bundled icon package.
-  A worst-case app that imports nearly every component adds about 314 KB, most of
-  it the Geist font (~36 KB over the wire), and the Dart code tree-shakes to what
-  you use. Pass your own icons through plain `Widget` slots.
+  A worst-case app that imports nearly every component adds about 384 KB: roughly
+  310 KB of Dart code, which tree-shakes down to what you actually use, plus the
+  Geist font (74 KB installed, ~35 KB over the wire). Pass your own icons through
+  plain `Widget` slots.
 - **Preview-rich docs.** Every component's API doc renders a live light and dark
   preview, not just text, and the same preview shows on hover in your IDE. Each
   one states plainly what it does and does not do.
@@ -51,7 +52,7 @@ theme, light and dark out of the box.
 
 ```yaml
 dependencies:
-  fossui: ^0.1.0
+  fossui: ^0.1.1
 ```
 
 Or from the command line:

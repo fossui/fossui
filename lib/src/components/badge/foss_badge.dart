@@ -97,7 +97,7 @@ enum FossBadgeSize {
 ///
 /// See the [badge documentation ↗](https://fossui.org/docs/components/badge) or
 /// try it live in the
-/// [playground ↗](https://play.fossui.org/#/?path=components/badge/fossbadge/playground).
+/// [playground ↗](https://play.fossui.org/components/#/?path=components/badge/fossbadge/playground).
 /// {@endtemplate}
 ///
 /// A compact status pill: a content-hugging, single-line label that tags a

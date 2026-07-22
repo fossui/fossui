@@ -44,7 +44,7 @@ const Color _thumbRim = Color(0x0A000000);
 ///
 /// See the [slider documentation ↗](https://fossui.org/docs/components/slider) or
 /// try it live in the
-/// [playground ↗](https://play.fossui.org/#/?path=components/slider/fossslider/playground).
+/// [playground ↗](https://play.fossui.org/components/#/?path=components/slider/fossslider/playground).
 /// {@endtemplate}
 ///
 /// A horizontal slider: a track with a draggable thumb that picks a [double]

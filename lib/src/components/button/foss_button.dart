@@ -60,7 +60,7 @@ enum FossButtonSize {
 ///
 /// See the [button documentation ↗](https://fossui.org/docs/components/button) or
 /// try it live in the
-/// [playground ↗](https://play.fossui.org/#/?path=components/button/fossbutton/playground).
+/// [playground ↗](https://play.fossui.org/components/#/?path=components/button/fossbutton/playground).
 /// {@endtemplate}
 ///
 /// A pressable button in the fossui style.

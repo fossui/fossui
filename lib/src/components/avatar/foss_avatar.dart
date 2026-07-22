@@ -50,7 +50,7 @@ enum FossAvatarSize {
 ///
 /// See the [avatar documentation ↗](https://fossui.org/docs/components/avatar) or
 /// try it live in the
-/// [playground ↗](https://play.fossui.org/#/?path=components/avatar/fossavatar/playground).
+/// [playground ↗](https://play.fossui.org/components/#/?path=components/avatar/fossavatar/playground).
 /// {@endtemplate}
 ///
 /// A user's stand-in: a fixed-size circle that shows a profile [image] and

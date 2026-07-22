@@ -88,7 +88,7 @@ enum _SelectionMode { single, multiple, range }
 ///
 /// See the [calendar documentation ↗](https://fossui.org/docs/components/calendar)
 /// or try it live in the
-/// [playground ↗](https://play.fossui.org/#/?path=components/calendar/fosscalendar/playground).
+/// [playground ↗](https://play.fossui.org/components/#/?path=components/calendar/fosscalendar/playground).
 /// {@endtemplate}
 ///
 /// A month grid for viewing and picking dates: a seven-column day grid under a

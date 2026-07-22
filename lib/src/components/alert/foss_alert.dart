@@ -49,7 +49,7 @@ enum FossAlertVariant {
 ///
 /// See the [alert documentation ↗](https://fossui.org/docs/components/alert) or
 /// try it live in the
-/// [playground ↗](https://play.fossui.org/#/?path=components/alert/fossalert/playground).
+/// [playground ↗](https://play.fossui.org/components/#/?path=components/alert/fossalert/playground).
 /// {@endtemplate}
 ///
 /// A static inline callout: a leading status glyph, a title, an optional

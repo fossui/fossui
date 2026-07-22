@@ -53,7 +53,7 @@ const Color _rimDark = Color(0x0FFFFFFF);
 ///
 /// See the [select documentation ↗](https://fossui.org/docs/components/select) or
 /// try it live in the
-/// [playground ↗](https://play.fossui.org/#/?path=components/select/fossselect/playground).
+/// [playground ↗](https://play.fossui.org/components/#/?path=components/select/fossselect/playground).
 /// {@endtemplate}
 ///
 /// A pick-from-list control with no typing.

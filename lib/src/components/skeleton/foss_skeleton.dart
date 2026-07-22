@@ -15,7 +15,7 @@ import 'package:fossui/src/theme/theme.dart';
 ///
 /// See the [skeleton documentation ↗](https://fossui.org/docs/components/skeleton)
 /// or try it live in the
-/// [playground ↗](https://play.fossui.org/#/?path=components/skeleton/fossskeleton/playground).
+/// [playground ↗](https://play.fossui.org/components/#/?path=components/skeleton/fossskeleton/playground).
 /// {@endtemplate}
 ///
 /// A placeholder that stands in for content while it loads.

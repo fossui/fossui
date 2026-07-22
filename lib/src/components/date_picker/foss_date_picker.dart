@@ -80,7 +80,7 @@ bool _isSameDay(DateTime a, DateTime b) =>
 ///
 /// See the [date picker documentation ↗](https://fossui.org/docs/components/date-picker)
 /// or try it live in the
-/// [playground ↗](https://play.fossui.org/#/?path=components/date_picker/fossdatepicker/playground).
+/// [playground ↗](https://play.fossui.org/components/#/?path=components/date_picker/fossdatepicker/playground).
 /// {@endtemplate}
 ///
 /// A date field that opens a calendar in a modal dialog and shows the chosen

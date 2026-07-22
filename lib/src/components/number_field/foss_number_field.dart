@@ -32,7 +32,7 @@ const double _selectionOpacity = 0.24;
 ///
 /// See the [number field documentation ↗](https://fossui.org/docs/components/number-field)
 /// or try it live in the
-/// [playground ↗](https://play.fossui.org/#/?path=components/number_field/fossnumberfield/playground).
+/// [playground ↗](https://play.fossui.org/components/#/?path=components/number_field/fossnumberfield/playground).
 /// {@endtemplate}
 ///
 /// A numeric input flanked by a decrement and an increment button.

@@ -58,7 +58,7 @@ bool _defaultFilter(String label, String query) =>
 ///
 /// See the [combobox documentation ↗](https://fossui.org/docs/components/combobox) or
 /// try it live in the
-/// [playground ↗](https://play.fossui.org/#/?path=components/combobox/fosscombobox/playground).
+/// [playground ↗](https://play.fossui.org/components/#/?path=components/combobox/fosscombobox/playground).
 /// {@endtemplate}
 ///
 /// A text field whose dropdown filters a list of suggestions as you type.

@@ -38,7 +38,7 @@ const Duration _squishDuration = Duration(milliseconds: 100);
 ///
 /// See the [switch documentation ↗](https://fossui.org/docs/components/switch) or
 /// try it live in the
-/// [playground ↗](https://play.fossui.org/#/?path=components/switch/fossswitch/playground).
+/// [playground ↗](https://play.fossui.org/components/#/?path=components/switch/fossswitch/playground).
 /// {@endtemplate}
 ///
 /// An instant on / off toggle: a pill track with a sliding thumb that commits a

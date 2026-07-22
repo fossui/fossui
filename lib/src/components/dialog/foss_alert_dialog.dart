@@ -11,7 +11,7 @@ part of 'foss_dialog.dart';
 ///
 /// See the [alert dialog documentation ↗](https://fossui.org/docs/components/alert-dialog) or
 /// try it live in the
-/// [playground ↗](https://play.fossui.org/#/?path=components/dialog/fossalertdialog/playground).
+/// [playground ↗](https://play.fossui.org/components/#/?path=components/dialog/fossalertdialog/playground).
 /// {@endtemplate}
 ///
 /// A non-dismissible modal that interrupts to require a decision.

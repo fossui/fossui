@@ -55,7 +55,7 @@ enum FossOtpValidation {
 ///
 /// See the [otp field documentation ↗](https://fossui.org/docs/components/otp-field) or
 /// try it live in the
-/// [playground ↗](https://play.fossui.org/#/?path=components/otp_field/fossotpfield/playground).
+/// [playground ↗](https://play.fossui.org/components/#/?path=components/otp_field/fossotpfield/playground).
 /// {@endtemplate}
 ///
 /// A segmented one-time-code field: a row of single-character slots over one

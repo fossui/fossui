@@ -16,7 +16,7 @@ import 'package:fossui/src/theme/theme.dart';
 ///
 /// See the [spinner documentation ↗](https://fossui.org/docs/components/spinner) or
 /// try it live in the
-/// [playground ↗](https://play.fossui.org/#/?path=components/spinner/fossspinner/playground).
+/// [playground ↗](https://play.fossui.org/components/#/?path=components/spinner/fossspinner/playground).
 /// {@endtemplate}
 ///
 /// A circular loading indicator: an open arc that spins continuously.

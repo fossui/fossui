@@ -116,7 +116,7 @@ Future<T?> showFossDrawer<T>({
 ///
 /// See the [drawer documentation ↗](https://fossui.org/docs/components/drawer) or
 /// try it live in the
-/// [playground ↗](https://play.fossui.org/#/?path=components/drawer/fossdrawer/playground).
+/// [playground ↗](https://play.fossui.org/components/#/?path=components/drawer/fossdrawer/playground).
 /// {@endtemplate}
 ///
 /// An edge-anchored modal panel with slots for a title, description, body, and

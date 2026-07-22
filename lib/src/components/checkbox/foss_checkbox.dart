@@ -48,7 +48,7 @@ const Color _rimDark = Color(0x0FFFFFFF);
 ///
 /// See the [checkbox documentation ↗](https://fossui.org/docs/components/checkbox) or
 /// try it live in the
-/// [playground ↗](https://play.fossui.org/#/?path=components/checkbox/fosscheckbox/playground).
+/// [playground ↗](https://play.fossui.org/components/#/?path=components/checkbox/fosscheckbox/playground).
 /// {@endtemplate}
 ///
 /// A checkbox: an independent on / off toggle that can also show an

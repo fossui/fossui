@@ -22,7 +22,7 @@ const Curve _fillCurve = Curves.ease;
 ///
 /// See the [progress documentation ↗](https://fossui.org/docs/components/progress) or
 /// try it live in the
-/// [playground ↗](https://play.fossui.org/#/?path=components/progress/fossprogress/playground).
+/// [playground ↗](https://play.fossui.org/components/#/?path=components/progress/fossprogress/playground).
 /// {@endtemplate}
 ///
 /// A determinate progress bar: a full-width track with a leading fill that

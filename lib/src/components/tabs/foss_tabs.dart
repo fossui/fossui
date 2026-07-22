@@ -74,7 +74,7 @@ class FossTab<T> {
 ///
 /// See the [tabs documentation ↗](https://fossui.org/docs/components/tabs) or
 /// try it live in the
-/// [playground ↗](https://play.fossui.org/#/?path=components/tabs/fosstabs/playground).
+/// [playground ↗](https://play.fossui.org/components/#/?path=components/tabs/fosstabs/playground).
 /// {@endtemplate}
 ///
 /// A row or column of tabs that toggle between sibling panels, with an animated

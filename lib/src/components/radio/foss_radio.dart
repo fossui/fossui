@@ -44,7 +44,7 @@ const Color _rimDark = Color(0x0FFFFFFF);
 ///
 /// See the [radio documentation ↗](https://fossui.org/docs/components/radio) or
 /// try it live in the
-/// [playground ↗](https://play.fossui.org/#/?path=components/radio/fossradiogroup/playground).
+/// [playground ↗](https://play.fossui.org/components/#/?path=components/radio/fossradiogroup/playground).
 /// {@endtemplate}
 ///
 /// A single option within a [FossRadioGroup].

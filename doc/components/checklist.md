@@ -82,7 +82,7 @@ bottom into the pull request and tick it as you go.
   convention so they stay derivable from the name: preview images at
   `fossui.org/components/<slug>/overview/{light,dark}.png`, docs at
   `fossui.org/docs/components/<slug>`, playground at
-  `play.fossui.org/#/?path=components/<folder>/<class-lower>/playground`. The
+  `play.fossui.org/components/#/?path=components/<folder>/<class-lower>/playground`. The
   `<slug>` is the class name minus the `Foss` prefix, kebab-cased; the playground
   is keyed on the component's primary class. Do not invent a new path shape.
 - [ ] Once a component ships, its URLs are frozen: never move or rename one. Add a

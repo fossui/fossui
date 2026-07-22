@@ -21,7 +21,7 @@ enum FossSeparatorOrientation {
 ///
 /// See the [separator documentation ↗](https://fossui.org/docs/components/separator) or
 /// try it live in the
-/// [playground ↗](https://play.fossui.org/#/?path=components/separator/fossseparator/playground).
+/// [playground ↗](https://play.fossui.org/components/#/?path=components/separator/fossseparator/playground).
 /// {@endtemplate}
 ///
 /// A hairline rule that divides content along a row or a column. Static and

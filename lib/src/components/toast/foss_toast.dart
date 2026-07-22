@@ -37,7 +37,7 @@ enum FossToastVariant {
 ///
 /// See the [toast documentation ↗](https://fossui.org/docs/components/toast) or
 /// try it live in the
-/// [playground ↗](https://play.fossui.org/#/?path=components/toast/fosstoaster/playground).
+/// [playground ↗](https://play.fossui.org/components/#/?path=components/toast/fosstoaster/playground).
 /// {@endtemplate}
 ///
 /// One transient notification. Enqueue it with `showFossToast` or a

@@ -88,7 +88,7 @@ class FossPopoverController {
 ///
 /// See the [popover documentation ↗](https://fossui.org/docs/components/popover) or
 /// try it live in the
-/// [playground ↗](https://play.fossui.org/#/?path=components/popover/fosspopover/playground).
+/// [playground ↗](https://play.fossui.org/components/#/?path=components/popover/fosspopover/playground).
 /// {@endtemplate}
 ///
 /// An interactive floating panel anchored to a [child] trigger. Tapping the
