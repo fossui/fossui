@@ -303,28 +303,42 @@ class _FossNumberFieldState extends State<FossNumberField>
       minHeight: v.minHeight,
       shadow: v.shadow,
       isDark: colors.isDark,
-      child: Row(
-        children: [
-          _Stepper(
-            plus: false,
-            interactive: canDecrement,
-            dim: widget.enabled && !canDecrement,
-            visuals: v,
-            semanticsLabel: 'Decrement',
-            onStep: () => _step(-widget.step),
+      // Clip the content to the box's inner superellipse (inset past the 1px
+      // border) so a stepper's hover fill nests inside the corner instead of
+      // squaring off over the border.
+      child: ClipPath(
+        clipper: _FieldClip(v.borderRadius),
+        // Resolve the row's height (the box min height) before stretching, so
+        // the stretch has a bound even when the field sits in an unbounded box.
+        child: IntrinsicHeight(
+          child: Row(
+            // Stretch the steppers to the full field height so each button, its
+            // hover fill, and its tap target fill the box rather than a short
+            // glyph-height band centered in it.
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              _Stepper(
+                plus: false,
+                interactive: canDecrement,
+                dim: widget.enabled && !canDecrement,
+                visuals: v,
+                semanticsLabel: 'Decrement',
+                onStep: () => _step(-widget.step),
+              ),
+              Expanded(
+                child: _buildEditable(colors, v, canDecrement, canIncrement),
+              ),
+              _Stepper(
+                plus: true,
+                interactive: canIncrement,
+                dim: widget.enabled && !canIncrement,
+                visuals: v,
+                semanticsLabel: 'Increment',
+                onStep: () => _step(widget.step),
+              ),
+            ],
           ),
-          Expanded(
-            child: _buildEditable(colors, v, canDecrement, canIncrement),
-          ),
-          _Stepper(
-            plus: true,
-            interactive: canIncrement,
-            dim: widget.enabled && !canIncrement,
-            visuals: v,
-            semanticsLabel: 'Increment',
-            onStep: () => _step(widget.step),
-          ),
-        ],
+        ),
       ),
     );
 
@@ -401,6 +415,7 @@ class _FossNumberFieldState extends State<FossNumberField>
       onIncrease: canIncrement ? () => _step(widget.step) : null,
       onDecrease: canDecrement ? () => _step(-widget.step) : null,
       child: Stack(
+        alignment: Alignment.center,
         children: [
           if (placeholder != null)
             Positioned.fill(
@@ -507,19 +522,10 @@ class _StepperState extends State<_Stepper> {
         ? v.glyphColor.withValues(alpha: v.glyphColor.a * _disabledOpacity)
         : v.glyphColor;
 
-    // The hover fill rounds the inner corner so it sits within the box radius.
-    final innerRadius = Radius.circular(math.max(0, v.borderRadius - 1));
+    // The full-height fill; the field clips its outer corner to the box radius,
+    // and its inner edge stays square against the value.
     final fill = _hovered && widget.interactive
-        ? DecoratedBox(
-            decoration: ShapeDecoration(
-              color: v.stepperHoverColor,
-              shape: RoundedSuperellipseBorder(
-                borderRadius: widget.plus
-                    ? BorderRadiusDirectional.horizontal(end: innerRadius)
-                    : BorderRadiusDirectional.horizontal(start: innerRadius),
-              ),
-            ),
-          )
+        ? ColoredBox(color: v.stepperHoverColor)
         : const SizedBox.shrink();
 
     final glyph = Padding(
@@ -590,6 +596,22 @@ class _GlyphPainter extends CustomPainter {
   @override
   bool shouldRepaint(_GlyphPainter oldDelegate) =>
       oldDelegate.color != color || oldDelegate.plus != plus;
+}
+
+/// Clips the field content to the superellipse just inside the 1px border, so
+/// a stepper's full-height fill nests within the corner instead of overhanging.
+class _FieldClip extends CustomClipper<Path> {
+  const _FieldClip(this.radius);
+
+  final double radius;
+
+  @override
+  Path getClip(Size size) => RoundedSuperellipseBorder(
+    borderRadius: BorderRadius.circular(math.max(0, radius - 1)),
+  ).getOuterPath((Offset.zero & size).deflate(1));
+
+  @override
+  bool shouldReclip(_FieldClip oldClipper) => oldClipper.radius != radius;
 }
 
 /// Builds the default appearance for a [size] from the theme tokens, reusing

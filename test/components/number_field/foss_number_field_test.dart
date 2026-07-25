@@ -450,11 +450,9 @@ void main() {
       await tester.pump();
 
       final accent = FossThemeData.light.colors.accent;
-      bool anyAccentFill() =>
-          tester.widgetList<DecoratedBox>(find.byType(DecoratedBox)).any((b) {
-            final d = b.decoration;
-            return d is ShapeDecoration && d.color == accent;
-          });
+      bool anyAccentFill() => tester
+          .widgetList<ColoredBox>(find.byType(ColoredBox))
+          .any((b) => b.color == accent);
 
       await gesture.moveTo(
         tester.getCenter(find.bySemanticsLabel('Increment')),

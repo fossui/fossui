@@ -1,3 +1,12 @@
+## 0.1.2
+
+### Fixed
+
+* `FossNumberField` steppers now fill the full field height, so a stepper's
+  hover fill and tap target span the button instead of a short band floating in
+  the middle. The hover fill is clipped to the field's rounded corner, so it no
+  longer squares off over the border.
+
 ## 0.1.1
 
 ### Added
