@@ -109,7 +109,7 @@ say so.
 Bigger composed pieces do not live here: data tables, charts, dashboards, auth
 forms, schedulers, and the like. They ship in a separate package, `fossui_plus`,
 built on these same atoms so they inherit the theme and retheme with your app. It
-is pre-development; follow it at https://github.com/fossui/plus.
+is pre-development; follow it at [github.com/fossui/plus](https://github.com/fossui/plus).
 
 ## How the order is decided
 
