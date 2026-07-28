@@ -65,8 +65,51 @@ right-to-left layout, and three layers of tests. That bar is written down in
 
 ## Planned
 
-The core set above is complete. New components are added as real needs come in.
-Need one sooner? Open an issue and say so.
+Next up, in no fixed order. Each clears the same bar as everything above before it
+ships.
+
+### Forms and inputs
+
+- [ ] **Chip** : selectable, dismissible chip or tag.
+- [ ] **Time picker** : time-of-day selection, pairs with Date picker.
+- [ ] **Rating** : star rating input and display.
+
+### Layout and surfaces
+
+- [ ] **List tile** : list row with leading, title, subtitle, and trailing slots.
+- [ ] **Empty state** : icon, message, and action for an empty view.
+- [ ] **Stepper** : multi-step progress and step-through flows.
+- [ ] **Timeline** : vertical sequence of events.
+- [ ] **Scroll area** : scrolling region with a styled scrollbar.
+- [ ] **Avatar group** : overlapping stack of avatars.
+- [ ] **Resizable** : draggable split panels, stacked on small screens.
+
+### Navigation
+
+- [ ] **Breadcrumb** : path trail for nested navigation.
+- [ ] **Pagination** : page controls with previous, next, and page numbers.
+- [ ] **Bottom navigation bar** : primary tab bar for top-level sections.
+- [ ] **Menubar** : application menu bar, collapses on small screens.
+- [ ] **Navigation menu** : grouped navigation with flyout panels.
+
+### Overlays
+
+- [ ] **Context menu** : long-press or secondary-click menu.
+- [ ] **Hover card** : preview card shown on hover or long-press.
+
+### Feedback and status
+
+- [ ] **Kbd** : keyboard key label.
+
+New components are added as real needs come in. Need one sooner? Open an issue and
+say so.
+
+## Beyond the core: fossui_plus
+
+Bigger composed pieces do not live here: data tables, charts, dashboards, auth
+forms, schedulers, and the like. They ship in a separate package, `fossui_plus`,
+built on these same atoms so they inherit the theme and retheme with your app. It
+is pre-development; follow it at https://github.com/fossui/plus.
 
 ## How the order is decided
 
