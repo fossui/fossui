@@ -1,11 +1,11 @@
-# Regenerates the star-history chart daily and commits it into the repo.
+# Regenerates the star-history chart weekly and commits it into the repo.
 name: Star History
 
 on:
   push:
     branches: [main]
   schedule:
-    - cron: "0 0 * * *" # daily at 00:00 UTC
+    - cron: "0 0 * * 0" # weekly on Sunday at 00:00 UTC
   workflow_dispatch:
 
 permissions:
