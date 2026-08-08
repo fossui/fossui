@@ -10,6 +10,7 @@ export 'button/foss_button.dart';
 export 'calendar/foss_calendar.dart';
 export 'card/foss_card.dart';
 export 'checkbox/foss_checkbox.dart';
+export 'chip/foss_chip.dart';
 export 'combobox/foss_combobox.dart';
 export 'date_picker/foss_date_picker.dart';
 export 'dialog/foss_dialog.dart';

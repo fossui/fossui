@@ -1,3 +1,20 @@
+## 0.2.0
+
+### Added
+
+* `FossChip` presents a compact pill for a value the user can pick or drop. The
+  callbacks decide its shape: with neither it is a static tag, `onRemove` adds a
+  close affordance, `onSelected` makes the body toggle `selected`, and both
+  together give a filter chip that can also be dropped. Two variants (`soft`,
+  `outline`), two sizes (`sm` 24, `md` 32), and a `FossChipStyle` for one-off
+  overrides.
+
+### Changed
+
+* `FossMultiCombobox` now renders its selected values as `FossChip`. The look is
+  unchanged; the chip is public API, so the same pill is available outside the
+  field.
+
 ## 0.1.2
 
 ### Fixed
