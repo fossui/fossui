@@ -13,11 +13,12 @@ Themed from one source. Inspired by [coss.com/ui](https://coss.com/ui), Cal.com'
   <img src="assets/demo.gif" alt="fossui components" width="900" />
 </p>
 
-fossui is a component set for developers tired of every Flutter app looking like
-Material. It drops into any app (`MaterialApp`, `CupertinoApp`, or a bare
-`WidgetsApp`) and reads its own theme first, not replacing yours. The look comes
-from [coss.com/ui](https://coss.com/ui), Cal.com's design system: clean, neutral,
-superellipse corners. One import, one theme, light and dark out of the box.
+fossui is a set of 30+ components for developers tired of every Flutter app
+looking like Material. It drops into any app (`MaterialApp`, `CupertinoApp`, or a
+bare `WidgetsApp`) and reads its own theme first, not replacing yours. The look
+comes from [coss.com/ui](https://coss.com/ui), Cal.com's design system: clean,
+neutral, superellipse corners. One import, one theme, light and dark out of the
+box.
 
 > [!IMPORTANT]
 > Unofficial and independent. Not affiliated with or endorsed by Cal.com, Inc.
@@ -59,6 +60,8 @@ Or from the command line:
 ```bash
 flutter pub add fossui
 ```
+
+Browse the package on [pub.dev/packages/fossui](https://pub.dev/packages/fossui).
 
 ## Quick start
 
@@ -156,9 +159,18 @@ https://mcp.fossui.org
 Per-client setup and the full tool list are in the
 [AI-native docs](https://fossui.org/docs/ai-native).
 
+## Blog
+
+- [Introducing fossui: a minimal Flutter UI kit](https://fossui.org/blogs/introducing-fossui)
+- [Migrating from Material to fossui](https://fossui.org/blogs/migrating-from-material-to-fossui)
+- [Minimal Flutter UI kits compared: fossui vs Material (2026)](https://fossui.org/blogs/minimal-flutter-ui-kits-compared-2026)
+
+More at [fossui.org/blogs](https://fossui.org/blogs).
+
 ## Ecosystem
 
 - Documentation: [fossui.org](https://fossui.org)
+- Blog: [fossui.org/blogs](https://fossui.org/blogs)
 - Live gallery: [play.fossui.org](https://play.fossui.org)
 - AI-native (MCP): [fossui.org/docs/ai-native](https://fossui.org/docs/ai-native)
 - Package: [pub.dev/packages/fossui](https://pub.dev/packages/fossui)
