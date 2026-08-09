@@ -1,3 +1,17 @@
+## 0.2.0
+
+### Added
+
+* `FossListTile` lays out a list row: an optional leading widget, a title over
+  an optional subtitle, and an optional trailing widget. Only the title is
+  required and every gap collapses with its slot. Two variants: `filled` (the
+  default) paints a tinted, rounded surface so a plain list reads as a stack of
+  bands, and `plain` is transparent so a row inside a `FossCard` does not
+  double-draw. Passing `onTap` turns the row into one target with hover,
+  pressed, and keyboard activation; leaving it null keeps it inert, which is
+  separate from `enabled: false`. Takes a `FossListTileStyle` for one-off
+  overrides.
+
 ## 0.1.2
 
 ### Fixed

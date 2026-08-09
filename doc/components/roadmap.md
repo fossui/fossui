@@ -43,6 +43,8 @@ right-to-left layout, and three layers of tests. That bar is written down in
 - [x] **Separator** : thin divider.
 - [x] **Tabs** : tabbed panels, horizontal or vertical.
 - [x] **Accordion** : expandable, stacked sections, single or multiple open.
+- [x] **List tile** : list row with leading, title, subtitle, and trailing
+  slots, tappable or inert.
 
 ### Feedback and status
 
@@ -76,7 +78,6 @@ ships.
 
 ### Layout and surfaces
 
-- [ ] **List tile** : list row with leading, title, subtitle, and trailing slots.
 - [ ] **Empty state** : icon, message, and action for an empty view.
 - [ ] **Stepper** : multi-step progress and step-through flows.
 - [ ] **Timeline** : vertical sequence of events.
