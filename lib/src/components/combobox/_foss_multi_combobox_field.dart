@@ -273,10 +273,10 @@ class _FossMultiComboboxFieldState<T> extends State<_FossMultiComboboxField<T>>
             child: addon,
           ),
         for (final item in chips)
-          _Chip(
-            label: item.label,
+          FossChip(
+            label: Text(item.label),
+            size: FossChipSize.sm,
             removeLabel: widget.removeLabel,
-            theme: theme,
             enabled: widget.enabled,
             onRemove: () => _toggle(item),
           ),
@@ -364,87 +364,3 @@ class _FossMultiComboboxFieldState<T> extends State<_FossMultiComboboxField<T>>
 }
 
 /// A removable chip in the chips field: a label plus a trailing remove button.
-class _Chip extends StatelessWidget {
-  const _Chip({
-    required this.label,
-    required this.removeLabel,
-    required this.theme,
-    required this.enabled,
-    required this.onRemove,
-  });
-
-  final String label;
-  final String removeLabel;
-  final FossThemeData theme;
-  final bool enabled;
-  final VoidCallback onRemove;
-
-  @override
-  Widget build(BuildContext context) {
-    final colors = theme.colors;
-    return Semantics(
-      label: label,
-      child: DecoratedBox(
-        decoration: ShapeDecoration(
-          color: colors.accent,
-          shape: RoundedSuperellipseBorder(
-            borderRadius: BorderRadius.circular(theme.radii.md),
-          ),
-        ),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Padding(
-              padding: EdgeInsetsDirectional.only(start: theme.spacing(2)),
-              child: Text(
-                label,
-                style: theme.typography.sm.medium.copyWith(
-                  color: colors.accentForeground,
-                ),
-              ),
-            ),
-            Semantics(
-              button: true,
-              label: removeLabel,
-              child: GestureDetector(
-                behavior: HitTestBehavior.opaque,
-                onTap: enabled ? onRemove : null,
-                child: MouseRegion(
-                  cursor: enabled
-                      ? SystemMouseCursors.click
-                      : SystemMouseCursors.basic,
-                  child: Padding(
-                    padding: EdgeInsets.symmetric(
-                      horizontal: theme.spacing(1.5),
-                      vertical: theme.spacing(1),
-                    ),
-                    // Compact glyph footprint, hit region grown to the minimum
-                    // touch target so the small X is comfortably tappable.
-                    child: SizedBox.square(
-                      dimension: _removeGlyphSize,
-                      child: OverflowBox(
-                        maxWidth: _minHitTarget,
-                        maxHeight: _minHitTarget,
-                        child: Center(
-                          child: CustomPaint(
-                            size: const Size.square(_removeGlyphSize),
-                            painter: CloseGlyph(
-                              colors.accentForeground.withValues(
-                                alpha:
-                                    colors.accentForeground.a * _affixOpacity,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
