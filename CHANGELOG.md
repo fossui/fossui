@@ -36,6 +36,11 @@
 
 ### Fixed
 
+* `FossCalendar` keyboard focus ring now follows the day's own corners. On a
+  range, the ring drew a fully rounded box over the half-rounded start and end
+  fills, so a focused end day showed a rounded outline with the flat fill edge
+  poking out behind it. The ring now traces the fill: rounded on the outer side
+  of a range end, square through the middle days.
 * `FossNumberField` steppers now fill the full field height, so a stepper's
   hover fill and tap target span the button instead of a short band floating in
   the middle. The hover fill is clipped to the field's rounded corner, so it no

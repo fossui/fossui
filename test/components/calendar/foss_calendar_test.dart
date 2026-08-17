@@ -28,6 +28,42 @@ bool _enabled(WidgetTester t, String label) =>
         .toBoolOrNull() ??
     false;
 
+// The ring geometry these tests assert against: a 40px cell with an 8px day
+// radius, stroked 3px wide, so the ring insets 1.5 on every side and each
+// rounded corner shrinks to 6.5.
+const _ringStyle = FossCalendarStyle(dayRadius: 8, cellSize: 40);
+
+RenderObject _dayPainter(WidgetTester t, String day) => t.renderObject(
+  find.ancestor(of: find.text(day), matching: find.byType(CustomPaint)).first,
+);
+
+/// Matches a focused day that paints its fill and then a ring tracing it: same
+/// rounded corners, inset by half the stroke.
+PaintPattern _fillThenRing({
+  required bool leftRounded,
+  required bool rightRounded,
+}) {
+  RSuperellipse shape(Rect rect, double radius) =>
+      RSuperellipse.fromRectAndCorners(
+        rect,
+        topLeft: leftRounded ? Radius.circular(radius) : Radius.zero,
+        bottomLeft: leftRounded ? Radius.circular(radius) : Radius.zero,
+        topRight: rightRounded ? Radius.circular(radius) : Radius.zero,
+        bottomRight: rightRounded ? Radius.circular(radius) : Radius.zero,
+      );
+  const cell = Rect.fromLTWH(0, 0, 40, 40);
+  final fill = paints;
+  // A square fill takes the cheaper drawRect path.
+  if (leftRounded || rightRounded) {
+    fill.rsuperellipse(rsuperellipse: shape(cell, 8));
+  } else {
+    fill.rect(rect: cell);
+  }
+  return fill..rsuperellipse(
+    rsuperellipse: shape(const Rect.fromLTRB(1.5, 1.5, 38.5, 38.5), 6.5),
+  );
+}
+
 bool _hasRing(WidgetTester t) => t
     .widgetList<CustomPaint>(find.byType(CustomPaint))
     .any(
@@ -507,6 +543,99 @@ void main() {
       await tester.sendKeyEvent(LogicalKeyboardKey.enter);
       await tester.pump();
       expect(picked, DateTime(2026, 3, 15));
+    });
+  });
+
+  group('focus ring shape', () {
+    // Keyboard focus lands on the range start, so one arrow step reaches the
+    // middle day and two reach the end.
+    Future<void> pumpRange(WidgetTester tester) async {
+      await tester.pumpWidget(
+        host(
+          FossCalendar.range(
+            selected: FossDateRange(
+              start: DateTime(2026, 3, 10),
+              end: DateTime(2026, 3, 12),
+            ),
+            onSelected: (_) {},
+            initialMonth: _march,
+            style: _ringStyle,
+          ),
+        ),
+      );
+      await tester.sendKeyEvent(LogicalKeyboardKey.tab);
+      await tester.pump();
+    }
+
+    testWidgets('a lone selected day rings on every corner', (tester) async {
+      await tester.pumpWidget(
+        host(
+          FossCalendar.single(
+            selected: DateTime(2026, 3, 15),
+            onSelected: (_) {},
+            initialMonth: _march,
+            style: _ringStyle,
+          ),
+        ),
+      );
+      await tester.sendKeyEvent(LogicalKeyboardKey.tab);
+      await tester.pump();
+      expect(
+        _dayPainter(tester, '15'),
+        _fillThenRing(leftRounded: true, rightRounded: true),
+      );
+    });
+
+    testWidgets('the range start rings flat on its inner edge', (tester) async {
+      await pumpRange(tester);
+      expect(
+        _dayPainter(tester, '10'),
+        _fillThenRing(leftRounded: true, rightRounded: false),
+      );
+    });
+
+    testWidgets('a range middle day rings square', (tester) async {
+      await pumpRange(tester);
+      await tester.sendKeyEvent(LogicalKeyboardKey.arrowRight);
+      await tester.pump();
+      expect(
+        _dayPainter(tester, '11'),
+        _fillThenRing(leftRounded: false, rightRounded: false),
+      );
+    });
+
+    testWidgets('the range end rings flat on its inner edge', (tester) async {
+      await pumpRange(tester);
+      await tester.sendKeyEvent(LogicalKeyboardKey.arrowRight);
+      await tester.sendKeyEvent(LogicalKeyboardKey.arrowRight);
+      await tester.pump();
+      expect(
+        _dayPainter(tester, '12'),
+        _fillThenRing(leftRounded: false, rightRounded: true),
+      );
+    });
+
+    testWidgets('the range start mirrors under RTL', (tester) async {
+      await tester.pumpWidget(
+        host(
+          FossCalendar.range(
+            selected: FossDateRange(
+              start: DateTime(2026, 3, 10),
+              end: DateTime(2026, 3, 12),
+            ),
+            onSelected: (_) {},
+            initialMonth: _march,
+            style: _ringStyle,
+          ),
+          direction: TextDirection.rtl,
+        ),
+      );
+      await tester.sendKeyEvent(LogicalKeyboardKey.tab);
+      await tester.pump();
+      expect(
+        _dayPainter(tester, '10'),
+        _fillThenRing(leftRounded: false, rightRounded: true),
+      );
     });
   });
 
