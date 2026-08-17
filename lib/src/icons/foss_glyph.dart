@@ -2,8 +2,11 @@ import 'package:flutter/widgets.dart';
 
 part 'glyphs/calendar.dart';
 part 'glyphs/check.dart';
+part 'glyphs/chevron_left.dart';
+part 'glyphs/chevron_right.dart';
 part 'glyphs/chevron_up_down.dart';
 part 'glyphs/close.dart';
+part 'glyphs/ellipsis.dart';
 part 'glyphs/error.dart';
 part 'glyphs/info.dart';
 part 'glyphs/minus.dart';

@@ -46,6 +46,8 @@ right-to-left layout, and three layers of tests. That bar is written down in
 - [x] **Accordion** : expandable, stacked sections, single or multiple open.
 - [x] **List tile** : list row with leading, title, subtitle, and trailing
   slots, tappable or inert.
+- [x] **Pagination** : page controls with previous, next, and windowed page
+  numbers, narrowing the run to fit the width it is given.
 
 ### Feedback and status
 
@@ -88,7 +90,6 @@ ships.
 ### Navigation
 
 - [ ] **Breadcrumb** : path trail for nested navigation.
-- [ ] **Pagination** : page controls with previous, next, and page numbers.
 - [ ] **Bottom navigation bar** : primary tab bar for top-level sections.
 - [ ] **Menubar** : application menu bar, collapses on small screens.
 - [ ] **Navigation menu** : grouped navigation with flyout panels.

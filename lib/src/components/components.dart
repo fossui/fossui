@@ -19,6 +19,7 @@ export 'list_tile/foss_list_tile.dart';
 export 'meter/foss_meter.dart';
 export 'number_field/foss_number_field.dart';
 export 'otp_field/foss_otp_field.dart';
+export 'pagination/foss_pagination.dart';
 export 'popover/foss_popover.dart';
 export 'progress/foss_progress.dart';
 export 'radio/foss_radio.dart';

@@ -2,6 +2,14 @@
 
 ### Added
 
+* `FossPagination` pages through a list: a previous control, a run of page
+  numbers with an ellipsis wherever the run is cut, and a next control. It is
+  controlled through `page`, `pageCount`, and `onPageChanged`, and pages are
+  1-based. `siblingCount` sets how many pages sit either side of the current
+  one, but it is an upper bound: the row uses the widest run the width it is
+  given can hold, so it fits a phone without the caller measuring anything. That
+  figure ignores `page`, so the row does not resize while the user is paging.
+  Takes a `FossPaginationStyle` for one-off overrides.
 * `FossChip` presents a compact pill for a value the user can pick or drop. The
   callbacks decide its shape: with neither it is a static tag, `onRemove` adds a
   close affordance, `onSelected` makes the body toggle `selected`, and both
