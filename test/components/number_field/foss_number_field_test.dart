@@ -382,6 +382,88 @@ void main() {
         isFalse,
       );
     });
+
+    testWidgets('a null value clears the text', (tester) async {
+      await tester.pumpWidget(host(const FossNumberField(value: 3)));
+      expect(find.text('3'), findsOneWidget);
+
+      await tester.pumpWidget(host(const FossNumberField()));
+      await tester.pump();
+
+      expect(find.text('3'), findsNothing);
+      expect(
+        tester.widget<EditableText>(find.byType(EditableText)).controller.text,
+        isEmpty,
+      );
+    });
+
+    testWidgets('an update while focused leaves the typed text alone', (
+      tester,
+    ) async {
+      await tester.pumpWidget(host(const FossNumberField(value: 3)));
+      await _focus(tester);
+
+      await tester.enterText(find.byType(EditableText), '7');
+      await tester.pumpWidget(host(const FossNumberField(value: 9)));
+      await tester.pump();
+
+      // The parent's 9 is authoritative for the value, but the field does not
+      // fight the caret: the typed text stays until the edit ends.
+      expect(find.text('7'), findsOneWidget);
+      expect(find.text('9'), findsNothing);
+    });
+  });
+
+  group('large step', () {
+    testWidgets('largeStep defaults to ten steps', (tester) async {
+      num? seen;
+      await tester.pumpWidget(
+        host(FossNumberField(value: 100, step: 5, onChanged: (v) => seen = v)),
+      );
+      await _focus(tester);
+
+      await tester.sendKeyEvent(LogicalKeyboardKey.pageUp);
+      await tester.pump();
+
+      expect(seen, 150);
+    });
+  });
+
+  group('blur commit', () {
+    testWidgets('a lone sign commits as empty', (tester) async {
+      num? seen = 3;
+      await tester.pumpWidget(
+        host(FossNumberField(value: 3, onChanged: (v) => seen = v)),
+      );
+      await _focus(tester);
+
+      await tester.enterText(find.byType(EditableText), '-');
+      await tester.pump();
+      FocusManager.instance.primaryFocus?.unfocus();
+      await tester.pumpAndSettle();
+
+      expect(seen, isNull);
+      expect(
+        tester.widget<EditableText>(find.byType(EditableText)).controller.text,
+        isEmpty,
+      );
+    });
+
+    testWidgets('a trailing separator commits the whole part', (tester) async {
+      num? seen;
+      await tester.pumpWidget(
+        host(FossNumberField(value: 3, onChanged: (v) => seen = v)),
+      );
+      await _focus(tester);
+
+      await tester.enterText(find.byType(EditableText), '12.');
+      await tester.pump();
+      FocusManager.instance.primaryFocus?.unfocus();
+      await tester.pumpAndSettle();
+
+      expect(seen, 12);
+      expect(find.text('12'), findsOneWidget);
+    });
   });
 
   group('coverage', () {
