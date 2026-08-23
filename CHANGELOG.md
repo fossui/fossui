@@ -2,6 +2,21 @@
 
 ### Added
 
+* `FossChip` presents a compact pill for a value the user can pick or drop. The
+  callbacks decide its shape: with neither it is a static tag, `onRemove` adds a
+  close affordance, `onSelected` makes the body toggle `selected`, and both
+  together give a filter chip that can also be dropped. Two variants (`soft`,
+  `outline`), two sizes (`sm` 24, `md` 32), and a `FossChipStyle` for one-off
+  overrides.
+* `FossListTile` lays out a list row: an optional leading widget, a title over
+  an optional subtitle, and an optional trailing widget. Only the title is
+  required and every gap collapses with its slot. Two variants: `filled` (the
+  default) paints a tinted, rounded surface so a plain list reads as a stack of
+  bands, and `plain` is transparent so a row inside a `FossCard` does not
+  double-draw. Passing `onTap` turns the row into one target with hover,
+  pressed, and keyboard activation; leaving it null keeps it inert, which is
+  separate from `enabled: false`. Takes a `FossListTileStyle` for one-off
+  overrides.
 * `FossPagination` pages through a list: a previous control, a run of page
   numbers with an ellipsis wherever the run is cut, and a next control. It is
   controlled through `page`, `pageCount`, and `onPageChanged`, and pages are
@@ -23,21 +38,6 @@
   disabled while the draft sits on one. Wheels are awkward without a pointer, so
   each column is a labelled adjustable that steps with the arrow keys. Values
   are the new `FossTimeOfDay`; `FossTimePickerStyle` covers one-off overrides.
-* `FossChip` presents a compact pill for a value the user can pick or drop. The
-  callbacks decide its shape: with neither it is a static tag, `onRemove` adds a
-  close affordance, `onSelected` makes the body toggle `selected`, and both
-  together give a filter chip that can also be dropped. Two variants (`soft`,
-  `outline`), two sizes (`sm` 24, `md` 32), and a `FossChipStyle` for one-off
-  overrides.
-* `FossListTile` lays out a list row: an optional leading widget, a title over
-  an optional subtitle, and an optional trailing widget. Only the title is
-  required and every gap collapses with its slot. Two variants: `filled` (the
-  default) paints a tinted, rounded surface so a plain list reads as a stack of
-  bands, and `plain` is transparent so a row inside a `FossCard` does not
-  double-draw. Passing `onTap` turns the row into one target with hover,
-  pressed, and keyboard activation; leaving it null keeps it inert, which is
-  separate from `enabled: false`. Takes a `FossListTileStyle` for one-off
-  overrides.
 
 ### Changed
 
