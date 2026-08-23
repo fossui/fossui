@@ -5,6 +5,7 @@ part 'glyphs/check.dart';
 part 'glyphs/chevron_left.dart';
 part 'glyphs/chevron_right.dart';
 part 'glyphs/chevron_up_down.dart';
+part 'glyphs/clock.dart';
 part 'glyphs/close.dart';
 part 'glyphs/ellipsis.dart';
 part 'glyphs/error.dart';

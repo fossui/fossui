@@ -36,6 +36,8 @@ right-to-left layout, and three layers of tests. That bar is written down in
 - [x] **Calendar** : month grid with single, multiple, or range selection.
 - [x] **Date picker** : date selection from a field, in a bottom sheet or a
   centered dialog.
+- [x] **Time picker** : time-of-day selection from a field, on scrolling wheels
+  in a bottom sheet or a centered dialog.
 - [x] **Chip** : compact pill for a value, selectable and removable.
 
 ### Layout and surfaces
@@ -75,7 +77,6 @@ ships.
 
 ### Forms and inputs
 
-- [ ] **Time picker** : time-of-day selection, pairs with Date picker.
 - [ ] **Rating** : star rating input and display.
 
 ### Layout and surfaces

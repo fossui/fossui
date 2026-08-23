@@ -32,6 +32,7 @@ export 'switch/foss_switch.dart';
 export 'tabs/foss_tabs.dart';
 export 'text/foss_text.dart';
 export 'text_field/foss_text_field.dart';
+export 'time_picker/foss_time_picker.dart';
 export 'toast/foss_toast.dart';
 export 'toast/foss_toast_controller.dart';
 export 'toast/foss_toaster.dart';

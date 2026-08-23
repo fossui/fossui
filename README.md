@@ -124,10 +124,10 @@ The library covers input, feedback, overlays, and layout:
 
 | Group | Components |
 | --- | --- |
-| Actions and input | Button, TextField, NumberField, OtpField, Select, Combobox, Checkbox, Radio, Switch, Toggle, ToggleGroup, Slider, DatePicker |
+| Actions and input | Button, TextField, NumberField, OtpField, Select, Combobox, Checkbox, Radio, Switch, Toggle, ToggleGroup, Chip, Slider, DatePicker, TimePicker, Pagination |
 | Feedback | Alert, Badge, Meter, Progress, Skeleton, Spinner, Toast, Tooltip |
 | Overlays | Dialog, Drawer (sheet and bottom sheet), Popover |
-| Layout and media | Accordion, Card, Tabs, Separator, Text, Calendar, Avatar |
+| Layout and media | Accordion, Card, ListTile, Tabs, Separator, Text, Calendar, Avatar |
 
 See the [components roadmap](https://github.com/fossui/fossui/blob/main/doc/components/roadmap.md)
 for what is shipped and what is planned, and the
