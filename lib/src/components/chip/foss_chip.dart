@@ -82,7 +82,7 @@ enum FossChipSize {
 ///   onRemove: () => setState(() => tags.remove('Design')),
 /// );
 /// ```
-@FossSince('0.2.0')
+@FossSince('0.1.2')
 class FossChip extends StatefulWidget {
   /// {@macro foss.chip.preview}
   ///

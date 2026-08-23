@@ -65,7 +65,7 @@ const double _ellipsisGlyph = 20;
 ///   onPageChanged: (p) => setState(() => page = p),
 /// );
 /// ```
-@FossSince('0.2.0')
+@FossSince('0.1.2')
 class FossPagination extends StatelessWidget {
   /// {@macro foss.pagination.preview}
   ///

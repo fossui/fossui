@@ -43,7 +43,7 @@ enum FossListTileVariant {
 ///
 /// See the [list tile documentation ↗](https://fossui.org/docs/components/list-tile)
 /// or try it live in the
-/// [playground ↗](https://play.fossui.org/components/#/?path=components/list-tile/fosslisttile/playground).
+/// [playground ↗](https://play.fossui.org/components/#/?path=components/list_tile/fosslisttile/playground).
 /// {@endtemplate}
 ///
 /// A row in a list: an optional [leading] widget, a [title] over an optional
@@ -86,7 +86,7 @@ enum FossListTileVariant {
 ///   onTap: openNotificationSettings,
 /// );
 /// ```
-@FossSince('0.2.0')
+@FossSince('0.1.2')
 class FossListTile extends StatefulWidget {
   /// {@macro foss.listTile.preview}
   ///
