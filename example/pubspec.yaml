@@ -11,6 +11,4 @@ dependencies:
     sdk: flutter
   fossui:
     path: ../
-
-flutter:
-  uses-material-design: true
+  lucide_icons: ^0.257.0
