@@ -130,6 +130,10 @@ All are `Foss`-prefixed. Variants and sizes are enums passed as named params; a 
   - style FossTabsStyle(barColor, indicatorColor, indicatorShadow, hoverColor, activeForeground, inactiveForeground, labelStyle)
   - item FossTab(value, label, icon, content, enabled)
 
+### Typography
+
+- FossText: On-brand text in one line. [FossText] renders a string in a [FossTypography] step at one of four weights, resolving the type scale and the bundled font from `context.fossTheme` so the text stays on theme without reaching into the tokens. (Size: xs | sm | base | lg | xl | xl2. Weight: regular | medium | semibold | bold. Color: foreground | mutedForeground | primary | destructive)
+
 ## Common mistakes
 
 The wrong form, then the fix: the errors a model makes writing fossui without the API in front of it.

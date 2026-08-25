@@ -8,4 +8,6 @@ dartdoc:
       markdown: doc/categories/feedback.md
     Layout:
       markdown: doc/categories/layout.md
-  categoryOrder: ["Inputs", "Overlays", "Feedback", "Layout"]
+    Typography:
+      markdown: doc/categories/typography.md
+  categoryOrder: ["Inputs", "Overlays", "Feedback", "Layout", "Typography"]
