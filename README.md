@@ -37,10 +37,11 @@ superellipse corners. One import, one theme, light and dark out of the box.
   token: color, type, radius, spacing, shadow, motion. Reskin the whole app,
   light and dark, in one call.
 - **Light on dependencies.** One runtime dependency and no bundled icon package.
-  A worst-case app that imports nearly every component adds about 384 KB: roughly
-  310 KB of Dart code, which tree-shakes down to what you actually use, plus the
-  Geist font (74 KB installed, ~35 KB over the wire). Pass your own icons through
-  plain `Widget` slots.
+  A worst-case app referencing all 39 components adds about 430 KB: roughly
+  357 KB of Dart code, which tree-shakes down to what you actually use, plus the
+  Geist font (74 KB installed, ~35 KB over the wire). Drop five components and
+  the Dart figure falls to 316 KB. Pass your own icons through plain `Widget`
+  slots.
 - **Preview-rich docs.** Every component's API doc renders a live light and dark
   preview, not just text, and the same preview shows on hover in your IDE. Each
   one states plainly what it does and does not do.
