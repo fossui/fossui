@@ -6,9 +6,13 @@ const Color _a = Color(0xFF112233);
 const Color _b = Color(0xFF445566);
 
 const List<FossGlyph> _glyphs = [
+  CalendarGlyph(_a),
   CheckGlyph(_a),
   CloseGlyph(_a),
   ChevronUpDownGlyph(_a),
+  ChevronLeftGlyph(_a),
+  ChevronRightGlyph(_a),
+  EllipsisGlyph(_a),
   MinusGlyph(_a),
   InfoGlyph(_a),
   SuccessGlyph(_a),

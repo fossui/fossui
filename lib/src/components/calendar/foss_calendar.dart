@@ -736,7 +736,7 @@ class _FossCalendarState extends State<FossCalendar> {
       content = CustomPaint(
         foregroundPainter: _DayRingPainter(
           color: v.ringColor,
-          radius: v.dayRadius,
+          borderRadius: radius.resolve(Directionality.of(context)),
         ),
         child: content,
       );
@@ -890,7 +890,7 @@ class _NavButtonState extends State<_NavButton> {
       content = CustomPaint(
         foregroundPainter: _DayRingPainter(
           color: widget.ringColor,
-          radius: _chevronSize / 2,
+          borderRadius: BorderRadius.circular(_chevronSize / 2),
         ),
         child: SizedBox.square(
           dimension: widget.size,

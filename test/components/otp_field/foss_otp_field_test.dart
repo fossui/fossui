@@ -26,6 +26,20 @@ Future<void> _enter(WidgetTester tester, String text) async {
   await tester.pump();
 }
 
+// A masked slot paints its dot as a circular DecoratedBox, so counting them
+// counts the filled slots.
+int _dots(WidgetTester tester) => tester
+    .widgetList<DecoratedBox>(
+      find.descendant(
+        of: find.byType(FossOtpField),
+        matching: find.byType(DecoratedBox),
+      ),
+    )
+    .map((b) => b.decoration)
+    .whereType<BoxDecoration>()
+    .where((d) => d.shape == BoxShape.circle)
+    .length;
+
 void main() {
   final ring = FossThemeData.light.colors.ring;
   final destructive = FossThemeData.light.colors.destructive;
@@ -56,6 +70,44 @@ void main() {
 
       expect(values.last, '1');
       expect(find.text('2'), findsNothing);
+    });
+
+    testWidgets('backspace on an empty row is inert', (tester) async {
+      final values = <String>[];
+      await tester.pumpWidget(
+        host(FossOtpField(length: 6, onChanged: values.add)),
+      );
+      await tester.tap(find.byType(FossOtpField));
+      await tester.pump();
+
+      await tester.sendKeyEvent(LogicalKeyboardKey.backspace);
+      await tester.pump();
+
+      expect(values, isEmpty);
+      expect(
+        tester.widget<EditableText>(find.byType(EditableText)).controller.text,
+        isEmpty,
+      );
+    });
+
+    testWidgets('onCompleted fires again after a delete and refill', (
+      tester,
+    ) async {
+      final completed = <String>[];
+      await tester.pumpWidget(
+        host(FossOtpField(length: 4, onCompleted: completed.add)),
+      );
+
+      await _enter(tester, '1234');
+      expect(completed, ['1234']);
+
+      await tester.sendKeyEvent(LogicalKeyboardKey.backspace);
+      await tester.pump();
+      expect(completed.length, 1, reason: 'dropping below full does not fire');
+
+      await _enter(tester, '1239');
+
+      expect(completed, ['1234', '1239']);
     });
 
     testWidgets('arrow left retreats the caret', (tester) async {
@@ -140,6 +192,43 @@ void main() {
 
       expect(seen, '1234');
     });
+
+    testWidgets('an over-length paste fills the row and drops the rest', (
+      tester,
+    ) async {
+      final completed = <String>[];
+      String? seen;
+      await tester.pumpWidget(
+        host(
+          FossOtpField(
+            length: 4,
+            onChanged: (v) => seen = v,
+            onCompleted: completed.add,
+          ),
+        ),
+      );
+      await tester.tap(find.byType(FossOtpField));
+      await tester.pump();
+
+      final messenger = tester.binding.defaultBinaryMessenger
+        ..setMockMethodCallHandler(
+          SystemChannels.platform,
+          (call) async => call.method == 'Clipboard.getData'
+              ? <String, Object?>{'text': '987654'}
+              : null,
+        );
+      addTearDown(
+        () => messenger.setMockMethodCallHandler(SystemChannels.platform, null),
+      );
+
+      await tester
+          .state<EditableTextState>(find.byType(EditableText))
+          .pasteText(SelectionChangedCause.keyboard);
+      await tester.pump();
+
+      expect(seen, '9876');
+      expect(completed, ['9876']);
+    });
   });
 
   group('masking', () {
@@ -152,6 +241,16 @@ void main() {
 
       expect(find.text('1'), findsNothing);
       expect(find.text('2'), findsNothing);
+    });
+
+    testWidgets('obscure draws one dot per filled slot', (tester) async {
+      await tester.pumpWidget(
+        host(const FossOtpField(length: 6, obscure: true)),
+      );
+
+      await _enter(tester, '123');
+
+      expect(_dots(tester), 3);
     });
   });
 

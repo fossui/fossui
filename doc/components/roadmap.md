@@ -36,6 +36,9 @@ right-to-left layout, and three layers of tests. That bar is written down in
 - [x] **Calendar** : month grid with single, multiple, or range selection.
 - [x] **Date picker** : date selection from a field, in a bottom sheet or a
   centered dialog.
+- [x] **Time picker** : time-of-day selection from a field, on scrolling wheels
+  in a bottom sheet or a centered dialog.
+- [x] **Chip** : compact pill for a value, selectable and removable.
 
 ### Layout and surfaces
 
@@ -43,6 +46,10 @@ right-to-left layout, and three layers of tests. That bar is written down in
 - [x] **Separator** : thin divider.
 - [x] **Tabs** : tabbed panels, horizontal or vertical.
 - [x] **Accordion** : expandable, stacked sections, single or multiple open.
+- [x] **List tile** : list row with leading, title, subtitle, and trailing
+  slots, tappable or inert.
+- [x] **Pagination** : page controls with previous, next, and windowed page
+  numbers, narrowing the run to fit the width it is given.
 
 ### Feedback and status
 
@@ -70,13 +77,10 @@ ships.
 
 ### Forms and inputs
 
-- [ ] **Chip** : selectable, dismissible chip or tag.
-- [ ] **Time picker** : time-of-day selection, pairs with Date picker.
 - [ ] **Rating** : star rating input and display.
 
 ### Layout and surfaces
 
-- [ ] **List tile** : list row with leading, title, subtitle, and trailing slots.
 - [ ] **Empty state** : icon, message, and action for an empty view.
 - [ ] **Stepper** : multi-step progress and step-through flows.
 - [ ] **Timeline** : vertical sequence of events.
@@ -87,7 +91,6 @@ ships.
 ### Navigation
 
 - [ ] **Breadcrumb** : path trail for nested navigation.
-- [ ] **Pagination** : page controls with previous, next, and page numbers.
 - [ ] **Bottom navigation bar** : primary tab bar for top-level sections.
 - [ ] **Menubar** : application menu bar, collapses on small screens.
 - [ ] **Navigation menu** : grouped navigation with flyout panels.

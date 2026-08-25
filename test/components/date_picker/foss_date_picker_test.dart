@@ -130,6 +130,24 @@ void main() {
 
       expect(find.text('Jul 09, 2026'), findsOneWidget);
     });
+
+    testWidgets('a custom format overrides both ends', (tester) async {
+      await tester.pumpWidget(
+        host(
+          FossDatePicker.range(
+            selected: FossDateRange(
+              start: DateTime(2026, 7, 9),
+              end: DateTime(2026, 7, 16),
+            ),
+            onSelected: (_) {},
+            format: (r) => '${r.start.day} to ${r.end.day}',
+          ),
+        ),
+      );
+
+      expect(find.text('9 to 16'), findsOneWidget);
+      expect(find.text('Jul 09, 2026 - Jul 16, 2026'), findsNothing);
+    });
   });
 
   group('open and close', () {
@@ -175,6 +193,47 @@ void main() {
 
       await tester.tap(find.text('Pick a date'));
       await tester.pumpAndSettle();
+      expect(find.byType(FossCalendar), findsNothing);
+    });
+
+    testWidgets('open true on mount shows the dialog without a tap', (
+      tester,
+    ) async {
+      await tester.pumpWidget(
+        host(
+          FossDatePicker.single(
+            selected: null,
+            onSelected: (_) {},
+            open: true,
+            onOpenChange: (_) {},
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(find.byType(FossCalendar), findsOneWidget);
+    });
+
+    testWidgets('uncontrolled open still reports both edges', (tester) async {
+      final changes = <bool>[];
+      await tester.pumpWidget(
+        host(
+          FossDatePicker.single(
+            selected: null,
+            onSelected: (_) {},
+            onOpenChange: changes.add,
+          ),
+        ),
+      );
+
+      await tester.tap(find.text('Pick a date'));
+      await tester.pumpAndSettle();
+      expect(find.byType(FossCalendar), findsOneWidget);
+
+      await tester.sendKeyEvent(LogicalKeyboardKey.escape);
+      await tester.pumpAndSettle();
+
+      expect(changes, [true, false]);
       expect(find.byType(FossCalendar), findsNothing);
     });
 
@@ -316,6 +375,73 @@ void main() {
         picks.last,
         FossDateRange(start: DateTime(2026, 7, 9), end: DateTime(2026, 7, 16)),
       );
+    });
+
+    testWidgets('a re-pick over a seeded range still takes two taps', (
+      tester,
+    ) async {
+      final picks = <FossDateRange>[];
+      await tester.pumpWidget(
+        host(
+          FossDatePicker.range(
+            selected: FossDateRange(
+              start: DateTime(2026, 7, 6),
+              end: DateTime(2026, 7, 10),
+            ),
+            onSelected: picks.add,
+            minDate: _min(2026, 7),
+            maxDate: _max(2026, 7),
+          ),
+        ),
+      );
+
+      await tester.tap(find.text('Jul 06, 2026 - Jul 10, 2026'));
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.text('20'));
+      await tester.pumpAndSettle();
+      expect(find.byType(FossCalendar), findsOneWidget, reason: 'first tap');
+      expect(
+        picks.single,
+        FossDateRange(start: DateTime(2026, 7, 20), end: DateTime(2026, 7, 20)),
+        reason: 'the first tap restarts the range on the tapped day',
+      );
+
+      await tester.tap(find.text('24'));
+      await tester.pumpAndSettle();
+      expect(find.byType(FossCalendar), findsNothing, reason: 'second tap');
+      expect(picks.length, 2);
+      expect(
+        picks.last,
+        FossDateRange(start: DateTime(2026, 7, 20), end: DateTime(2026, 7, 24)),
+      );
+    });
+
+    testWidgets('closeOnSelect false keeps a completed range open', (
+      tester,
+    ) async {
+      final picks = <FossDateRange>[];
+      await tester.pumpWidget(
+        host(
+          FossDatePicker.range(
+            selected: null,
+            onSelected: picks.add,
+            closeOnSelect: false,
+            minDate: _min(2026, 7),
+            maxDate: _max(2026, 7),
+          ),
+        ),
+      );
+
+      await tester.tap(find.text('Pick a date range'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('9'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('16'));
+      await tester.pumpAndSettle();
+
+      expect(picks.length, 2);
+      expect(find.byType(FossCalendar), findsOneWidget);
     });
   });
 

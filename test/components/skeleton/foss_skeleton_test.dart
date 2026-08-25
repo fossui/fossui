@@ -110,4 +110,43 @@ void main() {
     await tester.pumpWidget(_host(FossSkeleton.circle(size: w)));
     expect(_baseDecoration(tester).shape, isA<CircleBorder>());
   });
+
+  testWidgets('turning reduced motion off restarts the shimmer', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      _host(const FossSkeleton(width: 80, height: 12), reduceMotion: true),
+    );
+    expect(tester.hasRunningAnimations, isFalse);
+
+    await tester.pumpWidget(
+      _host(const FossSkeleton(width: 80, height: 12)),
+    );
+    await tester.pump();
+
+    expect(tester.hasRunningAnimations, isTrue);
+    expect(
+      find.descendant(
+        of: find.byType(FossSkeleton),
+        matching: find.byType(Stack),
+      ),
+      findsOneWidget,
+    );
+  });
+
+  testWidgets('a null dimension defers to the parent', (tester) async {
+    await tester.pumpWidget(
+      _host(
+        const SizedBox(
+          width: 120,
+          height: 30,
+          child: FossSkeleton(height: 12),
+        ),
+      ),
+    );
+
+    expect(_outerBox(tester).width, isNull);
+    expect(_outerBox(tester).height, 12);
+    expect(tester.getSize(find.byType(FossSkeleton)).width, 120);
+  });
 }

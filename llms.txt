@@ -42,6 +42,8 @@ All are `Foss`-prefixed. Variants and sizes are enums passed as named params; a 
   - group FossCheckboxGroup(children, values, onChanged, label, errorText, variant, enabled)
   - item FossCheckboxItem(value, label, description, enabled, style)
   - style FossCheckboxStyle(backgroundColor, checkedColor, checkColor, borderColor, shadow, boxSize, glyphSize, gap, labelStyle, descriptionStyle)
+- FossChip: A compact pill carrying a value the user can pick or drop: a filter in a bar, a tag on a record, an entry in a multi-select field. (Variant: soft | outline. Size: sm | md)
+  - style FossChipStyle(backgroundColor, foregroundColor, side, borderRadius, padding, minHeight, textStyle, iconSize, gap, disabledOpacity)
 - FossCombobox: A text field with a filtered dropdown of predefined items, each carrying a check when picked.
   - item FossComboboxItem(value, label, icon, enabled)
   - style FossComboboxStyle(backgroundColor, borderColor, borderRadius, textStyle, shadow)
@@ -65,6 +67,8 @@ All are `Foss`-prefixed. Variants and sizes are enums passed as named params; a 
   - style FossSwitchStyle(activeTrackColor, inactiveTrackColor, thumbColor, shadow, trackWidth, trackHeight, thumbSize)
 - FossTextField: A text field in the fossui style. (Size: sm | md | lg)
   - style FossTextFieldStyle(backgroundColor, borderColor, borderRadius, contentPadding, minHeight, textStyle, labelStyle, helperStyle, iconSize, gap, shadow)
+- FossTimePicker: A time field that opens scrolling wheels in a modal dialog and shows the chosen time back in its trigger.
+  - style FossTimePickerStyle(placeholderColor, gap, itemExtent, visibleItemCount, highlightColor)
 - FossToggle: A button that holds a two-state pressed look: tap it to turn it on, tap again to release. It is the control behind a formatting button (bold, italic) in a toolbar, sized and shaped like a FossButton but carrying a binary on / off state. (Variant: standard | outline. Size: sm | md | lg)
   - style FossToggleStyle(backgroundColor, foregroundColor, side, borderRadius, cornerRadius, padding, minHeight, textStyle, shadow, iconSize, gap, disabledOpacity)
   - item FossToggleGroupItem(value, leading, child, semanticLabel, enabled)
@@ -117,6 +121,10 @@ All are `Foss`-prefixed. Variants and sizes are enums passed as named params; a 
   - style FossAvatarStyle(backgroundColor, fallbackColor, fallbackTextStyle)
 - FossCard: A static content container: a bordered, rounded surface that groups an optional header (title, description, trailing action), an optional content body, and an optional footer. Every slot is optional and content-agnostic; the surface renders, it does not respond.
   - style FossCardStyle(backgroundColor, borderColor, borderRadius, shadows, titleStyle, descriptionStyle)
+- FossListTile: A row in a list: an optional [leading] widget, a [title] over an optional [subtitle], and an optional [trailing] widget. A settings screen or an account list is mostly this one row repeated. (Variant: filled | plain)
+  - style FossListTileStyle(backgroundColor, padding, gap, minHeight, borderRadius, titleStyle, subtitleStyle, iconSize)
+- FossPagination: A row that walks through pages: a previous control, a windowed run of page numbers with an ellipsis wherever the run is cut, and a next control.
+  - style FossPaginationStyle(gap, buttonSize, activeVariant, inactiveVariant, ellipsisColor, ellipsisWidth)
 - FossSeparator: A hairline rule that divides content along a row or a column. Static and non-interactive: a 1 logical pixel line in the `border` role. (Orientation: horizontal | vertical)
 - FossTabs: A row or column of tabs that toggle between sibling panels, with an animated indicator marking the active tab. (Variant: segmented | underline. Orientation: horizontal | vertical)
   - style FossTabsStyle(barColor, indicatorColor, indicatorShadow, hoverColor, activeForeground, inactiveForeground, labelStyle)
@@ -163,6 +171,9 @@ The wrong form, then the fix: the errors a model makes writing fossui without th
 - FossCheckbox: `FossCheckbox(value: true, onChanged: (v) {}, tristate: true)` -> `FossCheckbox(value: null, onChanged: (v) {})`
 - FossCheckbox: `FossCheckboxItem(value: 'a', label: 'A')` -> `FossCheckboxGroup<String>(values: selected, onChanged: (next) => setState(() => selected = next), children: const [FossCheckboxItem(value: 'a', label: 'A')])`
 - FossCheckbox: `FossCheckboxGroup(variant: 'card', values: {}, children: [...])` -> `FossCheckboxGroup(variant: FossCheckboxGroupVariant.card, values: {}, children: [...])`
+- FossChip: `FossChip(label: 'Design', onSelected: (v) {})` -> `FossChip(label: const Text('Design'), onSelected: (v) {})`
+- FossChip: `FossChip(label: const Text('Design'), onSelected: (v) => on = v)` -> `FossChip(label: const Text('Design'), selected: on, onSelected: (v) => setState(() => on = v))`
+- FossChip: `FossChip(label: const Text('Design'), backgroundColor: Colors.green)` -> `FossChip(label: const Text('Design'), style: FossChipStyle(backgroundColor: WidgetStatePropertyAll(Color(0xFF16A34A))))`
 - FossCombobox: `FossCombobox<String>(value: team, items: [FossSelectItem(value: 'a', label: 'Design')], onSelected: _set)` -> `FossCombobox<String>(value: team, items: const [FossComboboxItem(value: 'a', label: 'Design')], onSelected: _set)`
 - FossCombobox: `FossCombobox<String>(value: team, items: items, onChanged: _set)` -> `FossCombobox<String>(value: team, items: items, onSelected: (v) => setState(() => team = v))`
 - FossCombobox: `FossCombobox<String>(items: ['Design', 'Eng'], onSelected: _set)` -> `FossCombobox<String>(items: const [FossComboboxItem(value: 'design', label: 'Design'), FossComboboxItem(value: 'eng', label: 'Engineering')], onSelected: _set)`
@@ -179,6 +190,9 @@ The wrong form, then the fix: the errors a model makes writing fossui without th
 - FossDrawer: `FossDrawer(variant: 'straight', content: Body())` -> `FossDrawer(variant: FossDrawerVariant.straight, content: const Body())`
 - FossDrawer: `FossDrawer(borderRadius: 12, content: Body())` -> `FossDrawer(content: const Body(), style: const FossDrawerStyle(borderRadius: 12))`
 - FossDrawer: `FossSheet(content: Body())` -> `showFossDrawer(context: context, builder: (context) => const FossDrawer(content: Body()))`
+- FossListTile: `FossListTile(title: 'Notifications')` -> `FossListTile(title: const Text('Notifications'))`
+- FossListTile: `FossListTile(title: const Text('Sync'), onTap: null) // to disable` -> `FossListTile(title: const Text('Sync'), enabled: false, onTap: startSync)`
+- FossListTile: `FossCard(content: FossListTile(title: const Text('Profile')))` -> `FossCard(content: FossListTile(title: const Text('Profile'), variant: FossListTileVariant.plain))`
 - FossMeter: `FossMeter(value: 40, onChanged: (v) {})` -> `FossMeter(value: 40, label: 'Storage')`
 - FossMeter: `FossMeter(value: used, fillColor: Colors.green)` -> `FossMeter(value: used, style: const FossMeterStyle(fillColor: Color(0xFF16A34A)))`
 - FossMeter: `FossMeter(value: 3, max: 5, formatValue: (v) => '$v')` -> `FossMeter(value: 3, max: 5, formatValue: (value, min, max) => '$value of $max')`
@@ -196,6 +210,9 @@ The wrong form, then the fix: the errors a model makes writing fossui without th
 - FossOtpField: `FossOtpField(length: 6, validation: 'numeric')` -> `FossOtpField(length: 6, validation: FossOtpValidation.numeric)`
 - FossOtpField: `FossOtpField(length: 6, size: 'lg')` -> `FossOtpField(length: 6, size: FossOtpFieldSize.lg)`
 - FossOtpField: `FossOtpField(length: 6, groups: [2, 2])` -> `FossOtpField(length: 6, groups: [3, 3])`
+- FossPagination: `FossPagination(page: 0, pageCount: 10, onPageChanged: (p) {})` -> `FossPagination(page: 1, pageCount: 10, onPageChanged: (p) => setState(() => page = p))`
+- FossPagination: `IntrinsicWidth(child: FossPagination(page: 1, pageCount: 10, onPageChanged: (p) {}))` -> `SizedBox(width: 420, child: FossPagination(page: 1, pageCount: 10, onPageChanged: (p) {}))`
+- FossPagination: `FossPagination(page: page, pageCount: 24, siblingCount: 4, onPageChanged: (p) {}) // expecting 4 either side on a phone` -> `FossPagination(page: page, pageCount: 24, siblingCount: 4, onPageChanged: (p) {}) // shows fewer when the width cannot hold them`
 - FossPopover: `FossPopover(borderRadius: 12, builder: _menu, child: _trigger)` -> `FossPopover(style: const FossPopoverStyle(borderRadius: 12), builder: _menu, child: _trigger)`
 - FossPopover: `FossPopover(side: 'top', builder: _menu, child: _trigger)` -> `FossPopover(side: FossPopoverSide.top, builder: _menu, child: _trigger)`
 - FossPopover: `FossPopover(builder: (_) => const Text('Copy'), child: icon)` -> `FossTooltip(message: 'Copy', child: icon)`
@@ -240,6 +257,9 @@ The wrong form, then the fix: the errors a model makes writing fossui without th
 - FossTextField: `FossTextField(size: 'lg', label: 'Name')` -> `FossTextField(size: FossTextFieldSize.lg, label: 'Name')`
 - FossTextField: `FossTextField(maxLines: 5, leading: const Icon(LucideIcons.mail))` -> `FossTextField(maxLines: 5, minLines: 3)`
 - FossTextField: `FossTextField(label: 'Search', borderRadius: 999)` -> `FossTextField(label: 'Search', style: const FossTextFieldStyle(borderRadius: 999))`
+- FossTimePicker: `FossTimePicker(value: const TimeOfDay(hour: 9, minute: 30), onChanged: (t) {})` -> `FossTimePicker(value: const FossTimeOfDay(hour: 9, minute: 30), onChanged: (t) {})`
+- FossTimePicker: `FossTimePicker(value: time, onChanged: (t) {}, onOpenChange: (open) => readWheel())` -> `FossTimePicker(value: time, onChanged: (t) => setState(() => time = t))`
+- FossTimePicker: `FossTimePicker(value: time, onChanged: (t) {}, minuteStep: 7)` -> `FossTimePicker(value: time, onChanged: (t) {}, minuteStep: 5)`
 - FossToast: `Widget build(BuildContext context) => const FossToast(title: Text('Saved'));` -> `showFossToast(context, const FossToast(title: Text('Saved')));`
 - FossToast: `FossToast(variant: 'success', title: Text('Saved'))` -> `FossToast(variant: FossToastVariant.success, title: Text('Saved'))`
 - FossToast: `const FossToast(title: Text('Saved'), color: Colors.green)` -> `const FossToast(variant: FossToastVariant.success, title: Text('Saved'))`

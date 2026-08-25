@@ -12,6 +12,8 @@ import 'host.dart';
 // 29 to 31 are therefore unique to March and safe to target by text.
 final _march = DateTime(2026, 3);
 
+const _weekdays = {'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa', 'Su'};
+
 bool? _selected(WidgetTester t, String label) => t
     .getSemantics(find.bySemanticsLabel(label))
     .getSemanticsData()
@@ -27,6 +29,42 @@ bool _enabled(WidgetTester t, String label) =>
         .isEnabled
         .toBoolOrNull() ??
     false;
+
+// The ring geometry these tests assert against: a 40px cell with an 8px day
+// radius, stroked 3px wide, so the ring insets 1.5 on every side and each
+// rounded corner shrinks to 6.5.
+const _ringStyle = FossCalendarStyle(dayRadius: 8, cellSize: 40);
+
+RenderObject _dayPainter(WidgetTester t, String day) => t.renderObject(
+  find.ancestor(of: find.text(day), matching: find.byType(CustomPaint)).first,
+);
+
+/// Matches a focused day that paints its fill and then a ring tracing it: same
+/// rounded corners, inset by half the stroke.
+PaintPattern _fillThenRing({
+  required bool leftRounded,
+  required bool rightRounded,
+}) {
+  RSuperellipse shape(Rect rect, double radius) =>
+      RSuperellipse.fromRectAndCorners(
+        rect,
+        topLeft: leftRounded ? Radius.circular(radius) : Radius.zero,
+        bottomLeft: leftRounded ? Radius.circular(radius) : Radius.zero,
+        topRight: rightRounded ? Radius.circular(radius) : Radius.zero,
+        bottomRight: rightRounded ? Radius.circular(radius) : Radius.zero,
+      );
+  const cell = Rect.fromLTWH(0, 0, 40, 40);
+  final fill = paints;
+  // A square fill takes the cheaper drawRect path.
+  if (leftRounded || rightRounded) {
+    fill.rsuperellipse(rsuperellipse: shape(cell, 8));
+  } else {
+    fill.rect(rect: cell);
+  }
+  return fill..rsuperellipse(
+    rsuperellipse: shape(const Rect.fromLTRB(1.5, 1.5, 38.5, 38.5), 6.5),
+  );
+}
 
 bool _hasRing(WidgetTester t) => t
     .widgetList<CustomPaint>(find.byType(CustomPaint))
@@ -84,6 +122,33 @@ void main() {
         ),
       );
       expect(find.text('5'), findsOneWidget);
+    });
+
+    testWidgets('firstDayOfWeek rotates the header and the grid', (
+      tester,
+    ) async {
+      await tester.pumpWidget(
+        host(
+          FossCalendar.single(
+            selected: null,
+            onSelected: (_) {},
+            initialMonth: _march,
+            firstDayOfWeek: DateTime.sunday,
+          ),
+        ),
+      );
+
+      final header = tester
+          .widgetList<Text>(find.byType(Text))
+          .map((t) => t.data)
+          .where(_weekdays.contains)
+          .take(7)
+          .toList();
+      expect(header, ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa']);
+
+      // March 2026 opens on a Sunday, so a Sunday-first grid needs no leading
+      // pad and February 28 drops out of the view a Monday-first grid shows.
+      expect(find.text('28'), findsOneWidget);
     });
 
     testWidgets('caption spans the grid width, not the parent', (tester) async {
@@ -215,6 +280,39 @@ void main() {
       expect(
         current,
         FossDateRange(start: DateTime(2026, 3, 10), end: DateTime(2026, 3, 20)),
+      );
+    });
+
+    testWidgets('a reversed span orders across a month change', (tester) async {
+      FossDateRange? current;
+      await tester.pumpWidget(
+        host(
+          StatefulBuilder(
+            builder: (context, setState) => FossCalendar.range(
+              selected: current,
+              onSelected: (r) => setState(() => current = r),
+              initialMonth: _march,
+              showOutsideDays: false,
+            ),
+          ),
+        ),
+      );
+
+      await tester.tap(find.text('10'));
+      await tester.pump();
+
+      await tester.tap(find.bySemanticsLabel('Previous month'));
+      await tester.pumpAndSettle();
+      expect(find.text('February 2026'), findsOneWidget);
+
+      // The anchor sits in March, so tapping an earlier February day has to
+      // order the span rather than emit it backwards.
+      await tester.tap(find.text('18'));
+      await tester.pump();
+
+      expect(
+        current,
+        FossDateRange(start: DateTime(2026, 2, 18), end: DateTime(2026, 3, 10)),
       );
     });
 
@@ -480,6 +578,98 @@ void main() {
       expect(picked, DateTime(2026, 4, 15));
     });
 
+    testWidgets('an arrow past the last day walks into the next month', (
+      tester,
+    ) async {
+      DateTime? picked;
+      await pumpSingle(tester, (d) => picked = d);
+      await tester.tap(find.text('31'));
+      await tester.pump();
+
+      await tester.sendKeyEvent(LogicalKeyboardKey.arrowRight);
+      await tester.pump();
+      expect(find.text('April 2026'), findsOneWidget);
+
+      await tester.sendKeyEvent(LogicalKeyboardKey.enter);
+      await tester.pump();
+      expect(picked, DateTime(2026, 4));
+    });
+
+    testWidgets('paging off a 31st clamps into a shorter month', (
+      tester,
+    ) async {
+      DateTime? picked;
+      await tester.pumpWidget(
+        host(
+          FossCalendar.single(
+            selected: null,
+            onSelected: (d) => picked = d,
+            initialMonth: DateTime(2027),
+            showOutsideDays: false,
+          ),
+        ),
+      );
+      await tester.tap(find.text('31'));
+      await tester.pump();
+
+      await tester.sendKeyEvent(LogicalKeyboardKey.pageDown);
+      await tester.pump();
+      expect(find.text('February 2027'), findsOneWidget);
+
+      await tester.sendKeyEvent(LogicalKeyboardKey.enter);
+      await tester.pump();
+      // 2027 is not a leap year, so January 31 lands on the 28th.
+      expect(picked, DateTime(2027, 2, 28));
+    });
+
+    testWidgets('paging off a 31st lands on the leap day', (tester) async {
+      DateTime? picked;
+      await tester.pumpWidget(
+        host(
+          FossCalendar.single(
+            selected: null,
+            onSelected: (d) => picked = d,
+            initialMonth: DateTime(2028),
+            showOutsideDays: false,
+          ),
+        ),
+      );
+      await tester.tap(find.text('31'));
+      await tester.pump();
+
+      await tester.sendKeyEvent(LogicalKeyboardKey.pageDown);
+      await tester.sendKeyEvent(LogicalKeyboardKey.enter);
+      await tester.pump();
+
+      expect(picked, DateTime(2028, 2, 29));
+    });
+
+    testWidgets('a week step crosses a daylight-saving boundary cleanly', (
+      tester,
+    ) async {
+      DateTime? picked;
+      await tester.pumpWidget(
+        host(
+          FossCalendar.single(
+            selected: null,
+            onSelected: (d) => picked = d,
+            initialMonth: DateTime(2026, 3),
+          ),
+        ),
+      );
+      // Many zones shift clocks in the second half of March. A week step has to
+      // land on the same weekday regardless, so day arithmetic cannot run on
+      // fixed 24-hour offsets.
+      await tester.tap(find.text('8'));
+      await tester.pump();
+      await tester.sendKeyEvent(LogicalKeyboardKey.arrowDown);
+      await tester.sendKeyEvent(LogicalKeyboardKey.enter);
+      await tester.pump();
+
+      expect(picked, DateTime(2026, 3, 15));
+      expect(picked?.weekday, DateTime(2026, 3, 8).weekday);
+    });
+
     testWidgets('keyboard navigation raises the focus ring', (tester) async {
       await pumpSingle(tester, (_) {});
       await tester.tap(find.text('15'));
@@ -507,6 +697,99 @@ void main() {
       await tester.sendKeyEvent(LogicalKeyboardKey.enter);
       await tester.pump();
       expect(picked, DateTime(2026, 3, 15));
+    });
+  });
+
+  group('focus ring shape', () {
+    // Keyboard focus lands on the range start, so one arrow step reaches the
+    // middle day and two reach the end.
+    Future<void> pumpRange(WidgetTester tester) async {
+      await tester.pumpWidget(
+        host(
+          FossCalendar.range(
+            selected: FossDateRange(
+              start: DateTime(2026, 3, 10),
+              end: DateTime(2026, 3, 12),
+            ),
+            onSelected: (_) {},
+            initialMonth: _march,
+            style: _ringStyle,
+          ),
+        ),
+      );
+      await tester.sendKeyEvent(LogicalKeyboardKey.tab);
+      await tester.pump();
+    }
+
+    testWidgets('a lone selected day rings on every corner', (tester) async {
+      await tester.pumpWidget(
+        host(
+          FossCalendar.single(
+            selected: DateTime(2026, 3, 15),
+            onSelected: (_) {},
+            initialMonth: _march,
+            style: _ringStyle,
+          ),
+        ),
+      );
+      await tester.sendKeyEvent(LogicalKeyboardKey.tab);
+      await tester.pump();
+      expect(
+        _dayPainter(tester, '15'),
+        _fillThenRing(leftRounded: true, rightRounded: true),
+      );
+    });
+
+    testWidgets('the range start rings flat on its inner edge', (tester) async {
+      await pumpRange(tester);
+      expect(
+        _dayPainter(tester, '10'),
+        _fillThenRing(leftRounded: true, rightRounded: false),
+      );
+    });
+
+    testWidgets('a range middle day rings square', (tester) async {
+      await pumpRange(tester);
+      await tester.sendKeyEvent(LogicalKeyboardKey.arrowRight);
+      await tester.pump();
+      expect(
+        _dayPainter(tester, '11'),
+        _fillThenRing(leftRounded: false, rightRounded: false),
+      );
+    });
+
+    testWidgets('the range end rings flat on its inner edge', (tester) async {
+      await pumpRange(tester);
+      await tester.sendKeyEvent(LogicalKeyboardKey.arrowRight);
+      await tester.sendKeyEvent(LogicalKeyboardKey.arrowRight);
+      await tester.pump();
+      expect(
+        _dayPainter(tester, '12'),
+        _fillThenRing(leftRounded: false, rightRounded: true),
+      );
+    });
+
+    testWidgets('the range start mirrors under RTL', (tester) async {
+      await tester.pumpWidget(
+        host(
+          FossCalendar.range(
+            selected: FossDateRange(
+              start: DateTime(2026, 3, 10),
+              end: DateTime(2026, 3, 12),
+            ),
+            onSelected: (_) {},
+            initialMonth: _march,
+            style: _ringStyle,
+          ),
+          direction: TextDirection.rtl,
+        ),
+      );
+      await tester.sendKeyEvent(LogicalKeyboardKey.tab);
+      await tester.pump();
+      expect(
+        _dayPainter(tester, '10'),
+        _fillThenRing(leftRounded: false, rightRounded: true),
+      );
     });
   });
 

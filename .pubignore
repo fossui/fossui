@@ -16,6 +16,12 @@ lefthook.yml
 CONTRIBUTING.md
 CODE_OF_CONDUCT.md
 
+# Locally generated dartdoc. Git ignores it, but this file replaces .gitignore
+# at publish time, so without this line the whole tree lands in the archive:
+# several megabytes of HTML built from whichever version happened to be checked
+# out. pub.dev renders the API docs from lib/ itself.
+doc/api/
+
 # Star-history chart, meaningful only on the GitHub README. Keeping it out trims
 # ~108 KB from the archive.
 assets/star-history/

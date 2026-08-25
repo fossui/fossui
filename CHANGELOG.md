@@ -1,3 +1,62 @@
+## 0.1.2
+
+### Added
+
+* `FossChip` presents a compact pill for a value the user can pick or drop. The
+  callbacks decide its shape: with neither it is a static tag, `onRemove` adds a
+  close affordance, `onSelected` makes the body toggle `selected`, and both
+  together give a filter chip that can also be dropped. Two variants (`soft`,
+  `outline`), two sizes (`sm` 24, `md` 32), and a `FossChipStyle` for one-off
+  overrides.
+* `FossListTile` lays out a list row: an optional leading widget, a title over
+  an optional subtitle, and an optional trailing widget. Only the title is
+  required and every gap collapses with its slot. Two variants: `filled` (the
+  default) paints a tinted, rounded surface so a plain list reads as a stack of
+  bands, and `plain` is transparent so a row inside a `FossCard` does not
+  double-draw. Passing `onTap` turns the row into one target with hover,
+  pressed, and keyboard activation; leaving it null keeps it inert, which is
+  separate from `enabled: false`. Takes a `FossListTileStyle` for one-off
+  overrides.
+* `FossPagination` pages through a list: a previous control, a run of page
+  numbers with an ellipsis wherever the run is cut, and a next control. It is
+  controlled through `page`, `pageCount`, and `onPageChanged`, and pages are
+  1-based. `siblingCount` sets how many pages sit either side of the current
+  one, but it is an upper bound: the row uses the widest run the width it is
+  given can hold, so it fits a phone without the caller measuring anything. That
+  figure ignores `page`, so the row does not resize while the user is paging.
+  Takes a `FossPaginationStyle` for one-off overrides.
+* `FossTimePicker` picks a time of day from a field. The trigger is the one
+  `FossDatePicker` uses, so the two line up in a form; tapping it opens hour,
+  minute, and period wheels in a bottom sheet, or a centered dialog through
+  `presentation`. Where the date picker commits on a tap, this one keeps a draft
+  in the sheet and reports through `onChanged` only when the footer confirms,
+  because where a wheel stops scrolling is not the same as a choice.
+  `minuteStep` coarsens the minute column, and `use24HourFormat` drops the
+  period column, following the device setting when left null. `minTime`,
+  `maxTime`, and `isTimeEnabled` bound the range: a blocked time stays on the
+  wheel rather than leaving a hole in it, dimmed, and the confirm action is
+  disabled while the draft sits on one. Wheels are awkward without a pointer, so
+  each column is a labelled adjustable that steps with the arrow keys. Values
+  are the new `FossTimeOfDay`; `FossTimePickerStyle` covers one-off overrides.
+
+### Changed
+
+* `FossMultiCombobox` now renders its selected values as `FossChip`. The look is
+  unchanged; the chip is public API, so the same pill is available outside the
+  field.
+
+### Fixed
+
+* `FossCalendar` keyboard focus ring now follows the day's own corners. On a
+  range, the ring drew a fully rounded box over the half-rounded start and end
+  fills, so a focused end day showed a rounded outline with the flat fill edge
+  poking out behind it. The ring now traces the fill: rounded on the outer side
+  of a range end, square through the middle days.
+* `FossNumberField` steppers now fill the full field height, so a stepper's
+  hover fill and tap target span the button instead of a short band floating in
+  the middle. The hover fill is clipped to the field's rounded corner, so it no
+  longer squares off over the border.
+
 ## 0.1.1
 
 ### Added

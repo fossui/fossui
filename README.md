@@ -2,8 +2,8 @@
 
 <img src="assets/logo.png" alt="fossui" width="200" />
 
-**The Fresh, Minimal Flutter UI kit.<br/>
-Themed from one source. Inspired by [coss.com/ui](https://coss.com/ui), Cal.com's design system.**
+**The Fresh, Minimal Flutter UI kit. 39 components.<br/>
+No app shell required. Inspired by [coss.com/ui](https://coss.com/ui), Cal.com's design system.**
 
 [![Pub Version](https://img.shields.io/pub/v/fossui?logo=dart&color=0175C2)](https://pub.dev/packages/fossui) [![Pub Likes](https://img.shields.io/pub/likes/fossui?logo=dart&color=0175C2)](https://pub.dev/packages/fossui) [![GitHub stars](https://img.shields.io/github/stars/fossui/fossui?logo=github)](https://github.com/fossui/fossui) [![Coverage](https://img.shields.io/endpoint?url=https://coverage.fossui.org/coverage.json)](https://coverage.fossui.org)
 
@@ -13,12 +13,11 @@ Themed from one source. Inspired by [coss.com/ui](https://coss.com/ui), Cal.com'
   <img src="assets/demo.gif" alt="fossui components" width="900" />
 </p>
 
-fossui is a set of 30+ components for developers tired of every Flutter app
-looking like Material. It drops into any app (`MaterialApp`, `CupertinoApp`, or a
-bare `WidgetsApp`) and reads its own theme first, not replacing yours. The look
-comes from [coss.com/ui](https://coss.com/ui), Cal.com's design system: clean,
-neutral, superellipse corners. One import, one theme, light and dark out of the
-box.
+fossui is for developers tired of every Flutter app looking like Material. It
+drops into any app (a bare `WidgetsApp`, `CupertinoApp`, or `MaterialApp`) and
+reads its own theme first, not replacing yours. The look comes from
+[coss.com/ui](https://coss.com/ui), Cal.com's design system: clean, neutral,
+superellipse corners. One import, one theme, light and dark out of the box.
 
 > [!IMPORTANT]
 > Unofficial and independent. Not affiliated with or endorsed by Cal.com, Inc.
@@ -32,9 +31,9 @@ box.
   platform channels and no `FossApp` wrapper. The widgets work under any app
   shell.
 - **Reads your theme, not the other way around.** Components resolve
-  `context.fossTheme` before falling back to Material, so they keep their look
-  inside an existing app.
-- **Themed from one source.** A single `FossThemeData` holds every semantic
+  `context.fossTheme` first, so they keep their look inside an existing app
+  instead of inheriting whatever the surrounding shell imposes.
+- **One theme object.** A single `FossThemeData` holds every semantic
   token: color, type, radius, spacing, shadow, motion. Reskin the whole app,
   light and dark, in one call.
 - **Light on dependencies.** One runtime dependency and no bundled icon package.
@@ -52,7 +51,7 @@ box.
 
 ```yaml
 dependencies:
-  fossui: ^0.1.1
+  fossui: ^0.1.2
 ```
 
 Or from the command line:
@@ -68,15 +67,15 @@ Browse the package on [pub.dev/packages/fossui](https://pub.dev/packages/fossui)
 Register the theme once, then use the widgets anywhere.
 
 ```dart
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:fossui/fossui.dart';
 
 void main() => runApp(
-      MaterialApp(
-        theme: FossThemeData.light.toThemeData(),
-        darkTheme: FossThemeData.dark.toThemeData(),
-        home: Scaffold(
-          body: Center(
+      FossTheme(
+        data: FossThemeData.light,
+        child: WidgetsApp(
+          color: FossThemeData.light.colors.background,
+          builder: (context, _) => Center(
             child: FossButton(
               onPressed: () {},
               child: const Text('Get started'),
@@ -87,9 +86,10 @@ void main() => runApp(
     );
 ```
 
-No wrapper lock-in. `FossTheme` drops into any app, and `context.fossTheme`
-resolves identically under `MaterialApp`, `CupertinoApp`, or a bare
-`WidgetsApp`.
+No shell lock-in. `FossTheme` is a plain `InheritedWidget`, so
+`context.fossTheme` resolves the same way under `WidgetsApp`, `CupertinoApp`, or
+any other app widget. If your app already registers a theme, `toThemeData()`
+hands the same tokens over as a theme extension.
 
 See [`example/`](https://pub.dev/packages/fossui/example) for a runnable app.
 
@@ -108,13 +108,11 @@ To reskin the app, layer a `FossThemeSpec` over a base theme. Every field is
 optional, and anything you leave unset keeps the default.
 
 ```dart
-MaterialApp(
-  theme: FossThemeData.light.retheme(
+FossTheme(
+  data: FossThemeData.light.retheme(
     const FossThemeSpec(primary: Color(0xFF16A34A), radius: 22),
-  ).toThemeData(),
-  darkTheme: FossThemeData.dark.retheme(
-    const FossThemeSpec(primary: Color(0xFF51F0A8), radius: 22),
-  ).toThemeData(),
+  ),
+  child: const MyApp(),
 );
 ```
 
@@ -124,10 +122,10 @@ The library covers input, feedback, overlays, and layout:
 
 | Group | Components |
 | --- | --- |
-| Actions and input | Button, TextField, NumberField, OtpField, Select, Combobox, Checkbox, Radio, Switch, Toggle, ToggleGroup, Slider, DatePicker |
+| Actions and input | Button, TextField, NumberField, OtpField, Select, MultiSelect, Combobox, MultiCombobox, Autocomplete, Checkbox, Radio, Switch, Toggle, ToggleGroup, Chip, Slider, DatePicker, TimePicker, Pagination |
 | Feedback | Alert, Badge, Meter, Progress, Skeleton, Spinner, Toast, Tooltip |
-| Overlays | Dialog, Drawer (sheet and bottom sheet), Popover |
-| Layout and media | Accordion, Card, Tabs, Separator, Text, Calendar, Avatar |
+| Overlays | Dialog, AlertDialog, Drawer (sheet and bottom sheet), Popover |
+| Layout and media | Accordion, Card, ListTile, Tabs, Separator, Text, Calendar, Avatar |
 
 See the [components roadmap](https://github.com/fossui/fossui/blob/main/doc/components/roadmap.md)
 for what is shipped and what is planned, and the
@@ -136,10 +134,10 @@ for the bar each one clears.
 
 ## Icons
 
-Icon slots accept a plain `Widget`, so any icon set works: Lucide, Material
-Icons, Cupertino, SVGs, or your own. The package pulls in no icon dependency of
-its own. Examples and docs use [Lucide](https://pub.dev/packages/lucide_icons)
-as the documented companion.
+Icon slots accept a plain `Widget`, so any icon set works: Lucide, Cupertino,
+SVGs, or your own. The package pulls in no icon dependency of its own. The
+example and the docs use [Lucide](https://pub.dev/packages/lucide_icons) as the
+documented companion.
 
 ## Platforms
 
@@ -164,8 +162,6 @@ Per-client setup and the full tool list are in the
 - [Introducing fossui: a minimal Flutter UI kit](https://fossui.org/blogs/introducing-fossui)
 - [Migrating from Material to fossui](https://fossui.org/blogs/migrating-from-material-to-fossui)
 - [Minimal Flutter UI kits compared: fossui vs Material (2026)](https://fossui.org/blogs/minimal-flutter-ui-kits-compared-2026)
-
-More at [fossui.org/blogs](https://fossui.org/blogs).
 
 ## Ecosystem
 

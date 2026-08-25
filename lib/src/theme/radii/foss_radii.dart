@@ -43,7 +43,7 @@ class FossRadii extends ThemeExtension<FossRadii> with _$FossRadiiTailorMixin {
     );
   }
 
-  /// Small corners (6 px): controls, chips.
+  /// Small corners (6 px): small controls and inline marks.
   @override
   final double sm;
 

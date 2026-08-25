@@ -3,6 +3,7 @@ import 'dart:math' as math;
 
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
+import 'package:fossui/src/components/chip/foss_chip.dart';
 import 'package:fossui/src/components/select/foss_select.dart';
 import 'package:fossui/src/components/text_field/foss_text_field.dart';
 import 'package:fossui/src/foundation/foss_field_box.dart';
@@ -24,10 +25,9 @@ const double _popupMaxHeight = 368;
 const double _rowMinHeight = 32;
 const double _indicatorColumn = 16;
 const double _openScale = 0.96;
-const double _removeGlyphSize = 16;
 
-// Minimum touch region for the trailing affixes and the chip remove button.
-// The region expands past the small glyph without growing its visual footprint.
+// Minimum touch region for the trailing affixes. The region expands past the
+// small glyph without growing its visual footprint.
 const double _minHitTarget = 48;
 
 /// Default empty-state caption when a query matches nothing.

@@ -1,13 +1,15 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:fossui/fossui.dart';
+import 'package:lucide_icons/lucide_icons.dart';
 
 void main() => runApp(const ExampleApp());
 
 /// Entry point for the fossui example.
 ///
-/// Registers the light and dark themes, then shows a component gallery grouped
-/// into tabs. The app bar toggles the theme so every component can be seen in
-/// both modes.
+/// Runs on a bare [WidgetsApp]: the theme is registered through the [FossTheme]
+/// scope, and every piece of chrome below it is built from fossui widgets and
+/// `package:flutter/widgets.dart`. The header toggles between light and dark so
+/// each component can be seen in both.
 class ExampleApp extends StatefulWidget {
   /// Creates the example app.
   const ExampleApp({super.key});
@@ -17,21 +19,25 @@ class ExampleApp extends StatefulWidget {
 }
 
 class _ExampleAppState extends State<ExampleApp> {
-  ThemeMode _mode = ThemeMode.dark;
+  bool _isDark = true;
 
-  void _toggleTheme() => setState(
-    () => _mode = _mode == ThemeMode.dark ? ThemeMode.light : ThemeMode.dark,
-  );
+  void _toggleTheme() => setState(() => _isDark = !_isDark);
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'fossui example',
-      debugShowCheckedModeBanner: false,
-      theme: FossThemeData.light.toThemeData(),
-      darkTheme: FossThemeData.dark.toThemeData(),
-      themeMode: _mode,
-      home: _Home(isDark: _mode == ThemeMode.dark, onToggleTheme: _toggleTheme),
+    final theme = _isDark ? FossThemeData.dark : FossThemeData.light;
+    return FossTheme(
+      data: theme,
+      child: WidgetsApp(
+        title: 'fossui example',
+        color: theme.colors.background,
+        textStyle: theme.typography.sm.copyWith(color: theme.colors.foreground),
+        pageRouteBuilder: <T>(settings, builder) => PageRouteBuilder<T>(
+          settings: settings,
+          pageBuilder: (context, _, _) => builder(context),
+        ),
+        home: _Home(isDark: _isDark, onToggleTheme: _toggleTheme),
+      ),
     );
   }
 }
@@ -44,30 +50,87 @@ class _Home extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('fossui'),
-        actions: [
-          IconButton(
+    final theme = context.fossTheme;
+    return ColoredBox(
+      color: theme.colors.background,
+      // WidgetsApp sets no icon defaults, so every icon slot below would
+      // otherwise fall back to opaque black on both themes.
+      child: IconTheme(
+        data: IconThemeData(color: theme.colors.foreground, size: 20),
+        child: SafeArea(
+          child: Column(
+            children: [
+              _Header(isDark: isDark, onToggleTheme: onToggleTheme),
+              // A FossToaster ancestor is required for showFossToast to find a
+              // host.
+              const Expanded(
+                child: FossToaster(
+                  // FossTabs sizes a horizontal panel to its content, so the
+                  // scroll lives above the tabs rather than inside a panel.
+                  child: SingleChildScrollView(
+                    child: FossTabs(
+                      initialValue: 'controls',
+                      tabs: [
+                        FossTab(
+                          value: 'controls',
+                          label: 'Controls',
+                          content: _Controls(),
+                        ),
+                        FossTab(
+                          value: 'inputs',
+                          label: 'Inputs',
+                          content: _Inputs(),
+                        ),
+                        FossTab(
+                          value: 'feedback',
+                          label: 'Feedback',
+                          content: _Feedback(),
+                        ),
+                        FossTab(
+                          value: 'layout',
+                          label: 'Layout',
+                          content: _Layout(),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// The title row and the light/dark toggle that sits above the tabs.
+class _Header extends StatelessWidget {
+  const _Header({required this.isDark, required this.onToggleTheme});
+
+  final bool isDark;
+  final VoidCallback onToggleTheme;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = context.fossTheme;
+    return Padding(
+      padding: EdgeInsets.symmetric(
+        horizontal: theme.spacing(5),
+        vertical: theme.spacing(3),
+      ),
+      child: Row(
+        children: [
+          Text('fossui', style: theme.typography.lg.semibold),
+          const Spacer(),
+          FossButton.icon(
+            variant: FossButtonVariant.ghost,
+            size: FossButtonSize.sm,
             onPressed: onToggleTheme,
-            tooltip: isDark ? 'Switch to light' : 'Switch to dark',
-            icon: Icon(
-              isDark ? Icons.light_mode_outlined : Icons.dark_mode_outlined,
-            ),
+            semanticLabel: isDark ? 'Switch to light' : 'Switch to dark',
+            icon: Icon(isDark ? LucideIcons.sun : LucideIcons.moon, size: 16),
           ),
         ],
-      ),
-      // A FossToaster ancestor is required for showFossToast to find a host.
-      body: const FossToaster(
-        child: FossTabs(
-          initialValue: 'controls',
-          tabs: [
-            FossTab(value: 'controls', label: 'Controls', content: _Controls()),
-            FossTab(value: 'inputs', label: 'Inputs', content: _Inputs()),
-            FossTab(value: 'feedback', label: 'Feedback', content: _Feedback()),
-            FossTab(value: 'layout', label: 'Layout', content: _Layout()),
-          ],
-        ),
       ),
     );
   }
@@ -108,11 +171,17 @@ class _Page extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final spacing = context.fossTheme.spacing;
-    return ListView(
+    return Padding(
       padding: spacing.all(5),
-      children: [
-        for (final child in children) ...[child, SizedBox(height: spacing(6))],
-      ],
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          for (final child in children) ...[
+            child,
+            SizedBox(height: spacing(6)),
+          ],
+        ],
+      ),
     );
   }
 }
@@ -179,7 +248,7 @@ class _ControlsState extends State<_Controls> {
               ),
               FossButton(
                 variant: FossButtonVariant.outline,
-                leading: const Icon(Icons.download_outlined, size: 16),
+                leading: const Icon(LucideIcons.download, size: 16),
                 onPressed: () {},
                 child: const Text('Outline'),
               ),
@@ -244,7 +313,7 @@ class _ControlsState extends State<_Controls> {
           label: 'Toggle',
           child: FossToggle(
             pressed: _bold,
-            leading: const Icon(Icons.format_bold),
+            leading: const Icon(LucideIcons.bold),
             semanticLabel: 'Bold',
             onPressedChanged: (v) => setState(() => _bold = v),
             child: const Text('Bold'),
@@ -258,17 +327,17 @@ class _ControlsState extends State<_Controls> {
             children: const [
               FossToggleGroupItem(
                 value: 'left',
-                leading: Icon(Icons.format_align_left),
+                leading: Icon(LucideIcons.alignLeft),
                 semanticLabel: 'Align left',
               ),
               FossToggleGroupItem(
                 value: 'center',
-                leading: Icon(Icons.format_align_center),
+                leading: Icon(LucideIcons.alignCenter),
                 semanticLabel: 'Align center',
               ),
               FossToggleGroupItem(
                 value: 'right',
-                leading: Icon(Icons.format_align_right),
+                leading: Icon(LucideIcons.alignRight),
                 semanticLabel: 'Align right',
               ),
             ],
@@ -316,7 +385,7 @@ class _InputsState extends State<_Inputs> {
             label: 'Email',
             hintText: 'you@example.com',
             helperText: 'We never share it.',
-            leading: Icon(Icons.mail_outlined, size: 18),
+            leading: Icon(LucideIcons.mail, size: 18),
           ),
         ),
         const _Section(
@@ -548,7 +617,7 @@ class _Feedback extends StatelessWidget {
               SizedBox(width: spacing(4)),
               const FossTooltip(
                 message: 'More information',
-                child: Icon(Icons.info_outline, size: 20),
+                child: Icon(LucideIcons.info, size: 20),
               ),
             ],
           ),
