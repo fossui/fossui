@@ -160,21 +160,22 @@ class FossSelect<T> extends StatelessWidget {
 /// Builds the default trigger appearance from the theme tokens for [size].
 _SelectVisuals _resolve(FossThemeData theme, FossSelectSize size) {
   final c = theme.colors;
+  final h = theme.controlHeights;
   final (minHeight, padding, textStyle, gap) = switch (size) {
     FossSelectSize.sm => (
-      32.0,
+      h.sm,
       EdgeInsets.symmetric(horizontal: theme.spacing(2.5)),
       theme.typography.sm,
       theme.spacing(1.5),
     ),
     FossSelectSize.md => (
-      36.0,
+      h.md,
       EdgeInsets.symmetric(horizontal: theme.spacing(3)),
       theme.typography.base,
       theme.spacing(2),
     ),
     FossSelectSize.lg => (
-      40.0,
+      h.lg,
       EdgeInsets.symmetric(horizontal: theme.spacing(3)),
       theme.typography.base,
       theme.spacing(2),
