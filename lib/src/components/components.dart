@@ -6,6 +6,7 @@ export 'accordion/foss_accordion.dart';
 export 'alert/foss_alert.dart';
 export 'avatar/foss_avatar.dart';
 export 'badge/foss_badge.dart';
+export 'bottom_nav_bar/foss_bottom_nav_bar.dart';
 export 'button/foss_button.dart';
 export 'calendar/foss_calendar.dart';
 export 'card/foss_card.dart';
