@@ -337,10 +337,11 @@ _ToggleVisuals _resolve(
       shadow = theme.shadows.xs;
   }
 
+  final h = theme.controlHeights;
   final (height, padX) = switch (size) {
-    FossToggleSize.sm => (32.0, theme.spacing(1.5) - 1),
-    FossToggleSize.md => (36.0, theme.spacing(2) - 1),
-    FossToggleSize.lg => (40.0, theme.spacing(2.5) - 1),
+    FossToggleSize.sm => (h.sm, theme.spacing(1.5) - 1),
+    FossToggleSize.md => (h.md, theme.spacing(2) - 1),
+    FossToggleSize.lg => (h.lg, theme.spacing(2.5) - 1),
   };
 
   return _ToggleVisuals(
