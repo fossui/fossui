@@ -14,6 +14,7 @@ const List<FossGlyph> _glyphs = [
   ChevronRightGlyph(_a),
   EllipsisGlyph(_a),
   MinusGlyph(_a),
+  StarGlyph(_a),
   InfoGlyph(_a),
   SuccessGlyph(_a),
   WarningGlyph(_a),
@@ -99,6 +100,28 @@ void main() {
     test('repaints only when the color changes', () {
       expect(const CheckGlyph(_a).shouldRepaint(const CheckGlyph(_a)), isFalse);
       expect(const CheckGlyph(_a).shouldRepaint(const CheckGlyph(_b)), isTrue);
+    });
+
+    test('the star also repaints when its fill flips', () {
+      const outline = StarGlyph(_a);
+      const solid = StarGlyph(_a, filled: true);
+      expect(outline.shouldRepaint(outline), isFalse);
+      expect(outline.shouldRepaint(solid), isTrue);
+      expect(solid.shouldRepaint(const StarGlyph(_b, filled: true)), isTrue);
+    });
+  });
+
+  group('StarGlyph', () {
+    testWidgets('both treatments paint from the same vertices', (
+      tester,
+    ) async {
+      for (final filled in [false, true]) {
+        await tester.pumpWidget(
+          Center(child: FossGlyphIcon(StarGlyph(_a, filled: filled), size: 24)),
+        );
+        expect(_painterOf(const StarGlyph(_a)), findsOneWidget);
+        expect(tester.takeException(), isNull);
+      }
     });
   });
 }
