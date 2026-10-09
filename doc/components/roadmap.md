@@ -39,6 +39,7 @@ right-to-left layout, and three layers of tests. That bar is written down in
 - [x] **Time picker** : time-of-day selection from a field, on scrolling wheels
   in a bottom sheet or a centered dialog.
 - [x] **Chip** : compact pill for a value, selectable and removable.
+- [x] **Rating** : star rating, as an input or as a read-only average.
 
 ### Layout and surfaces
 
@@ -74,10 +75,6 @@ right-to-left layout, and three layers of tests. That bar is written down in
 
 Next up, in no fixed order. Each clears the same bar as everything above before it
 ships.
-
-### Forms and inputs
-
-- [ ] **Rating** : star rating input and display.
 
 ### Layout and surfaces
 

@@ -23,6 +23,7 @@ export 'pagination/foss_pagination.dart';
 export 'popover/foss_popover.dart';
 export 'progress/foss_progress.dart';
 export 'radio/foss_radio.dart';
+export 'rating/foss_rating.dart';
 export 'select/foss_select.dart';
 export 'separator/foss_separator.dart';
 export 'skeleton/foss_skeleton.dart';

@@ -1,3 +1,18 @@
+## 0.1.3
+
+### Added
+
+* `FossRating` shows a rating as a row of star marks and takes one when you give
+  it a callback. With `onChanged` the row responds to a tap or a horizontal
+  drag, arrow keys step it, and Home and End reach both ends; without one it is
+  an inert display that still announces its value, which is what an average
+  needs. `precision` snaps input to whole marks or halves and never touches
+  display, so a 4.3 average paints as 4.3 rather than rounding to a half. Three
+  sizes (`sm` 16, `md` 20, `lg` 24), any `count`, `emptyIcon` and `filledIcon`
+  slots that take any widget and still get the partial fill, and a
+  `FossRatingStyle` for one-off overrides. Input never falls back to zero, so a
+  stray tap cannot wipe a rating.
+
 ## 0.1.2
 
 ### Added
