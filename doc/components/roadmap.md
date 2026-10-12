@@ -75,6 +75,7 @@ right-to-left layout, and three layers of tests. That bar is written down in
 - [x] **Drawer** : panel that slides in from an edge.
 - [x] **Tooltip** : anchored hint on hover or focus.
 - [x] **Toast** : transient notifications with a queue.
+- [x] **Menu** : dropdown menu of rows, with shortcuts and groups.
 
 ## Planned
 

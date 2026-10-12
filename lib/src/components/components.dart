@@ -17,6 +17,7 @@ export 'date_picker/foss_date_picker.dart';
 export 'dialog/foss_dialog.dart';
 export 'drawer/foss_drawer.dart';
 export 'list_tile/foss_list_tile.dart';
+export 'menu/foss_menu.dart';
 export 'meter/foss_meter.dart';
 export 'number_field/foss_number_field.dart';
 export 'otp_field/foss_otp_field.dart';

@@ -2,6 +2,27 @@
 
 ### Added
 
+* `FossMenu` is a dropdown menu: a trigger that opens a panel of rows over the
+  page, each row a label with an optional glyph and an optional shortcut, under
+  a highlight that follows both the pointer and the arrow keys. The panel opens
+  below the trigger and flush with its start edge, flips above when there is no
+  room, clamps inside the viewport, and scrolls internally when a long list
+  still does not fit. One `items` list carries all three row kinds:
+  `FossMenuItem` for an action, `FossMenuItem.separator()` for a divider, and
+  `FossMenuItem.label()` for a group heading, so a caller never passes a
+  parallel structure to place a divider. A row carries `icon`, `shortcut`,
+  `onSelected`, `enabled`, `destructive`, and `inset`. A null `onSelected`
+  leaves the row inert: it stays visible at full strength, keeps its place in
+  the keyboard walk, and does nothing when selected, which is how you write a
+  "coming soon" entry. `enabled: false` is the other thing: it dims the row and
+  skips it. The menu shows and announces `shortcut` but never binds it, so the
+  app still registers the combination itself. `ArrowUp` and
+  `ArrowDown` move the highlight and wrap, `Enter` and `Space` select, and
+  `Escape` or a tap outside closes and returns focus to the trigger. A trigger
+  that takes its own taps, a `FossButton` with an `onPressed` for instance,
+  wins the gesture, so the menu never sees it: pass a `FossMenuController` and
+  point that callback at `toggle`. Takes a `FossMenuStyle` for one-off
+  overrides.
 * `FossBottomNavBar` is the strip of top-level destinations for the bottom of a
   phone screen: three to five cells, each a glyph over a short label, with the
   current one in `foreground` and the rest in `mutedForeground`. It is
