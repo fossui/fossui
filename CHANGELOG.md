@@ -25,6 +25,12 @@
   `FossRatingStyle` for one-off overrides. Input never falls back to zero, so a
   stray tap cannot wipe a rating.
 
+### Changed
+
+* The `theme_tailor_annotation` constraint widens to `>=3.1.3 <5.0.0`, so an app
+  already on the 4.x line resolves without a downgrade. The supported Flutter
+  and Dart versions are unchanged.
+
 ## 0.1.2
 
 ### Added
