@@ -1,5 +1,3 @@
-import 'dart:async' show unawaited;
-
 import 'package:flutter/services.dart'
     show
         AutofillHints,
@@ -313,7 +311,7 @@ class _FossOtpFieldState extends State<FossOtpField>
     // The caret blinks only while a slot is active; an idle field schedules no
     // frames, and reduced motion holds the caret steady.
     if (active != null && !reduceMotion) {
-      if (!_blink.isAnimating) unawaited(_blink.repeat(reverse: true));
+      if (!_blink.isAnimating) _blink.repeat(reverse: true);
     } else {
       if (_blink.isAnimating) _blink.stop();
       _blink.value = 1;

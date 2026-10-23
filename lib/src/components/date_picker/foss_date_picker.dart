@@ -399,7 +399,7 @@ class _FossDatePickerState extends State<FossDatePicker> {
 
   void _dismissDialog() {
     if (_routeShowing) {
-      unawaited(Navigator.of(context, rootNavigator: true).maybePop());
+      Navigator.of(context, rootNavigator: true).maybePop();
     }
   }
 
@@ -552,7 +552,7 @@ class _CalendarDialogState extends State<_CalendarDialog> {
     setState(() => _single = day);
     widget.onSingle?.call(day);
     if (widget.closeOnSelect) {
-      unawaited(Navigator.of(context).maybePop());
+      Navigator.of(context).maybePop();
     }
   }
 
@@ -561,7 +561,7 @@ class _CalendarDialogState extends State<_CalendarDialog> {
     widget.onRange?.call(range);
     _awaitingRangeEnd = !_awaitingRangeEnd;
     if (widget.closeOnSelect && !_awaitingRangeEnd) {
-      unawaited(Navigator.of(context).maybePop());
+      Navigator.of(context).maybePop();
     }
   }
 
