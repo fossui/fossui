@@ -66,6 +66,7 @@ class FossThemeSpec {
     this.ring,
     this.radius,
     this.spacing,
+    this.controlHeight,
     this.shadowColor,
     this.fontFamily,
   });
@@ -153,6 +154,12 @@ class FossThemeSpec {
 
   /// Spacing unit in logical pixels; every step is `unit * n`.
   final double? spacing;
+
+  /// Height base in logical pixels (the `md` step) for size-variant controls.
+  /// Derives both height scales from one seed: `FossControlHeights` for
+  /// buttons, selects, toggles, and pickers, and `FossFieldHeights` for
+  /// text-entry fields, which sit one step (2px) shorter.
+  final double? controlHeight;
 
   /// Re-tints every shadow layer, keeping each layer's alpha and geometry.
   final Color? shadowColor;

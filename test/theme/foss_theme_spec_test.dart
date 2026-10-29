@@ -13,6 +13,8 @@ void main() {
       expect(theme.colors.secondary, FossColors.light.secondary);
       expect(theme.radii, FossThemeData.light.radii);
       expect(theme.spacing, FossThemeData.light.spacing);
+      expect(theme.controlHeights, FossThemeData.light.controlHeights);
+      expect(theme.fieldHeights, FossThemeData.light.fieldHeights);
       expect(theme.typography, FossThemeData.light.typography);
     });
 
@@ -110,6 +112,15 @@ void main() {
         const FossThemeSpec(spacing: 4.3),
       );
       expect(theme.spacing, const FossSpacing(unit: 4.3));
+    });
+
+    test('the height seed derives both scales, fields offset by 2', () {
+      final theme = FossThemeData.light.retheme(
+        const FossThemeSpec(controlHeight: 36),
+      );
+      // Seed 36 reproduces the control default; fields derive from 34.
+      expect(theme.controlHeights, FossControlHeights.standard);
+      expect(theme.fieldHeights, FossFieldHeights.standard);
     });
 
     test('shadow color re-tints every layer, keeping alpha and geometry', () {

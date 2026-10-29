@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart' show Theme, ThemeData, ThemeExtension;
 import 'package:flutter/widgets.dart';
 import 'package:fossui/src/theme/colors/foss_colors.dart';
+import 'package:fossui/src/theme/control_heights/foss_control_heights.dart';
+import 'package:fossui/src/theme/field_heights/foss_field_heights.dart';
 import 'package:fossui/src/theme/foss_theme_spec.dart';
 import 'package:fossui/src/theme/motion/foss_motion.dart';
 import 'package:fossui/src/theme/radii/foss_radii.dart';
@@ -31,6 +33,8 @@ class FossThemeData extends ThemeExtension<FossThemeData> {
     required this.colors,
     required this.radii,
     required this.spacing,
+    required this.controlHeights,
+    required this.fieldHeights,
     required this.typography,
     required this.shadows,
     required this.motion,
@@ -41,6 +45,8 @@ class FossThemeData extends ThemeExtension<FossThemeData> {
     colors: FossColors.light,
     radii: FossRadii.standard,
     spacing: FossSpacing.standard,
+    controlHeights: FossControlHeights.standard,
+    fieldHeights: FossFieldHeights.standard,
     typography: FossTypography.standard,
     shadows: FossShadows.standard,
     motion: FossMotion.standard,
@@ -51,6 +57,8 @@ class FossThemeData extends ThemeExtension<FossThemeData> {
     colors: FossColors.dark,
     radii: FossRadii.standard,
     spacing: FossSpacing.standard,
+    controlHeights: FossControlHeights.standard,
+    fieldHeights: FossFieldHeights.standard,
     typography: FossTypography.standard,
     shadows: FossShadows.standard,
     motion: FossMotion.standard,
@@ -64,6 +72,12 @@ class FossThemeData extends ThemeExtension<FossThemeData> {
 
   /// Spacing scale.
   final FossSpacing spacing;
+
+  /// Minimum heights for size-variant controls.
+  final FossControlHeights controlHeights;
+
+  /// Minimum heights for text-entry fields.
+  final FossFieldHeights fieldHeights;
 
   /// Text styles.
   final FossTypography typography;
@@ -87,6 +101,7 @@ class FossThemeData extends ThemeExtension<FossThemeData> {
   FossThemeData retheme(FossThemeSpec spec) {
     final radius = spec.radius;
     final unit = spec.spacing;
+    final controlHeight = spec.controlHeight;
     final shadowColor = spec.shadowColor;
     final fontFamily = spec.fontFamily;
     return FossThemeData(
@@ -120,6 +135,14 @@ class FossThemeData extends ThemeExtension<FossThemeData> {
       ),
       radii: radius == null ? radii : FossRadii.fromBase(radius),
       spacing: unit == null ? spacing : FossSpacing(unit: unit),
+      controlHeights: controlHeight == null
+          ? controlHeights
+          : FossControlHeights.fromBase(controlHeight),
+      // Text-entry fields sit one step (2px) shorter than other controls, so
+      // they derive from the same seed less that offset.
+      fieldHeights: controlHeight == null
+          ? fieldHeights
+          : FossFieldHeights.fromBase(controlHeight - 2),
       typography: fontFamily == null
           ? typography
           : _reFamily(typography, fontFamily),
@@ -133,6 +156,8 @@ class FossThemeData extends ThemeExtension<FossThemeData> {
     FossColors? colors,
     FossRadii? radii,
     FossSpacing? spacing,
+    FossControlHeights? controlHeights,
+    FossFieldHeights? fieldHeights,
     FossTypography? typography,
     FossShadows? shadows,
     FossMotion? motion,
@@ -140,6 +165,8 @@ class FossThemeData extends ThemeExtension<FossThemeData> {
     colors: colors ?? this.colors,
     radii: radii ?? this.radii,
     spacing: spacing ?? this.spacing,
+    controlHeights: controlHeights ?? this.controlHeights,
+    fieldHeights: fieldHeights ?? this.fieldHeights,
     typography: typography ?? this.typography,
     shadows: shadows ?? this.shadows,
     motion: motion ?? this.motion,
@@ -154,6 +181,8 @@ class FossThemeData extends ThemeExtension<FossThemeData> {
       colors: colors.lerp(other.colors, t),
       radii: radii.lerp(other.radii, t),
       spacing: spacing.lerp(other.spacing, t),
+      controlHeights: controlHeights.lerp(other.controlHeights, t),
+      fieldHeights: fieldHeights.lerp(other.fieldHeights, t),
       typography: typography.lerp(other.typography, t),
       shadows: shadows.lerp(other.shadows, t),
       motion: motion.lerp(other.motion, t),
@@ -175,13 +204,23 @@ class FossThemeData extends ThemeExtension<FossThemeData> {
           colors == other.colors &&
           radii == other.radii &&
           spacing == other.spacing &&
+          controlHeights == other.controlHeights &&
+          fieldHeights == other.fieldHeights &&
           typography == other.typography &&
           shadows == other.shadows &&
           motion == other.motion;
 
   @override
-  int get hashCode =>
-      Object.hash(colors, radii, spacing, typography, shadows, motion);
+  int get hashCode => Object.hash(
+    colors,
+    radii,
+    spacing,
+    controlHeights,
+    fieldHeights,
+    typography,
+    shadows,
+    motion,
+  );
 }
 
 /// Rebuilds every type step on [family], preserving size, height, and spacing.

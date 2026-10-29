@@ -1,3 +1,19 @@
+## Unreleased
+
+### Added
+
+* A `controlHeight` theme seed sets the height of size-variant controls,
+  mirroring how `radius` and `spacing` seed their scales.
+  `FossThemeSpec.controlHeight` derives two scales from one value: it seeds
+  `FossControlHeights` for buttons, selects, toggles, and pickers
+  (`FossSelect`, `FossDatePicker`, `FossTimePicker`, `FossButton`,
+  `FossToggle`, `FossOtpField`), and seeds `FossFieldHeights` for text-entry
+  fields (`FossTextField`, `FossNumberField`), which sit one step (2px)
+  shorter. Both are single seeds on the `md` step, offset to `sm` and `lg`,
+  and default to the values these controls already used, so nothing changes
+  until the seed is set. Reachable on the resolved theme as
+  `FossThemeData.controlHeights` and `FossThemeData.fieldHeights`.
+
 ## 0.1.2
 
 ### Added

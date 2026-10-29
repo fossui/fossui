@@ -27,10 +27,11 @@ const double _labelLineHeight = 18 / 16;
   // Horizontal inset from the spacing scale: sm sits tighter than md and lg.
   // The border paints over the edge without consuming layout, so the inset is
   // the padding alone and needs no border compensation.
+  final h = theme.fieldHeights;
   final (minHeight, padX) = switch (size) {
-    FossTextFieldSize.sm => (30.0, theme.spacing(2.5)),
-    FossTextFieldSize.md => (34.0, theme.spacing(3)),
-    FossTextFieldSize.lg => (38.0, theme.spacing(3)),
+    FossTextFieldSize.sm => (h.sm, theme.spacing(2.5)),
+    FossTextFieldSize.md => (h.md, theme.spacing(3)),
+    FossTextFieldSize.lg => (h.lg, theme.spacing(3)),
   };
 
   // Dark adds a faint lift over the surface: the input color at 32% of its

@@ -516,9 +516,10 @@ class _OtpSeparator extends StatelessWidget {
 /// Builds the default slot appearance for a [size] from the theme tokens.
 _OtpVisuals _resolve(FossThemeData theme, FossOtpFieldSize size) {
   final c = theme.colors;
+  final h = theme.controlHeights;
   final (slotSize, textStyle) = switch (size) {
-    FossOtpFieldSize.md => (36.0, theme.typography.base),
-    FossOtpFieldSize.lg => (40.0, theme.typography.lg),
+    FossOtpFieldSize.md => (h.md, theme.typography.base),
+    FossOtpFieldSize.lg => (h.lg, theme.typography.lg),
   };
 
   // Dark adds a faint lift over the surface: the input color at 32% of its

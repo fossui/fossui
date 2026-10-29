@@ -514,10 +514,11 @@ _ButtonVisuals _resolve(
     _ => FossShadows.none,
   };
 
+  final h = theme.controlHeights;
   final (height, gap, horizontalPadding) = switch (size) {
-    FossButtonSize.sm => (32.0, theme.spacing(1.5), theme.spacing(2.5)),
-    FossButtonSize.md => (36.0, theme.spacing(2), theme.spacing(3)),
-    FossButtonSize.lg => (40.0, theme.spacing(2), theme.spacing(3.5)),
+    FossButtonSize.sm => (h.sm, theme.spacing(1.5), theme.spacing(2.5)),
+    FossButtonSize.md => (h.md, theme.spacing(2), theme.spacing(3)),
+    FossButtonSize.lg => (h.lg, theme.spacing(2), theme.spacing(3.5)),
   };
 
   return _ButtonVisuals(

@@ -15,7 +15,6 @@ import 'package:fossui/src/theme/theme.dart';
 part 'foss_time_picker_style.dart';
 
 const double _glyphSize = 16;
-const double _triggerMinHeight = 36;
 const double _darkFillOpacity = 0.32;
 
 /// One wheel row, matched to the trigger height so the field and the sheet
@@ -421,7 +420,7 @@ class _FossTimePickerState extends State<FossTimePicker> {
       ringColor: v.ringColor,
       destructiveColor: v.destructiveColor,
       borderRadius: v.borderRadius,
-      minHeight: _triggerMinHeight,
+      minHeight: theme.controlHeights.md,
       shadow: v.shadow,
       isDark: v.isDark,
       // The trigger node below carries the label as its value, so the painted
