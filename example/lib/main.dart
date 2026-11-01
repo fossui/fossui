@@ -1,6 +1,6 @@
 import 'package:flutter/widgets.dart';
 import 'package:fossui/fossui.dart';
-import 'package:lucide_icons/lucide_icons.dart';
+import 'package:lucide_icons_lite/lucide_icons_lite.dart';
 
 void main() => runApp(const ExampleApp());
 

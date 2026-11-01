@@ -11,4 +11,4 @@ dependencies:
     sdk: flutter
   fossui:
     path: ../
-  lucide_icons: ^0.257.0
+  lucide_icons_lite: ^1.41.0
