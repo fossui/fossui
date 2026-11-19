@@ -20,12 +20,16 @@ class ExampleApp extends StatefulWidget {
 
 class _ExampleAppState extends State<ExampleApp> {
   bool _isDark = true;
+  FossThemeSpec _spec = const FossThemeSpec();
 
   void _toggleTheme() => setState(() => _isDark = !_isDark);
 
+  void _updateSpec(FossThemeSpec spec) => setState(() => _spec = spec);
+
   @override
   Widget build(BuildContext context) {
-    final theme = _isDark ? FossThemeData.dark : FossThemeData.light;
+    final base = _isDark ? FossThemeData.dark : FossThemeData.light;
+    final theme = base.retheme(_spec);
     return FossTheme(
       data: theme,
       child: WidgetsApp(
@@ -36,17 +40,29 @@ class _ExampleAppState extends State<ExampleApp> {
           settings: settings,
           pageBuilder: (context, _, _) => builder(context),
         ),
-        home: _Home(isDark: _isDark, onToggleTheme: _toggleTheme),
+        home: _Home(
+          isDark: _isDark,
+          onToggleTheme: _toggleTheme,
+          spec: _spec,
+          onSpecChanged: _updateSpec,
+        ),
       ),
     );
   }
 }
 
 class _Home extends StatelessWidget {
-  const _Home({required this.isDark, required this.onToggleTheme});
+  const _Home({
+    required this.isDark,
+    required this.onToggleTheme,
+    required this.spec,
+    required this.onSpecChanged,
+  });
 
   final bool isDark;
   final VoidCallback onToggleTheme;
+  final FossThemeSpec spec;
+  final ValueChanged<FossThemeSpec> onSpecChanged;
 
   @override
   Widget build(BuildContext context) {
@@ -63,7 +79,7 @@ class _Home extends StatelessWidget {
               _Header(isDark: isDark, onToggleTheme: onToggleTheme),
               // A FossToaster ancestor is required for showFossToast to find a
               // host.
-              const Expanded(
+              Expanded(
                 child: FossToaster(
                   // FossTabs sizes a horizontal panel to its content, so the
                   // scroll lives above the tabs rather than inside a panel.
@@ -72,21 +88,29 @@ class _Home extends StatelessWidget {
                       initialValue: 'controls',
                       tabs: [
                         FossTab(
+                          value: 'playground',
+                          label: 'Playground',
+                          content: _Playground(
+                            spec: spec,
+                            onSpecChanged: onSpecChanged,
+                          ),
+                        ),
+                        const FossTab(
                           value: 'controls',
                           label: 'Controls',
                           content: _Controls(),
                         ),
-                        FossTab(
+                        const FossTab(
                           value: 'inputs',
                           label: 'Inputs',
                           content: _Inputs(),
                         ),
-                        FossTab(
+                        const FossTab(
                           value: 'feedback',
                           label: 'Feedback',
                           content: _Feedback(),
                         ),
-                        FossTab(
+                        const FossTab(
                           value: 'layout',
                           label: 'Layout',
                           content: _Layout(),
@@ -185,6 +209,96 @@ class _Page extends StatelessWidget {
     );
   }
 }
+
+/// Live demo for the control-height token: a slider drives
+/// [FossThemeSpec.controlHeight], which the app root layers over the base theme
+/// via `retheme`. One seed drives both height scales: other controls read
+/// `controlHeights`, and text-entry fields read `fieldHeights`, which sits one
+/// step shorter. The preview reacts immediately since every control reads its
+/// height from the theme.
+class _Playground extends StatelessWidget {
+  const _Playground({required this.spec, required this.onSpecChanged});
+
+  final FossThemeSpec spec;
+  final ValueChanged<FossThemeSpec> onSpecChanged;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = context.fossTheme;
+    return _Page(
+      children: [
+        _Section(
+          label: 'Height',
+          child: FossSlider(
+            value: spec.controlHeight ?? theme.controlHeights.md,
+            min: 24,
+            max: 48,
+            onChanged: (v) => onSpecChanged(_specCopy(spec, controlHeight: v)),
+          ),
+        ),
+        _Section(
+          label: 'Preview',
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              const FossTextField(label: 'Email', hintText: 'you@example.com'),
+              SizedBox(height: theme.spacing(4)),
+              FossSelect<String>(
+                label: 'Plan',
+                placeholder: 'Choose a plan',
+                onChanged: (_) {},
+                items: const [
+                  FossSelectItem(value: 'free', label: 'Free'),
+                  FossSelectItem(value: 'pro', label: 'Pro'),
+                ],
+              ),
+              SizedBox(height: theme.spacing(4)),
+              FossButton(onPressed: () {}, child: const Text('Submit')),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+/// Layers a new [controlHeight] over [spec], keeping every other field as-is. A
+/// local helper rather than a method on [FossThemeSpec] since only the
+/// example's playground needs a partial update.
+FossThemeSpec _specCopy(FossThemeSpec spec, {double? controlHeight}) =>
+    FossThemeSpec(
+      background: spec.background,
+      foreground: spec.foreground,
+      card: spec.card,
+      cardForeground: spec.cardForeground,
+      popover: spec.popover,
+      popoverForeground: spec.popoverForeground,
+      primary: spec.primary,
+      primaryForeground: spec.primaryForeground,
+      secondary: spec.secondary,
+      secondaryForeground: spec.secondaryForeground,
+      muted: spec.muted,
+      mutedForeground: spec.mutedForeground,
+      accent: spec.accent,
+      accentForeground: spec.accentForeground,
+      destructive: spec.destructive,
+      destructiveForeground: spec.destructiveForeground,
+      destructiveForegroundOn: spec.destructiveForegroundOn,
+      info: spec.info,
+      infoForeground: spec.infoForeground,
+      success: spec.success,
+      successForeground: spec.successForeground,
+      warning: spec.warning,
+      warningForeground: spec.warningForeground,
+      border: spec.border,
+      input: spec.input,
+      ring: spec.ring,
+      radius: spec.radius,
+      spacing: spec.spacing,
+      controlHeight: controlHeight ?? spec.controlHeight,
+      shadowColor: spec.shadowColor,
+      fontFamily: spec.fontFamily,
+    );
 
 class _Controls extends StatefulWidget {
   const _Controls();

@@ -149,6 +149,31 @@ void main() {
       expect(await heightFor(tester, FossTextFieldSize.md), 34);
       expect(await heightFor(tester, FossTextFieldSize.lg), 38);
     });
+
+    testWidgets('the controlHeight theme seed drives the rendered field box', (
+      tester,
+    ) async {
+      // Fields sit one step shorter, so a seed of 42 derives the field scale
+      // from 40: (sm 36, md 40, lg 44), taller than the 30/34/38 default.
+      final theme = FossThemeData.light.retheme(
+        const FossThemeSpec(controlHeight: 42),
+      );
+      Future<double> themedHeight(FossTextFieldSize size) async {
+        await tester.pumpWidget(
+          host(
+            FossTheme(
+              data: theme,
+              child: FossTextField(size: size),
+            ),
+          ),
+        );
+        return tester.getSize(_boxFinder).height;
+      }
+
+      expect(await themedHeight(FossTextFieldSize.sm), 36);
+      expect(await themedHeight(FossTextFieldSize.md), 40);
+      expect(await themedHeight(FossTextFieldSize.lg), 44);
+    });
   });
 
   group('FossTextField affixes', () {

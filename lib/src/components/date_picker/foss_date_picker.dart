@@ -14,7 +14,6 @@ import 'package:fossui/src/theme/theme.dart';
 part 'foss_date_picker_style.dart';
 
 const double _glyphSize = 16;
-const double _triggerMinHeight = 36;
 const double _darkFillOpacity = 0.32;
 
 const List<String> _monthNames = [
@@ -438,7 +437,7 @@ class _FossDatePickerState extends State<FossDatePicker> {
       ringColor: v.ringColor,
       destructiveColor: v.destructiveColor,
       borderRadius: v.borderRadius,
-      minHeight: _triggerMinHeight,
+      minHeight: theme.controlHeights.md,
       shadow: v.shadow,
       isDark: v.isDark,
       // The trigger node below carries the label as its value, so the painted

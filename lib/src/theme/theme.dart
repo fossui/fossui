@@ -6,6 +6,8 @@
 // wrapper.
 
 export 'colors/foss_colors.dart';
+export 'control_heights/foss_control_heights.dart';
+export 'field_heights/foss_field_heights.dart';
 export 'foss_theme.dart';
 export 'foss_theme_spec.dart';
 export 'motion/foss_motion.dart';
