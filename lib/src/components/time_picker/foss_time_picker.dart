@@ -391,7 +391,7 @@ class _FossTimePickerState extends State<FossTimePicker> {
 
   void _dismissDialog() {
     if (_routeShowing) {
-      unawaited(Navigator.of(context, rootNavigator: true).maybePop());
+      Navigator.of(context, rootNavigator: true).maybePop();
     }
   }
 
@@ -567,7 +567,7 @@ class _TimeDialogState extends State<_TimeDialog> {
 
   void _confirm() {
     widget.onConfirmed(_draft);
-    unawaited(Navigator.of(context).maybePop());
+    Navigator.of(context).maybePop();
   }
 
   /// Takes the hour column's unwrapped position. Each lap it completes on a
@@ -744,7 +744,7 @@ class _TimeDialogState extends State<_TimeDialog> {
         FossButton(
           variant: FossButtonVariant.ghost,
           size: FossButtonSize.sm,
-          onPressed: () => unawaited(Navigator.of(context).maybePop()),
+          onPressed: () => Navigator.of(context).maybePop(),
           child: Text(widget.cancelLabel),
         ),
         FossButton(
@@ -859,12 +859,10 @@ class _WheelColumnState extends State<_WheelColumn> {
     if (widget.reduceMotion) {
       _controller.jumpToItem(target);
     } else {
-      unawaited(
-        _controller.animateToItem(
-          target,
-          duration: widget.visuals.stepDuration,
-          curve: Curves.easeOut,
-        ),
+      _controller.animateToItem(
+        target,
+        duration: widget.visuals.stepDuration,
+        curve: Curves.easeOut,
       );
     }
   }

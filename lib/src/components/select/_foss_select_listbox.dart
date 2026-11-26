@@ -108,7 +108,7 @@ class _FossSelectFieldState<T> extends State<_FossSelectField<T>>
     _attachScrollDismiss();
     _popupFocus.requestFocus();
     _animation.duration = _reduceMotion ? Duration.zero : _duration;
-    unawaited(_animation.forward(from: _reduceMotion ? 1 : 0));
+    _animation.forward(from: _reduceMotion ? 1 : 0);
   }
 
   // Close the popup when any enclosing scrollable moves, so it never floats

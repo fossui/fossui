@@ -1,4 +1,3 @@
-import 'dart:async';
 import 'dart:math' as math;
 
 import 'package:flutter/widgets.dart';
@@ -72,7 +71,7 @@ class _FossSpinnerState extends State<FossSpinner>
     if (reduceMotion) {
       _controller.stop();
     } else if (!_controller.isAnimating) {
-      unawaited(_controller.repeat());
+      _controller.repeat();
     }
   }
 

@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:flutter/widgets.dart';
 import 'package:fossui/src/foundation/foss_since.dart';
 import 'package:fossui/src/theme/theme.dart';
@@ -75,7 +73,7 @@ class _FossSkeletonState extends State<FossSkeleton>
     if (reduceMotion) {
       _controller.stop();
     } else if (!_controller.isAnimating) {
-      unawaited(_controller.repeat());
+      _controller.repeat();
     }
   }
 

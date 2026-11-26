@@ -147,7 +147,7 @@ class _FossTooltipState extends State<FossTooltip>
     _hideTimer = null;
     if (_portal.isShowing) {
       _animation.duration = _duration;
-      unawaited(_animation.forward());
+      _animation.forward();
       return;
     }
     _showTimer ??= Timer(widget.showDelay, () {
@@ -155,7 +155,7 @@ class _FossTooltipState extends State<FossTooltip>
       if (!mounted) return;
       _portal.show();
       _animation.duration = _duration;
-      unawaited(_animation.forward(from: 0));
+      _animation.forward(from: 0);
     });
   }
 

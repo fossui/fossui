@@ -39,6 +39,7 @@ right-to-left layout, and three layers of tests. That bar is written down in
 - [x] **Time picker** : time-of-day selection from a field, on scrolling wheels
   in a bottom sheet or a centered dialog.
 - [x] **Chip** : compact pill for a value, selectable and removable.
+- [x] **Rating** : star rating, as an input or as a read-only average.
 
 ### Layout and surfaces
 
@@ -50,6 +51,11 @@ right-to-left layout, and three layers of tests. That bar is written down in
   slots, tappable or inert.
 - [x] **Pagination** : page controls with previous, next, and windowed page
   numbers, narrowing the run to fit the width it is given.
+
+### Navigation
+
+- [x] **Bottom nav bar** : three to five top-level destinations, each a glyph
+  over a label, with the bottom safe-area inset handled for you.
 
 ### Feedback and status
 
@@ -69,15 +75,12 @@ right-to-left layout, and three layers of tests. That bar is written down in
 - [x] **Drawer** : panel that slides in from an edge.
 - [x] **Tooltip** : anchored hint on hover or focus.
 - [x] **Toast** : transient notifications with a queue.
+- [x] **Menu** : dropdown menu of rows, with shortcuts and groups.
 
 ## Planned
 
 Next up, in no fixed order. Each clears the same bar as everything above before it
 ships.
-
-### Forms and inputs
-
-- [ ] **Rating** : star rating input and display.
 
 ### Layout and surfaces
 
@@ -91,7 +94,6 @@ ships.
 ### Navigation
 
 - [ ] **Breadcrumb** : path trail for nested navigation.
-- [ ] **Bottom navigation bar** : primary tab bar for top-level sections.
 - [ ] **Menubar** : application menu bar, collapses on small screens.
 - [ ] **Navigation menu** : grouped navigation with flyout panels.
 

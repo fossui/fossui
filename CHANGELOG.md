@@ -1,3 +1,57 @@
+## 0.1.3
+
+### Added
+
+* `FossMenu` is a dropdown menu: a trigger that opens a panel of rows over the
+  page, each row a label with an optional glyph and an optional shortcut, under
+  a highlight that follows both the pointer and the arrow keys. The panel opens
+  below the trigger and flush with its start edge, flips above when there is no
+  room, clamps inside the viewport, and scrolls internally when a long list
+  still does not fit. One `items` list carries all three row kinds:
+  `FossMenuItem` for an action, `FossMenuItem.separator()` for a divider, and
+  `FossMenuItem.label()` for a group heading, so a caller never passes a
+  parallel structure to place a divider. A row carries `icon`, `shortcut`,
+  `onSelected`, `enabled`, `destructive`, and `inset`. A null `onSelected`
+  leaves the row inert: it stays visible at full strength, keeps its place in
+  the keyboard walk, and does nothing when selected, which is how you write a
+  "coming soon" entry. `enabled: false` is the other thing: it dims the row and
+  skips it. The menu shows and announces `shortcut` but never binds it, so the
+  app still registers the combination itself. `ArrowUp` and
+  `ArrowDown` move the highlight and wrap, `Enter` and `Space` select, and
+  `Escape` or a tap outside closes and returns focus to the trigger. A trigger
+  that takes its own taps, a `FossButton` with an `onPressed` for instance,
+  wins the gesture, so the menu never sees it: pass a `FossMenuController` and
+  point that callback at `toggle`. Takes a `FossMenuStyle` for one-off
+  overrides.
+* `FossBottomNavBar` is the strip of top-level destinations for the bottom of a
+  phone screen: three to five cells, each a glyph over a short label, with the
+  current one in `foreground` and the rest in `mutedForeground`. It is
+  controlled through `value` and `onChanged`, and `onChanged` fires on every
+  tap, including a tap on the destination that is already current, so an app
+  can hang scroll-to-top or pop-to-root off the second tap. Each
+  `FossBottomNavItem` carries a required `label`, an `icon`, an optional
+  `selectedIcon` that swaps in while current, an optional `badge` pinned beside
+  the glyph, and an `enabled` flag. The bar adds the bottom safe-area inset
+  below itself and paints its fill through it, so it needs no `SafeArea` around
+  it. Arrow keys move between cells, Home and End reach the ends, and Enter or
+  Space activates. Takes a `FossBottomNavBarStyle` for one-off overrides.
+* `FossRating` shows a rating as a row of star marks and takes one when you give
+  it a callback. With `onChanged` the row responds to a tap or a horizontal
+  drag, arrow keys step it, and Home and End reach both ends; without one it is
+  an inert display that still announces its value, which is what an average
+  needs. `precision` snaps input to whole marks or halves and never touches
+  display, so a 4.3 average paints as 4.3 rather than rounding to a half. Three
+  sizes (`sm` 16, `md` 20, `lg` 24), any `count`, `emptyIcon` and `filledIcon`
+  slots that take any widget and still get the partial fill, and a
+  `FossRatingStyle` for one-off overrides. Input never falls back to zero, so a
+  stray tap cannot wipe a rating.
+
+### Changed
+
+* The `theme_tailor_annotation` constraint widens to `>=3.1.3 <5.0.0`, so an app
+  already on the 4.x line resolves without a downgrade. The supported Flutter
+  and Dart versions are unchanged.
+
 ## 0.1.2
 
 ### Added

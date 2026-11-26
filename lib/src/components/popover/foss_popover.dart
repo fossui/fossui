@@ -291,7 +291,7 @@ class _FossPopoverState extends State<FossPopover>
     _portal.show();
     _attachScrollDismiss();
     _animation.duration = _reduceMotion ? Duration.zero : _duration;
-    unawaited(_animation.forward(from: _reduceMotion ? 1 : 0));
+    _animation.forward(from: _reduceMotion ? 1 : 0);
     // Move focus into the surface once it has mounted: the first focusable
     // content, or the surface scope itself when the content has none.
     WidgetsBinding.instance.addPostFrameCallback((_) {

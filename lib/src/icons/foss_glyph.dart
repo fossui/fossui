@@ -11,6 +11,7 @@ part 'glyphs/ellipsis.dart';
 part 'glyphs/error.dart';
 part 'glyphs/info.dart';
 part 'glyphs/minus.dart';
+part 'glyphs/star.dart';
 part 'glyphs/success.dart';
 part 'glyphs/warning.dart';
 
@@ -76,6 +77,16 @@ class _Pen {
     }
     if (close) path.close();
     canvas.drawPath(path, _stroke);
+  }
+
+  /// A filled polygon through [points], closed.
+  void shape(List<(double, double)> points) {
+    final (fx, fy) = points.first;
+    final path = Path()..moveTo(_p(fx, fy).dx, _p(fx, fy).dy);
+    for (final (x, y) in points.skip(1)) {
+      path.lineTo(_p(x, y).dx, _p(x, y).dy);
+    }
+    canvas.drawPath(path..close(), _fill);
   }
 
   /// A small filled dot at a unit-box point.
